@@ -26,9 +26,10 @@ function StrainMeter({ value }) {
 
 // The per-event KPI panel. Every figure carries a data-tier badge and a source
 // line. Costs are shown with their likely range, never as a lone number.
-export default function KpiPanel({ event, color, onInfo }) {
+export default function KpiPanel({ event, color, onInfo, strainOneLiner }) {
   const k = event.kpis
   const isPending = event.status === 'survey_pending'
+  const strainVal = Number(k.strainIndex.value).toFixed(1)
 
   return (
     <section className="panel" aria-label={`Key figures for ${event.name}`}>
@@ -67,11 +68,13 @@ export default function KpiPanel({ event, color, onInfo }) {
         <KpiCard label="Injuries" kpi={k.injuries} onInfo={onInfo}>{k.injuries.display}</KpiCard>
 
         <KpiCard label="Emergency-resource strain" kpi={k.strainIndex} onInfo={onInfo}>
+          <p className="kpi__oneliner">{strainOneLiner}</p>
           <div className="kpi__strainrow">
-            <span className="kpi__strainval">{k.strainIndex.value}<span className="kpi__strainmax">/100</span></span>
+            <span className="kpi__strainval num">{strainVal}<span className="kpi__strainmax">/100</span></span>
             <button className="infobtn" onClick={() => onInfo('strain')} aria-label="How is the strain index calculated?">How is this calculated?</button>
           </div>
-          <StrainMeter value={k.strainIndex.value} />
+          <StrainMeter value={Number(k.strainIndex.value)} />
+          {k.strainIndex.note && <p className="kpi__strainnote">{k.strainIndex.note}</p>}
         </KpiCard>
       </div>
 

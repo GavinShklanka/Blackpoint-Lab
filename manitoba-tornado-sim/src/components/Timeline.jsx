@@ -11,7 +11,12 @@ export default function Timeline({ steps, progress, isPlaying, onScrub, onToggle
     <section className="timeline" aria-label="Event playback timeline">
       <div className="timeline__controls">
         <button className="timeline__play" onClick={onTogglePlay} aria-label={isPlaying ? 'Pause playback' : 'Play event'}>
-          {isPlaying ? '❚❚ Pause' : '▶ Play event'}
+          <svg className="timeline__icon" viewBox="0 0 12 12" width="11" height="11" aria-hidden="true">
+            {isPlaying
+              ? <g fill="currentColor"><rect x="2" y="1.5" width="3" height="9" /><rect x="7" y="1.5" width="3" height="9" /></g>
+              : <path fill="currentColor" d="M2.5 1.5 L10.5 6 L2.5 10.5 Z" />}
+          </svg>
+          {isPlaying ? 'Pause' : 'Play event'}
         </button>
         <input
           className="timeline__slider"

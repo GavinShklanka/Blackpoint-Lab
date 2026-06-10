@@ -1,29 +1,48 @@
-import React, { useEffect, useMemo } from 'react'
-import { MapContainer, TileLayer, Polygon, Polyline, CircleMarker, Tooltip, useMap } from 'react-leaflet'
+import React, { useMemo } from 'react'
+import { MapContainer, TileLayer, GeoJSON, Polygon, Polyline, CircleMarker, Tooltip, ScaleControl, useMap } from 'react-leaflet'
+import L from 'leaflet'
 import { toLatLng, revealTrack } from './trackUtils.js'
+import { CITIES } from '../data/cities.js'
+import manitobaBorder from '../data/manitoba-border.geo.json'
+import LocatorInset from './LocatorInset.jsx'
 
-function FlyTo({ center, zoom }) {
+const prefersReduced = () =>
+  typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+// Gather every coordinate for the event (affected municipalities + tracks) plus
+// Winnipeg, so the view always frames the event against a known anchor.
+function eventBounds(event, muniFeatures) {
+  const pts = []
+  const affected = new Set(event.affectedMunicipalities)
+  muniFeatures.forEach((f) => {
+    if (affected.has(f.properties.id)) f.geometry.coordinates[0].forEach(([lng, lat]) => pts.push([lat, lng]))
+  })
+  event.tracks.forEach((tr) => tr.coords.forEach(([lng, lat]) => pts.push([lat, lng])))
+  pts.push([49.895, -97.138]) // Winnipeg, always in frame
+  return L.latLngBounds(pts)
+}
+
+function FitExtent({ bounds }) {
   const map = useMap()
-  useEffect(() => {
-    map.flyTo(center, zoom, { duration: 0.9 })
-  }, [center[0], center[1], zoom]) // eslint-disable-line react-hooks/exhaustive-deps
+  React.useEffect(() => {
+    map.fitBounds(bounds, { padding: [36, 36], maxZoom: 10, animate: !prefersReduced() })
+  }, [bounds]) // eslint-disable-line react-hooks/exhaustive-deps
   return null
 }
 
 const RATING_COLOR = (r) => {
-  if (!r) return '#6b7280'
+  if (!r) return '#5C6B80'
   if (r.includes('F5')) return '#7f1d1d'
   if (r.includes('EF4') || r.includes('F4')) return '#b91c1c'
-  if (r.includes('EF2')) return '#d97706'
-  if (r.includes('EF1')) return '#ca8a04'
-  return '#0ea5e9'
+  if (r.includes('EF2')) return '#a8631a'
+  if (r.includes('EF1')) return '#8A5A14'
+  return '#2b6cb0'
 }
 
-// The Manitoba map: light vector basemap, municipal boundaries (affected ones
-// shaded in the event colour), surveyed tornado tracks revealed by playback,
-// and an explicit "survey pending" treatment for the June 9 event.
 export default function MapView({ event, color, muniFeatures, progress }) {
   const affected = new Set(event.affectedMunicipalities)
+  const bounds = useMemo(() => eventBounds(event, muniFeatures), [event, muniFeatures])
+  const isPending = event.status === 'survey_pending'
 
   const polygons = useMemo(() => muniFeatures.map((f) => ({
     id: f.properties.id,
@@ -31,15 +50,22 @@ export default function MapView({ event, color, muniFeatures, progress }) {
     positions: f.geometry.coordinates[0].map(([lng, lat]) => [lat, lng]),
   })), [muniFeatures])
 
+  const visibleCities = CITIES.filter((c) => c.always || bounds.pad(0.15).contains([c.lat, c.lng]))
+
   return (
     <div className="mapwrap">
-      <MapContainer center={event.center} zoom={event.zoom} className="map" scrollWheelZoom={true} zoomControl={true}>
+      <MapContainer bounds={bounds} className="map" scrollWheelZoom={true} zoomControl={true}>
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
           attribution='&copy; OpenStreetMap contributors &copy; CARTO'
         />
-        <FlyTo center={event.center} zoom={event.zoom} />
+        <FitExtent bounds={bounds} />
+        <ScaleControl position="bottomleft" imperial={false} />
 
+        {/* Provincial boundary — subtle ink-navy stroke, no fill */}
+        <GeoJSON data={manitobaBorder} interactive={false} style={{ color: '#16233A', weight: 1.5, fill: false, opacity: 0.7 }} />
+
+        {/* Municipal boundaries; affected areas shaded as an approximate footprint */}
         {polygons.map((p) => {
           const isAffected = affected.has(p.id)
           return (
@@ -48,31 +74,33 @@ export default function MapView({ event, color, muniFeatures, progress }) {
               positions={p.positions}
               pathOptions={{
                 color: isAffected ? color : '#9aa5b1',
-                weight: isAffected ? 2 : 1,
+                weight: isAffected ? 1.6 : 0.8,
+                dashArray: isAffected ? '5 5' : undefined,
                 fillColor: isAffected ? color : '#cbd2d9',
-                fillOpacity: isAffected ? 0.32 : 0.04,
-                opacity: isAffected ? 0.9 : 0.35,
+                fillOpacity: isAffected ? 0.18 : 0,
+                opacity: isAffected ? 0.85 : 0.3,
               }}
             >
               <Tooltip sticky>
                 <strong>{p.name}</strong>
-                {isAffected && <div className="map__tip">Among the areas most impacted</div>}
+                {isAffected && <div className="map__tip">Approximate affected area{isPending ? ' — survey pending' : ''}</div>}
               </Tooltip>
             </Polygon>
           )
         })}
 
+        {/* Surveyed tornado tracks — the emphasized element */}
         {event.tracks.map((tr) => {
           const { path, head } = revealTrack(tr.coords, progress)
           const full = toLatLng(tr.coords)
           return (
             <React.Fragment key={tr.id + event.id}>
-              <Polyline positions={full} pathOptions={{ color: '#475569', weight: 2, opacity: 0.25, dashArray: '4 6' }} />
-              <Polyline positions={path} pathOptions={{ color: RATING_COLOR(tr.rating), weight: 5, opacity: 0.95 }}>
-                <Tooltip sticky>Tornado track — rated {tr.rating}</Tooltip>
+              <Polyline positions={full} pathOptions={{ color: '#475569', weight: 2, opacity: 0.3, dashArray: '3 6' }} />
+              <Polyline positions={path} pathOptions={{ color: RATING_COLOR(tr.rating), weight: 5.5, opacity: 1 }}>
+                <Tooltip sticky>Surveyed tornado track — rated {tr.rating}</Tooltip>
               </Polyline>
               {head && (
-                <CircleMarker center={head} radius={7} pathOptions={{ color: '#111827', weight: 2, fillColor: RATING_COLOR(tr.rating), fillOpacity: 1 }}>
+                <CircleMarker center={head} radius={6.5} pathOptions={{ color: '#16233A', weight: 2, fillColor: RATING_COLOR(tr.rating), fillOpacity: 1 }}>
                   <Tooltip>{tr.rating} tornado</Tooltip>
                 </CircleMarker>
               )}
@@ -80,25 +108,40 @@ export default function MapView({ event, color, muniFeatures, progress }) {
           )
         })}
 
-        {event.tracks.length === 0 && (
+        {isPending && (
           <CircleMarker
             center={event.center}
-            radius={16 + progress * 10}
-            pathOptions={{ color: color, weight: 2, fillColor: color, fillOpacity: 0.18 }}
+            radius={14 + progress * 9}
+            pathOptions={{ color: color, weight: 1.5, dashArray: '4 4', fillColor: color, fillOpacity: 0.1 }}
           >
-            <Tooltip>Survey pending — no confirmed track yet</Tooltip>
+            <Tooltip>Approximate impact area — ground survey pending</Tooltip>
           </CircleMarker>
         )}
-        <CircleMarker center={event.center} radius={5} pathOptions={{ color: '#111827', weight: 2, fillColor: color, fillOpacity: 1 }}>
-          <Tooltip>{event.shortName} — {event.dateLabel}</Tooltip>
-        </CircleMarker>
+
+        {/* City anchors */}
+        {visibleCities.map((c) => (
+          <CircleMarker
+            key={c.name}
+            center={[c.lat, c.lng]}
+            radius={c.name === 'Winnipeg' ? 4.5 : 3}
+            pathOptions={{ color: '#16233A', weight: 1.5, fillColor: '#16233A', fillOpacity: 1 }}
+          >
+            <Tooltip permanent direction="right" offset={[6, 0]} className={`citylabel ${c.name === 'Winnipeg' ? 'citylabel--major' : ''}`}>
+              {c.name}
+            </Tooltip>
+          </CircleMarker>
+        ))}
       </MapContainer>
 
-      <div className="map__legend" aria-hidden="false">
-        <span className="map__legend-item"><span className="swatch" style={{ background: color }} /> Areas most impacted</span>
+      {isPending && <div className="map__cornernote">Approximate — ground survey pending</div>}
+
+      <div className="map__legend">
+        <span className="map__legend-item"><span className="swatch" style={{ background: color }} /> Approximate affected area</span>
         <span className="map__legend-item"><span className="swatch swatch--track" /> Surveyed tornado track</span>
-        {event.tracks.length === 0 && <span className="map__legend-item map__legend-pending">Survey pending — no track</span>}
+        <span className="map__legend-item"><span className="swatch swatch--city" /> Town / city anchor</span>
       </div>
+
+      <LocatorInset />
     </div>
   )
 }

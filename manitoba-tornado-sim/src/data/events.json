@@ -2,6 +2,7 @@
   "meta": {
     "title": "Manitoba Historical Tornado-System Simulator",
     "subtitle": "Executive Stakeholder Edition",
+    "purpose": "Compare an unfolding storm against Manitoba's worst on record — so responders can size what's coming.",
     "currency": "2026 CAD",
     "lastReviewed": "2026-06-10",
     "tiers": {
@@ -15,11 +16,12 @@
       },
       "projection": {
         "label": "Projection",
-        "blurb": "Modeled, not yet observed. Always shown with its likely range — never as a single number on its own."
+        "blurb": "A computer-modelled estimate, not yet observed — always shown with its likely range rather than a single number. The range spans the 10th to 90th percentile (P10–P90) of 100,000 simulated outcomes; the central estimate is the 50th percentile (P50)."
       }
     },
     "strainMethodology": {
       "label": "analytical proxy",
+      "oneLiner": "How hard this storm pushed emergency crews, scored 0–100.",
       "plain": "The Emergency-Resource Strain Index is a single 0–100 score that estimates how hard an event pushed on emergency resources. It blends four plain things: how many warnings were issued and for how long, the peak number of customers without power, how many municipalities were hit, and casualties (deaths weighted heavily). Each piece is scored as a share of the worst value seen across these five events, then averaged. 100 = the heaviest strain in this roster; it is a comparison tool, not an exact measurement.",
       "components": ["Warnings issued (count + duration)", "Peak power outages (customers)", "Affected municipalities (count)", "Casualties (deaths weighted)"]
     }
@@ -48,14 +50,14 @@
         { "t": "7:14 PM", "label": "Tornado lifts; no fatalities recorded" }
       ],
       "kpis": {
-        "duration":   { "value": "~35 minutes on the ground", "minutes": 35, "tier": "confirmed", "source": "ECCC / NTP survey" },
+        "duration":   { "value": "~35 minutes on the ground", "minutes": 35, "tier": "confirmed", "source": "Environment and Climate Change Canada (ECCC) / Northern Tornadoes Project (NTP) survey" },
         "maxWind":    { "value": "417–510 km/h", "tier": "confirmed", "source": "ECCC (Fujita F5)" },
         "rating":     { "value": "F5", "tier": "confirmed", "source": "ECCC — Canada's only F5" },
         "recordedDamage": { "value": "Several homes destroyed; ≈ $39M (2007 dollars)", "tier": "historical_estimate", "source": "ECCC / insurance records" },
         "projectedCost": { "central": 58, "low": 46, "high": 74, "rangeLabel": "likely range $46M–$74M", "centralLabel": "central estimate $58M", "tier": "historical_estimate", "source": "Inflation-normalized to 2026 CAD" },
         "fatalities": { "value": 0, "display": "0 — no lives lost", "tier": "confirmed", "source": "ECCC / Province of Manitoba" },
         "injuries":   { "value": 0, "display": "No serious injuries reported", "tier": "confirmed", "source": "ECCC" },
-        "strainIndex": { "value": 63, "tier": "projection", "source": "analytical proxy", "raw": { "warningCount": 18, "warningHours": 9, "peakOutages": 8000, "muniCount": 3, "fatalities": 0, "injuries": 0 } }
+        "strainIndex": { "value": 62.8, "tier": "projection", "source": "analytical proxy", "raw": { "warningCount": 18, "warningHours": 9, "peakOutages": 8000, "muniCount": 3, "fatalities": 0, "injuries": 0 } }
       }
     },
     {
@@ -81,14 +83,14 @@
         { "t": "9:50 PM", "label": "Tornado dissipates; one fatality confirmed" }
       ],
       "kpis": {
-        "duration":   { "value": "~45 minutes on the ground", "minutes": 45, "tier": "confirmed", "source": "ECCC / NTP survey" },
+        "duration":   { "value": "~45 minutes on the ground", "minutes": 45, "tier": "confirmed", "source": "Environment and Climate Change Canada (ECCC) / Northern Tornadoes Project (NTP) survey" },
         "maxWind":    { "value": "≈ 280 km/h", "tier": "confirmed", "source": "ECCC (EF4)" },
         "rating":     { "value": "EF4", "tier": "confirmed", "source": "ECCC damage survey" },
         "recordedDamage": { "value": "Homes & cottages destroyed near Margaret Bruce Beach", "tier": "historical_estimate", "source": "ECCC / Province of Manitoba" },
         "projectedCost": { "central": 18, "low": 13, "high": 26, "rangeLabel": "likely range $13M–$26M", "centralLabel": "central estimate $18M", "tier": "historical_estimate", "source": "Inflation-normalized to 2026 CAD" },
         "fatalities": { "value": 1, "display": "1 fatality", "tier": "confirmed", "source": "ECCC / Province of Manitoba" },
         "injuries":   { "value": 2, "display": "Several injuries", "tier": "confirmed", "source": "ECCC" },
-        "strainIndex": { "value": 63, "tier": "projection", "source": "analytical proxy", "raw": { "warningCount": 12, "warningHours": 6, "peakOutages": 5000, "muniCount": 3, "fatalities": 1, "injuries": 2 } }
+        "strainIndex": { "value": 63.2, "tier": "projection", "source": "analytical proxy", "raw": { "warningCount": 12, "warningHours": 6, "peakOutages": 5000, "muniCount": 3, "fatalities": 1, "injuries": 2 } }
       }
     },
     {
@@ -116,7 +118,7 @@
         { "t": "7:00 PM", "label": "Storms weaken; surveys later confirm three tornadoes" }
       ],
       "kpis": {
-        "duration":   { "value": "Up to ~25 minutes (longest track)", "minutes": 25, "tier": "confirmed", "source": "ECCC / NTP survey" },
+        "duration":   { "value": "Up to ~25 minutes (longest track)", "minutes": 25, "tier": "confirmed", "source": "Environment and Climate Change Canada (ECCC) / Northern Tornadoes Project (NTP) survey" },
         "maxWind":    { "value": "Up to ~180 km/h", "tier": "confirmed", "source": "ECCC (strongest of three, EF2)" },
         "rating":     { "value": "EF1–EF2 (3 tornadoes)", "tier": "confirmed", "source": "ECCC / NTP" },
         "recordedDamage": { "value": "Farmsteads, outbuildings and trees damaged", "tier": "historical_estimate", "source": "ECCC / NTP" },
@@ -151,7 +153,7 @@
         { "t": "5:40 PM", "label": "Activity ends; all three rated EF0 by survey" }
       ],
       "kpis": {
-        "duration":   { "value": "~5–10 minutes each", "minutes": 10, "tier": "confirmed", "source": "ECCC / NTP survey" },
+        "duration":   { "value": "~5–10 minutes each", "minutes": 10, "tier": "confirmed", "source": "Environment and Climate Change Canada (ECCC) / Northern Tornadoes Project (NTP) survey" },
         "maxWind":    { "value": "≈ 105–130 km/h", "tier": "confirmed", "source": "ECCC (EF0)" },
         "rating":     { "value": "EF0 (3 tornadoes)", "tier": "confirmed", "source": "ECCC / NTP" },
         "recordedDamage": { "value": "Minor — tree limbs and crop damage", "tier": "historical_estimate", "source": "ECCC / NTP" },
@@ -178,11 +180,11 @@
       "timeline": [
         { "t": "5:00 PM", "label": "Severe storms build over the Interlake (modeled)" },
         { "t": "5:45 PM", "label": "Giant hail reported; outages begin to climb (modeled)" },
-        { "t": "6:30 PM", "label": "Peak ~13,250 Manitoba Hydro customers without power (proxy)" },
+        { "t": "6:30 PM", "label": "Peak ~13,250 Manitoba Hydro customers without power (estimated from power-outage data)" },
         { "t": "7:30 PM", "label": "Storms exit east; ground survey not yet completed" }
       ],
       "projection": {
-        "method": "Monte Carlo, 100,000 draws, cross-validated against a power-outage proxy and historical analogues.",
+        "method": "Computer simulation of 100,000 possible outcomes (Monte Carlo), checked against power-outage data and past comparable storms.",
         "totalLoss": { "p10": 20, "p50": 44, "p90": 139, "rangeLabel": "likely range $20M–$139M", "centralLabel": "central estimate $44M" },
         "drivers": [
           { "name": "Hail", "median": 27, "note": "Dominant driver" },
@@ -194,13 +196,13 @@
       },
       "kpis": {
         "duration":   { "value": "Not yet surveyed", "minutes": 0, "tier": "projection", "source": "Survey pending" },
-        "maxWind":    { "value": "Not yet surveyed — wind/infra modeled from outages", "tier": "projection", "source": "Outage proxy" },
-        "rating":     { "value": "Pending — no confirmed tornado count yet", "tier": "projection", "source": "NTP survey pending" },
-        "recordedDamage": { "value": "Hail-dominated; survey pending", "tier": "projection", "source": "Modeled" },
-        "projectedCost": { "central": 44, "low": 20, "high": 139, "rangeLabel": "likely range $20M–$139M (P10–P90)", "centralLabel": "central estimate $44M (P50)", "tier": "projection", "source": "Monte Carlo, 100k draws (2026 CAD)" },
-        "fatalities": { "value": 0, "display": "None reported (survey pending)", "tier": "projection", "source": "Preliminary" },
-        "injuries":   { "value": 0, "display": "None reported (survey pending)", "tier": "projection", "source": "Preliminary" },
-        "strainIndex": { "value": 78, "tier": "projection", "source": "analytical proxy", "raw": { "warningCount": 20, "warningHours": 8, "peakOutages": 13250, "muniCount": 6, "fatalities": 0, "injuries": 0 } }
+        "maxWind":    { "value": "Wind damage estimated from power-outage data — not yet surveyed", "tier": "projection", "source": "Estimated from power-outage counts" },
+        "rating":     { "value": "Pending — no confirmed tornado count yet", "tier": "projection", "source": "Northern Tornadoes Project (NTP) survey pending" },
+        "recordedDamage": { "value": "Hail-dominated; survey pending", "tier": "projection", "source": "Computer estimate (survey pending)" },
+        "projectedCost": { "central": 44, "low": 20, "high": 139, "rangeLabel": "likely range $20M–$139M", "centralLabel": "central estimate $44M", "tier": "projection", "source": "Computer simulation of 100,000 possible outcomes (Monte Carlo), 2026 CAD" },
+        "fatalities": { "value": 0, "display": "None reported yet (survey pending)", "tier": "projection", "source": "Preliminary — survey pending" },
+        "injuries":   { "value": 0, "display": "None reported yet (survey pending)", "tier": "projection", "source": "Preliminary — survey pending" },
+        "strainIndex": { "value": 78, "tier": "projection", "source": "analytical proxy", "note": "Outranks the Elie F5 because of urban Winnipeg-area exposure and the scale of power outages — not because the storm itself was more intense.", "raw": { "warningCount": 20, "warningHours": 8, "peakOutages": 13250, "muniCount": 6, "fatalities": 0, "injuries": 0 } }
       }
     }
   ]

@@ -68,13 +68,16 @@ export default function App() {
         <div className="topbar__brand">
           <span className="topbar__kicker">Blackpoint Lab · Emergency-Management Briefing</span>
           <h1>{meta.title}</h1>
+          <p className="topbar__purpose">{meta.purpose}</p>
           <p className="topbar__sub">{meta.subtitle} · all figures in {meta.currency}</p>
         </div>
         <div className="topbar__legend">
           <span className="topbar__legendlabel">Every figure is labelled:</span>
-          {Object.keys(meta.tiers).map((t) => (
-            <Badge key={t} tier={t} onInfo={setInfo} />
-          ))}
+          <div className="topbar__badges">
+            {Object.keys(meta.tiers).map((t) => (
+              <Badge key={t} tier={t} onInfo={setInfo} />
+            ))}
+          </div>
         </div>
       </header>
 
@@ -88,7 +91,7 @@ export default function App() {
 
       {mode === 'compare' ? (
         <main className="stage stage--compare">
-          <CompareView events={events} colors={colors} onInfo={setInfo} onSelect={selectEvent} />
+          <CompareView events={events} colors={colors} onInfo={setInfo} onSelect={selectEvent} strainOneLiner={meta.strainMethodology.oneLiner} />
         </main>
       ) : (
         <main className="stage">
@@ -108,7 +111,7 @@ export default function App() {
             />
           </div>
           <div className="stage__right">
-            <KpiPanel event={selected} color={colors[selected.id]} onInfo={setInfo} />
+            <KpiPanel event={selected} color={colors[selected.id]} onInfo={setInfo} strainOneLiner={meta.strainMethodology.oneLiner} />
           </div>
         </main>
       )}
@@ -125,6 +128,7 @@ export default function App() {
         >
           {info === 'strain' ? (
             <>
+              <p className="modal__lead">{meta.strainMethodology.oneLiner}</p>
               <p className="modal__tag">Labelled “{meta.strainMethodology.label}” in the interface.</p>
               <p>{meta.strainMethodology.plain}</p>
               <ul className="modal__list">
