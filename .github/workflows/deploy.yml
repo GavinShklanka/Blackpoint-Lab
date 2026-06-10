@@ -7,10 +7,6 @@ name: Deploy site (portfolio + tornado simulator)
 on:
   push:
     branches: [main, claude/handoff-execution-l5g20s]
-    paths:
-      - 'index.html'
-      - 'manitoba-tornado-sim/**'
-      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 permissions:
