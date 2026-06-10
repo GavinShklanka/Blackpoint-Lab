@@ -107,7 +107,8 @@ body {
 .mapwrap { position: relative; }
 .map { height: 470px; width: 100%; border-radius: var(--radius); border: 1px solid var(--hairline); box-shadow: var(--shadow); z-index: 0; }
 .map__tip { font-size: 11px; color: var(--ink-soft); }
-.leaflet-container { font-family: var(--sans); background: #eef0f2; }
+.leaflet-container { font-family: var(--sans); background: var(--paper); }
+.swath-hail { fill: url(#hailHatch) !important; fill-opacity: 1 !important; }
 .citylabel {
   background: transparent; border: none; box-shadow: none; padding: 0; margin: 0;
   color: var(--ink); font-size: 11px; font-weight: 600;
@@ -117,14 +118,20 @@ body {
 .citylabel--major { font-size: 12.5px; font-weight: 700; }
 
 .map__legend {
-  position: absolute; top: 12px; right: 12px; z-index: 500;
-  background: rgba(255,255,255,.95); border: 1px solid var(--hairline); border-radius: var(--radius);
-  padding: 8px 10px; display: flex; flex-direction: column; gap: 5px; font-size: 11.5px; box-shadow: var(--shadow);
+  position: absolute; top: 12px; right: 12px; z-index: 500; max-width: 220px;
+  background: rgba(255,255,255,.96); border: 1px solid var(--hairline); border-radius: var(--radius);
+  padding: 9px 11px; display: flex; flex-direction: column; gap: 6px; font-size: 11.5px; box-shadow: var(--shadow);
 }
-.map__legend-item { display: flex; align-items: center; gap: 7px; color: var(--ink-soft); }
-.swatch { width: 14px; height: 10px; border-radius: 2px; display: inline-block; opacity: .85; }
+.map__legend-item { display: flex; align-items: center; gap: 7px; color: var(--ink); line-height: 1.25; }
+.map__legend-tier { color: var(--ink-soft); font-size: 10.5px; font-style: italic; }
+.swatch { flex: 0 0 auto; width: 15px; height: 11px; border-radius: 2px; display: inline-block; opacity: .9; }
 .swatch--track { background: #b91c1c; height: 3px; border-radius: 0; }
-.swatch--city { width: 8px; height: 8px; border-radius: 50%; background: var(--ink); }
+.swatch--tornado { border-radius: 2px; opacity: .8; }
+.swatch--hail { background-image: repeating-linear-gradient(45deg, #2C7DA0 0 2px, rgba(44,125,160,.12) 2px 5px); border: 1px solid #9FB8C8; }
+.swatch--city { width: 9px; height: 9px; border-radius: 50%; background: var(--ink); }
+.swatch--winnipeg { background: transparent; border: 1.5px dashed var(--ink-soft); }
+.swatch--lake { background: #CFE0EA; border: .5px solid #9FB8C8; }
+.citylabel--area { color: var(--ink-soft); font-size: 11px; font-weight: 600; font-style: italic; }
 .map__cornernote {
   position: absolute; top: 12px; left: 12px; z-index: 500;
   background: var(--projection-bg); color: var(--projection-fg);
