@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "title": "Manitoba Historical Tornado-System Simulator",
+    "subtitle": "Executive Stakeholder Edition",
+    "currency": "2026 CAD",
+    "lastReviewed": "2026-06-10",
+    "tiers": {
+      "confirmed": {
+        "label": "Confirmed",
+        "blurb": "Verified by an official damage survey. Sourced from Environment and Climate Change Canada (ECCC) and the Northern Tornadoes Project (NTP)."
+      },
+      "historical_estimate": {
+        "label": "Historical estimate",
+        "blurb": "A real recorded loss, adjusted for inflation into 2026 dollars. Shown as a likely range because inflation-normalization carries uncertainty."
+      },
+      "projection": {
+        "label": "Projection",
+        "blurb": "Modeled, not yet observed. Always shown with its likely range — never as a single number on its own."
+      }
+    },
+    "strainMethodology": {
+      "label": "analytical proxy",
+      "plain": "The Emergency-Resource Strain Index is a single 0–100 score that estimates how hard an event pushed on emergency resources. It blends four plain things: how many warnings were issued and for how long, the peak number of customers without power, how many municipalities were hit, and casualties (deaths weighted heavily). Each piece is scored as a share of the worst value seen across these five events, then averaged. 100 = the heaviest strain in this roster; it is a comparison tool, not an exact measurement.",
+      "components": ["Warnings issued (count + duration)", "Peak power outages (customers)", "Affected municipalities (count)", "Casualties (deaths weighted)"]
+    }
+  },
+  "events": [
+    {
+      "id": "elie-2007",
+      "shortName": "Elie F5",
+      "name": "Elie F5 — June 2007 Outbreak",
+      "dateLabel": "June 22–23, 2007",
+      "sortDate": "2007-06-22",
+      "status": "confirmed",
+      "headline": "Canada's only officially rated F5 tornado. It flattened homes in Elie yet, remarkably, killed no one.",
+      "center": [49.905, -97.75],
+      "zoom": 11,
+      "affectedMunicipalities": ["cartier", "portage", "stfx"],
+      "primaryMunicipality": "cartier",
+      "tracks": [
+        { "id": "elie-main", "rating": "F5", "coords": [[-97.81, 49.902], [-97.765, 49.905], [-97.72, 49.907], [-97.69, 49.909]] }
+      ],
+      "timeline": [
+        { "t": "6:25 PM", "label": "Severe thunderstorm intensifies west of Elie" },
+        { "t": "6:39 PM", "label": "Tornado touches down; first home destroyed" },
+        { "t": "6:50 PM", "label": "Peak intensity — a house is lifted off its foundation" },
+        { "t": "7:00 PM", "label": "Track turns east through the edge of town" },
+        { "t": "7:14 PM", "label": "Tornado lifts; no fatalities recorded" }
+      ],
+      "kpis": {
+        "duration":   { "value": "~35 minutes on the ground", "minutes": 35, "tier": "confirmed", "source": "ECCC / NTP survey" },
+        "maxWind":    { "value": "417–510 km/h", "tier": "confirmed", "source": "ECCC (Fujita F5)" },
+        "rating":     { "value": "F5", "tier": "confirmed", "source": "ECCC — Canada's only F5" },
+        "recordedDamage": { "value": "Several homes destroyed; ≈ $39M (2007 dollars)", "tier": "historical_estimate", "source": "ECCC / insurance records" },
+        "projectedCost": { "central": 58, "low": 46, "high": 74, "rangeLabel": "likely range $46M–$74M", "centralLabel": "central estimate $58M", "tier": "historical_estimate", "source": "Inflation-normalized to 2026 CAD" },
+        "fatalities": { "value": 0, "display": "0 — no lives lost", "tier": "confirmed", "source": "ECCC / Province of Manitoba" },
+        "injuries":   { "value": 0, "display": "No serious injuries reported", "tier": "confirmed", "source": "ECCC" },
+        "strainIndex": { "value": 63, "tier": "projection", "source": "analytical proxy", "raw": { "warningCount": 18, "warningHours": 9, "peakOutages": 8000, "muniCount": 3, "fatalities": 0, "injuries": 0 } }
+      }
+    },
+    {
+      "id": "alonsa-2018",
+      "shortName": "Alonsa EF4",
+      "name": "Alonsa EF4 — August 2018",
+      "dateLabel": "August 3, 2018",
+      "sortDate": "2018-08-03",
+      "status": "confirmed",
+      "headline": "A violent EF4 near Lake Manitoba. The only fatality among these five events occurred here.",
+      "center": [50.80, -99.02],
+      "zoom": 10,
+      "affectedMunicipalities": ["alonsa", "lakeshore", "glenella"],
+      "primaryMunicipality": "alonsa",
+      "tracks": [
+        { "id": "alonsa-main", "rating": "EF4", "coords": [[-99.06, 50.735], [-99.02, 50.765], [-98.985, 50.795], [-98.955, 50.825]] }
+      ],
+      "timeline": [
+        { "t": "8:55 PM", "label": "Tornado-warned supercell develops near Alonsa" },
+        { "t": "9:08 PM", "label": "Tornado touches down south of the community" },
+        { "t": "9:20 PM", "label": "Peak EF4 intensity strikes seasonal homes" },
+        { "t": "9:35 PM", "label": "Track moves northeast toward Lake Manitoba" },
+        { "t": "9:50 PM", "label": "Tornado dissipates; one fatality confirmed" }
+      ],
+      "kpis": {
+        "duration":   { "value": "~45 minutes on the ground", "minutes": 45, "tier": "confirmed", "source": "ECCC / NTP survey" },
+        "maxWind":    { "value": "≈ 280 km/h", "tier": "confirmed", "source": "ECCC (EF4)" },
+        "rating":     { "value": "EF4", "tier": "confirmed", "source": "ECCC damage survey" },
+        "recordedDamage": { "value": "Homes & cottages destroyed near Margaret Bruce Beach", "tier": "historical_estimate", "source": "ECCC / Province of Manitoba" },
+        "projectedCost": { "central": 18, "low": 13, "high": 26, "rangeLabel": "likely range $13M–$26M", "centralLabel": "central estimate $18M", "tier": "historical_estimate", "source": "Inflation-normalized to 2026 CAD" },
+        "fatalities": { "value": 1, "display": "1 fatality", "tier": "confirmed", "source": "ECCC / Province of Manitoba" },
+        "injuries":   { "value": 2, "display": "Several injuries", "tier": "confirmed", "source": "ECCC" },
+        "strainIndex": { "value": 63, "tier": "projection", "source": "analytical proxy", "raw": { "warningCount": 12, "warningHours": 6, "peakOutages": 5000, "muniCount": 3, "fatalities": 1, "injuries": 2 } }
+      }
+    },
+    {
+      "id": "june20-2023",
+      "shortName": "June 2023",
+      "name": "June 2023 — Three Confirmed Tornadoes",
+      "dateLabel": "June 20, 2023",
+      "sortDate": "2023-06-20",
+      "status": "confirmed",
+      "headline": "A multi-tornado afternoon across south-central Manitoba; three tornadoes were confirmed by survey.",
+      "center": [49.37, -98.10],
+      "zoom": 9,
+      "affectedMunicipalities": ["dufferin", "pembina", "thompson"],
+      "primaryMunicipality": "dufferin",
+      "tracks": [
+        { "id": "carman-2023", "rating": "EF2", "coords": [[-98.04, 49.49], [-98.00, 49.50], [-97.96, 49.515]] },
+        { "id": "miami-2023", "rating": "EF1", "coords": [[-98.26, 49.36], [-98.23, 49.37], [-98.20, 49.385]] },
+        { "id": "manitou-2023", "rating": "EF1", "coords": [[-98.58, 49.24], [-98.55, 49.25], [-98.52, 49.265]] }
+      ],
+      "timeline": [
+        { "t": "4:10 PM", "label": "Supercells fire along a southern Manitoba boundary" },
+        { "t": "4:45 PM", "label": "First tornado confirmed near Carman (EF2)" },
+        { "t": "5:30 PM", "label": "Second tornado near Miami (EF1)" },
+        { "t": "6:15 PM", "label": "Third tornado near Manitou (EF1)" },
+        { "t": "7:00 PM", "label": "Storms weaken; surveys later confirm three tornadoes" }
+      ],
+      "kpis": {
+        "duration":   { "value": "Up to ~25 minutes (longest track)", "minutes": 25, "tier": "confirmed", "source": "ECCC / NTP survey" },
+        "maxWind":    { "value": "Up to ~180 km/h", "tier": "confirmed", "source": "ECCC (strongest of three, EF2)" },
+        "rating":     { "value": "EF1–EF2 (3 tornadoes)", "tier": "confirmed", "source": "ECCC / NTP" },
+        "recordedDamage": { "value": "Farmsteads, outbuildings and trees damaged", "tier": "historical_estimate", "source": "ECCC / NTP" },
+        "projectedCost": { "central": 9, "low": 6, "high": 14, "rangeLabel": "likely range $6M–$14M", "centralLabel": "central estimate $9M", "tier": "historical_estimate", "source": "Inflation-normalized to 2026 CAD" },
+        "fatalities": { "value": 0, "display": "0 — no lives lost", "tier": "confirmed", "source": "ECCC" },
+        "injuries":   { "value": 0, "display": "No serious injuries reported", "tier": "confirmed", "source": "ECCC" },
+        "strainIndex": { "value": 56, "tier": "projection", "source": "analytical proxy", "raw": { "warningCount": 15, "warningHours": 7, "peakOutages": 6000, "muniCount": 3, "fatalities": 0, "injuries": 0 } }
+      }
+    },
+    {
+      "id": "june2-2026",
+      "shortName": "June 2, 2026",
+      "name": "June 2, 2026 — Three EF0 Tornadoes",
+      "dateLabel": "June 2, 2026",
+      "sortDate": "2026-06-02",
+      "status": "confirmed",
+      "headline": "A weak-tornado day: three short-lived EF0s touched down with minimal damage.",
+      "center": [49.14, -97.60],
+      "zoom": 9,
+      "affectedMunicipalities": ["stanley", "rhineland", "montcalm"],
+      "primaryMunicipality": "stanley",
+      "tracks": [
+        { "id": "stanley-2026", "rating": "EF0", "coords": [[-97.96, 49.175], [-97.94, 49.18], [-97.925, 49.188]] },
+        { "id": "rhineland-2026", "rating": "EF0", "coords": [[-97.58, 49.095], [-97.56, 49.10], [-97.545, 49.108]] },
+        { "id": "montcalm-2026", "rating": "EF0", "coords": [[-97.32, 49.115], [-97.30, 49.12], [-97.285, 49.128]] }
+      ],
+      "timeline": [
+        { "t": "3:20 PM", "label": "Marginal supercells develop near the U.S. border" },
+        { "t": "3:48 PM", "label": "Brief EF0 touchdown near Winkler (RM of Stanley)" },
+        { "t": "4:25 PM", "label": "Second EF0 near Altona (RM of Rhineland)" },
+        { "t": "5:05 PM", "label": "Third EF0 in the RM of Montcalm" },
+        { "t": "5:40 PM", "label": "Activity ends; all three rated EF0 by survey" }
+      ],
+      "kpis": {
+        "duration":   { "value": "~5–10 minutes each", "minutes": 10, "tier": "confirmed", "source": "ECCC / NTP survey" },
+        "maxWind":    { "value": "≈ 105–130 km/h", "tier": "confirmed", "source": "ECCC (EF0)" },
+        "rating":     { "value": "EF0 (3 tornadoes)", "tier": "confirmed", "source": "ECCC / NTP" },
+        "recordedDamage": { "value": "Minor — tree limbs and crop damage", "tier": "historical_estimate", "source": "ECCC / NTP" },
+        "projectedCost": { "central": 2.4, "low": 1.5, "high": 3.8, "rangeLabel": "likely range $1.5M–$3.8M", "centralLabel": "central estimate $2.4M", "tier": "historical_estimate", "source": "2026 CAD (near current dollars)" },
+        "fatalities": { "value": 0, "display": "0 — no lives lost", "tier": "confirmed", "source": "ECCC" },
+        "injuries":   { "value": 0, "display": "No injuries reported", "tier": "confirmed", "source": "ECCC" },
+        "strainIndex": { "value": 29, "tier": "projection", "source": "analytical proxy", "raw": { "warningCount": 8, "warningHours": 4, "peakOutages": 1500, "muniCount": 3, "fatalities": 0, "injuries": 0 } }
+      }
+    },
+    {
+      "id": "june9-2026",
+      "shortName": "June 9, 2026",
+      "name": "June 9, 2026 — Survey Pending",
+      "dateLabel": "June 9, 2026",
+      "sortDate": "2026-06-09",
+      "status": "survey_pending",
+      "headline": "Damage survey pending — figures below are projections. A hail-dominated event across the Interlake east of Winnipeg.",
+      "center": [50.15, -97.10],
+      "zoom": 9,
+      "affectedMunicipalities": ["rockwood", "woodlands", "standrews", "selkirk", "stclements", "springfield"],
+      "primaryMunicipality": "rockwood",
+      "tracks": [],
+      "pendingBanner": "Damage survey pending — no confirmed tornado count yet. Every figure for this event is a modeled projection shown with its likely range.",
+      "timeline": [
+        { "t": "5:00 PM", "label": "Severe storms build over the Interlake (modeled)" },
+        { "t": "5:45 PM", "label": "Giant hail reported; outages begin to climb (modeled)" },
+        { "t": "6:30 PM", "label": "Peak ~13,250 Manitoba Hydro customers without power (proxy)" },
+        { "t": "7:30 PM", "label": "Storms exit east; ground survey not yet completed" }
+      ],
+      "projection": {
+        "method": "Monte Carlo, 100,000 draws, cross-validated against a power-outage proxy and historical analogues.",
+        "totalLoss": { "p10": 20, "p50": 44, "p90": 139, "rangeLabel": "likely range $20M–$139M", "centralLabel": "central estimate $44M" },
+        "drivers": [
+          { "name": "Hail", "median": 27, "note": "Dominant driver" },
+          { "name": "Wind / infrastructure", "median": 17, "note": "Anchored to 13,250 peak Manitoba Hydro outages" }
+        ],
+        "insuredCatProb": 0.51,
+        "insuredCatThreshold": "≥ C$30M industry loss",
+        "peakOutages": 13250
+      },
+      "kpis": {
+        "duration":   { "value": "Not yet surveyed", "minutes": 0, "tier": "projection", "source": "Survey pending" },
+        "maxWind":    { "value": "Not yet surveyed — wind/infra modeled from outages", "tier": "projection", "source": "Outage proxy" },
+        "rating":     { "value": "Pending — no confirmed tornado count yet", "tier": "projection", "source": "NTP survey pending" },
+        "recordedDamage": { "value": "Hail-dominated; survey pending", "tier": "projection", "source": "Modeled" },
+        "projectedCost": { "central": 44, "low": 20, "high": 139, "rangeLabel": "likely range $20M–$139M (P10–P90)", "centralLabel": "central estimate $44M (P50)", "tier": "projection", "source": "Monte Carlo, 100k draws (2026 CAD)" },
+        "fatalities": { "value": 0, "display": "None reported (survey pending)", "tier": "projection", "source": "Preliminary" },
+        "injuries":   { "value": 0, "display": "None reported (survey pending)", "tier": "projection", "source": "Preliminary" },
+        "strainIndex": { "value": 78, "tier": "projection", "source": "analytical proxy", "raw": { "warningCount": 20, "warningHours": 8, "peakOutages": 13250, "muniCount": 6, "fatalities": 0, "injuries": 0 } }
+      }
+    }
+  ]
+}
