@@ -63,11 +63,8 @@ export const IMPACT = {
   },
 }
 
-// Simple City of Winnipeg footprint (≈ Perimeter Highway), [lng, lat].
-export const WINNIPEG_OUTLINE = [
-  [-97.34, 49.99], [-96.96, 49.99], [-96.93, 49.88], [-96.95, 49.80],
-  [-97.01, 49.72], [-97.28, 49.72], [-97.36, 49.81], [-97.35, 49.92], [-97.34, 49.99],
-]
+// The City of Winnipeg footprint now comes from the real urban polygon in
+// manitoba-urban.geojson (the freehand hexagon was removed); the label is kept.
 
 // Lake reference points kept in frame so southern views always show a lake.
 export const LAKE_ANCHORS = [

@@ -75,7 +75,7 @@ body {
   flex: 0 0 auto; text-align: left; cursor: pointer;
   background: transparent; border: none; border-bottom: 2px solid transparent;
   padding: 12px 14px 10px; min-width: 124px; font-family: var(--sans);
-  display: flex; flex-direction: column; gap: 2px; transition: background .15s;
+  display: flex; flex-direction: column; gap: 2px;
 }
 .tab__name { font-weight: 600; font-size: 14px; color: var(--ink-soft); }
 .tab__date { font-size: 11px; color: var(--ink-soft); opacity: .8; }
@@ -122,8 +122,16 @@ body {
 }
 .map__legend {
   background: rgba(255,255,255,.96); border: 1px solid var(--hairline); border-radius: var(--radius);
-  padding: 9px 11px; display: flex; flex-direction: column; gap: 6px; font-size: 11.5px; box-shadow: var(--shadow);
+  padding: 9px 11px; font-size: 11.5px; box-shadow: var(--shadow);
 }
+.map__legend--collapsed { display: inline-block; }
+.map__legend-toggle {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;
+  background: none; border: none; padding: 0; cursor: pointer; font-family: var(--sans);
+  font-weight: 700; font-size: 11.5px; color: var(--ink);
+}
+.map__legend-chevron { color: var(--ink-soft); }
+.map__legend-body { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
 .map__legend-item { display: flex; align-items: center; gap: 7px; color: var(--ink); line-height: 1.25; }
 .map__legend-tier { color: var(--ink-soft); font-size: 10.5px; font-style: italic; }
 .map__legend-cap { margin-top: 2px; padding-top: 6px; border-top: 1px solid var(--hairline); font-size: 10.5px; font-style: italic; color: var(--ink-soft); line-height: 1.3; }
@@ -133,6 +141,9 @@ body {
 .swatch--hail { background: rgba(44,125,160,.20); border: 1.5px dashed #2C7DA0; }
 .swatch--city { width: 9px; height: 9px; border-radius: 50%; background: var(--ink); }
 .swatch--winnipeg { background: transparent; border: 1.5px dashed var(--ink-soft); }
+.swatch--road { background: #A9988F; height: 3px; border-radius: 0; }
+.swatch--urban { background: rgba(216,205,184,.65); border: 1px solid #A99B7E; }
+.swatch--river { background: #9FB8C8; height: 3px; border-radius: 0; }
 .swatch--lake { background: #CFE0EA; border: .5px solid #9FB8C8; }
 .citylabel--area { color: var(--ink-soft); font-size: 11px; font-weight: 600; font-style: italic; }
 .map__cornernote {
