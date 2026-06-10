@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, TileLayer, GeoJSON, Pane, Polygon, Polyline, CircleMarker, Tooltip, Popup, ScaleControl, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { toLatLng, revealTrack } from './trackUtils.js'
@@ -20,8 +20,6 @@ const RATING_COLOR = (r) => {
   return '#2b6cb0'
 }
 
-// Frame the event against known anchors: Winnipeg plus a lake always in view, so
-// southern Manitoba stays recognizable (we never zoom tighter than that).
 function eventBounds(event) {
   const pts = []
   ;(IMPACT[event.id]?.swaths || []).forEach((s) => s.line.forEach(([lng, lat]) => pts.push([lat, lng])))
@@ -39,6 +37,26 @@ function FitExtent({ bounds }) {
   return null
 }
 
+// Once tiles repeatedly fail (CDN unreachable), hide the layer so degraded mode
+// is baked geography on clean paper — never a gray field of error tiles.
+function ResilientTiles() {
+  const tileRef = useRef(null)
+  const errs = useRef(0)
+  return (
+    <TileLayer
+      ref={tileRef}
+      url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+      attribution='&copy; OpenStreetMap contributors &copy; CARTO · Boundaries: Natural Earth'
+      eventHandlers={{
+        tileerror: () => {
+          errs.current += 1
+          if (errs.current >= 4 && tileRef.current) tileRef.current.setOpacity(0)
+        },
+      }}
+    />
+  )
+}
+
 export default function MapView({ event, color, muniFeatures, progress }) {
   const [geo, setGeo] = useState({ boundary: null, lakes: null })
   const bounds = useMemo(() => eventBounds(event), [event])
@@ -50,7 +68,7 @@ export default function MapView({ event, color, muniFeatures, progress }) {
     muniFeatures.forEach((f) => { m[f.properties.id] = f.properties.name })
     return m
   }, [muniFeatures])
-  const affectedNames = event.affectedMunicipalities.map((id) => muniNames[id]).filter(Boolean)
+  const namesFor = (ids) => (ids || event.affectedMunicipalities).map((id) => muniNames[id]).filter(Boolean)
 
   useEffect(() => {
     const base = import.meta.env.BASE_URL
@@ -60,42 +78,37 @@ export default function MapView({ event, color, muniFeatures, progress }) {
     ]).then(([boundary, lakes]) => setGeo({ boundary, lakes }))
   }, [])
 
-  // Legend, with a provenance tier on every drawn impact shape.
+  // Legend (deduped by label), with a provenance tier on every drawn shape.
   const legend = []
+  const seen = new Set()
   if (event.tracks.length) legend.push({ label: 'Surveyed tornado track', tier: 'confirmed', kind: 'track' })
-  impact.swaths.forEach((s) => legend.push({ label: s.label, tier: s.tier, kind: s.hazard }))
+  impact.swaths.forEach((s) => {
+    if (seen.has(s.label)) return
+    seen.add(s.label)
+    legend.push({ label: s.label, tier: s.tier, kind: s.hazard })
+  })
   legend.push({ label: 'Town / city anchor', kind: 'city' })
   if (impact.winnipegOutline) legend.push({ label: 'City of Winnipeg', kind: 'winnipeg' })
   legend.push({ label: 'Lakes & province (Natural Earth)', kind: 'lake' })
 
   return (
     <div className="mapwrap">
-      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
-        <defs>
-          <pattern id="hailHatch" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(45)">
-            <rect width="7" height="7" fill="#2C7DA0" fillOpacity="0.10" />
-            <line x1="0" y1="0" x2="0" y2="7" stroke="#2C7DA0" strokeWidth="2.2" strokeOpacity="0.55" />
-          </pattern>
-        </defs>
-      </svg>
-
       <MapContainer bounds={bounds} className="map" scrollWheelZoom={true} zoomControl={true}>
-        {/* Baked geography sits UNDER the tiles; if the tile CDN fails the map
-            degrades to a clean paper-and-geography view instead of gray void. */}
+        {/* Baked geography UNDER the tiles: a tile failure degrades to a clean
+            paper-and-geography map, not a gray void. */}
         <Pane name="basemap-geo" style={{ zIndex: 150 }} />
         {geo.boundary && <GeoJSON data={geo.boundary} pane="basemap-geo" interactive={false}
           style={{ color: '#16233A', weight: 1.5, fill: false, opacity: 0.85 }} />}
         {geo.lakes && <GeoJSON data={geo.lakes} pane="basemap-geo" interactive={false}
           style={{ color: '#9FB8C8', weight: 0.5, fillColor: '#CFE0EA', fillOpacity: 1, opacity: 1 }} />}
 
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; OpenStreetMap contributors &copy; CARTO · Boundaries: Natural Earth'
-        />
+        <ResilientTiles />
         <FitExtent bounds={bounds} />
         <ScaleControl position="bottomleft" imperial={false} />
 
-        {/* Elongated storm swaths (replaces round blobs) */}
+        {/* Elongated storm swaths. Hail uses a distinct teal tint + dense dash
+            (a robust substitute for the SVG hatch, which is unreliable in
+            Leaflet panes); tornado-warned areas use the event tint + open dash. */}
         {impact.swaths.map((s, i) => {
           const ring = swathRing(s.line, s.halfWidthKm)
           const isHail = s.hazard === 'hail'
@@ -103,20 +116,15 @@ export default function MapView({ event, color, muniFeatures, progress }) {
             <Polygon
               key={`${event.id}-swath-${i}`}
               positions={ring}
-              pathOptions={{
-                className: isHail ? 'swath-hail' : undefined,
-                color: isHail ? '#2C7DA0' : color,
-                weight: 1.3,
-                dashArray: '6 5',
-                fillColor: color,
-                fillOpacity: isHail ? 0 : 0.16,
-                opacity: 0.8,
-              }}
+              pathOptions={isHail
+                ? { color: '#2C7DA0', weight: 1.4, dashArray: '3 3', fillColor: '#2C7DA0', fillOpacity: 0.18, opacity: 0.9 }
+                : { color, weight: 1.3, dashArray: '7 5', fillColor: color, fillOpacity: 0.16, opacity: 0.8 }}
             >
               <Popup>
                 <strong>{s.label}</strong> — {TIER_LABEL[s.tier]}<br />
+                {s.cluster && <span>{s.cluster}<br /></span>}
                 Approximate, drawn from ECCC warning areas{isPending ? ' (survey pending)' : ''}.<br />
-                {affectedNames.length > 0 && <span>Within: {affectedNames.join(', ')}</span>}
+                {namesFor(s.muniIds).length > 0 && <span>Covers: {namesFor(s.muniIds).join(', ')}</span>}
               </Popup>
             </Polygon>
           )
@@ -158,12 +166,17 @@ export default function MapView({ event, color, muniFeatures, progress }) {
           )
         })}
 
-        {/* City of Winnipeg footprint — carries the June 9 exposure argument */}
+        {/* City of Winnipeg footprint — carries the June 9 exposure argument.
+            Its label is anchored south of centre to avoid the Winnipeg dot. */}
         {impact.winnipegOutline && (
-          <Polygon positions={toLatLng(WINNIPEG_OUTLINE)}
-            pathOptions={{ color: '#5C6B80', weight: 1.5, dashArray: '5 5', fillColor: '#5C6B80', fillOpacity: 0.05 }}>
-            <Tooltip permanent direction="center" className="citylabel citylabel--area">City of Winnipeg</Tooltip>
-          </Polygon>
+          <>
+            <Polygon positions={toLatLng(WINNIPEG_OUTLINE)} interactive={false}
+              pathOptions={{ color: '#5C6B80', weight: 1.5, dashArray: '5 5', fillColor: '#5C6B80', fillOpacity: 0.05 }} />
+            <CircleMarker center={[49.735, -97.10]} radius={0.1}
+              pathOptions={{ opacity: 0, fillOpacity: 0 }}>
+              <Tooltip permanent direction="bottom" className="citylabel citylabel--area">City of Winnipeg</Tooltip>
+            </CircleMarker>
+          </>
         )}
 
         {/* City anchors */}
@@ -177,15 +190,18 @@ export default function MapView({ event, color, muniFeatures, progress }) {
         ))}
       </MapContainer>
 
-      {isPending && <div className="map__cornernote">Approximate — drawn from ECCC warning areas (survey pending)</div>}
-
-      <div className="map__legend">
-        {legend.map((it) => (
-          <span className="map__legend-item" key={it.label}>
-            <span className={`swatch swatch--${it.kind}`} style={it.kind === 'tornado' ? { background: color } : undefined} />
-            {it.label}{it.tier && <em className="map__legend-tier"> · {TIER_LABEL[it.tier]}</em>}
-          </span>
-        ))}
+      {/* Legend + provenance banner stacked top-right so neither is clipped. */}
+      <div className="map__topright">
+        <div className="map__legend">
+          {legend.map((it) => (
+            <span className="map__legend-item" key={it.label}>
+              <span className={`swatch swatch--${it.kind}`} style={it.kind === 'tornado' ? { background: color } : undefined} />
+              {it.label}{it.tier && <em className="map__legend-tier"> · {TIER_LABEL[it.tier]}</em>}
+            </span>
+          ))}
+          {impact.hailCaption && <span className="map__legend-cap">Hail footprint approximate — survey pending.</span>}
+        </div>
+        {isPending && <div className="map__cornernote">Approximate — drawn from ECCC warning areas (survey pending)</div>}
       </div>
 
       <LocatorInset />

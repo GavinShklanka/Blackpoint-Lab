@@ -37,13 +37,29 @@ export const IMPACT = {
   },
   'june9-2026': {
     swaths: [
+      // Hail core tracking NE from the SW over the City of Winnipeg, consistent
+      // with the loss model's hail driver and the urban-exposure strain note.
       { hazard: 'hail', tier: 'projection', label: 'Large-hail area',
-        line: [[-97.72, 50.00], [-97.30, 50.17], [-96.92, 50.34]], halfWidthKm: 9 },
+        cluster: 'Hail core tracking NE over Winnipeg',
+        line: [[-97.50, 49.68], [-97.14, 49.88], [-96.80, 50.12]], halfWidthKm: 9,
+        muniIds: ['woodlands', 'rockwood'] },
+      // Tornado-warned clusters — one NE-elongated swath per municipality group.
       { hazard: 'tornado', tier: 'projection', label: 'Tornado-warned area',
-        line: [[-96.86, 49.92], [-96.73, 50.09], [-96.60, 50.25]], halfWidthKm: 6 },
+        cluster: 'Interlake (Stonewall corridor)',
+        line: [[-97.80, 50.02], [-97.50, 50.12], [-97.20, 50.22]], halfWidthKm: 7,
+        muniIds: ['woodlands', 'rockwood'] },
+      { hazard: 'tornado', tier: 'projection', label: 'Tornado-warned area',
+        cluster: 'Selkirk – St. Andrews – St. Clements',
+        line: [[-97.05, 50.05], [-96.82, 50.18], [-96.60, 50.32]], halfWidthKm: 7,
+        muniIds: ['standrews', 'selkirk', 'stclements'] },
+      { hazard: 'tornado', tier: 'projection', label: 'Tornado-warned area',
+        cluster: 'East of Winnipeg (Oakbank)',
+        line: [[-96.98, 49.82], [-96.78, 49.94], [-96.58, 50.06]], halfWidthKm: 6,
+        muniIds: ['springfield'] },
     ],
     trackRef: {},
     winnipegOutline: true,
+    hailCaption: true,
   },
 }
 
