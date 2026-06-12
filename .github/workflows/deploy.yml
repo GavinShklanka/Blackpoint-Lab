@@ -36,11 +36,12 @@ jobs:
           npm ci
           npm run build
 
-      - name: Assemble site (portfolio at root, app at /app)
+      - name: Assemble site (portfolio at root, app at /app, ED sim at /cape-breton-ed)
         run: |
-          mkdir -p _site/app
+          mkdir -p _site/app _site/cape-breton-ed
           cp index.html _site/index.html
           cp -r manitoba-tornado-sim/dist/* _site/app/
+          cp -r cape-breton-ed/* _site/cape-breton-ed/
           touch _site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
