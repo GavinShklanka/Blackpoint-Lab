@@ -7,87 +7,80 @@
 <meta name="description" content="A discrete-event simulation of the Cape Breton Regional Hospital emergency department, showing how one nurse-practitioner fast-track lane removes almost every patient walkout.">
 <style>
   :root{
-    --ground:#F6F3EC;
-    --panel:#FFFFFF;
-    --ink:#23271F;
-    --ink-soft:#5C6157;
-    --line:#E4E0D6;
-    --forest:#1E4D34;
-    --forest-deep:#143524;
-    --slate:#9AA09A;
-    --blue:#3E6B8C;
-    --green:#3DA468;
-    --amber:#D69A3C;
-    --danger:#C0463A;
+    --ground:#F6F3EC; --panel:#FFFFFF; --ink:#23271F; --ink-soft:#5C6157;
+    --line:#E4E0D6; --forest:#1E4D34; --forest-deep:#143524; --slate:#9AA09A;
+    --blue:#3E6B8C; --green:#3DA468; --amber:#D69A3C; --danger:#C0463A;
     --serif:Georgia,"Hoefler Text","Times New Roman",serif;
     --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     --wrap:980px;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
-  body{
-    margin:0;background:var(--ground);color:var(--ink);
-    font-family:var(--sans);font-size:18px;line-height:1.62;
-    -webkit-font-smoothing:antialiased;
-  }
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:18px;line-height:1.62;-webkit-font-smoothing:antialiased}
   .wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
   a{color:var(--forest)}
 
-  /* Header */
-  .topbar{border-bottom:1px solid var(--line);background:var(--ground)}
-  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:18px;padding-bottom:18px}
-  .brand{font-family:var(--serif);font-weight:700;letter-spacing:.01em;color:var(--forest-deep);font-size:18px}
-  .brand small{display:block;font-family:var(--sans);font-weight:500;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+  .topbar{border-bottom:1px solid var(--line);background:var(--ground);position:sticky;top:0;z-index:20}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:16px;padding-bottom:16px}
+  .brand{font-family:var(--serif);font-weight:700;color:var(--forest-deep);font-size:18px}
+  .brand small{display:block;font-family:var(--sans);font-weight:500;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+  .topright{display:flex;align-items:center;gap:14px}
   .backlink{font-size:14px;text-decoration:none;color:var(--ink-soft)}
   .backlink:hover{color:var(--forest)}
+  .gnotes{font-size:13px;border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:999px;padding:7px 14px;cursor:pointer;font-family:var(--sans)}
+  .gnotes.active{background:var(--forest-deep);color:#fff;border-color:var(--forest-deep)}
 
-  /* Hero */
-  .hero{padding:64px 0 36px}
+  .hero{padding:60px 0 34px}
   .eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--green);font-weight:700;margin:0 0 18px}
   h1{font-family:var(--serif);font-weight:700;font-size:clamp(30px,5vw,50px);line-height:1.08;margin:0 0 20px;color:var(--forest-deep)}
-  .lede{font-size:clamp(18px,2.3vw,22px);color:var(--ink);max-width:48ch;margin:0}
-
-  /* Stat cards */
+  .lede{font-size:clamp(18px,2.3vw,22px);max-width:50ch;margin:0}
   .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:42px 0 8px}
   .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 18px}
   .stat .num{font-family:var(--serif);font-weight:700;font-size:clamp(24px,3vw,30px);color:var(--forest);line-height:1.05}
   .stat .lab{font-size:13.5px;color:var(--ink-soft);margin-top:8px;line-height:1.35}
   .stat.alarm .num{color:var(--danger)}
 
-  /* Sections */
-  section{padding:54px 0;border-top:1px solid var(--line)}
+  section{padding:52px 0;border-top:1px solid var(--line)}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
   .kicker{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin:0 0 10px}
   h2{font-family:var(--serif);font-weight:700;font-size:clamp(24px,3.4vw,34px);margin:0 0 18px;color:var(--forest-deep);line-height:1.14}
+  h2.sub{font-size:clamp(20px,2.6vw,26px)}
   .plain{font-size:clamp(18px,2.2vw,21px);max-width:62ch;margin:0 0 20px}
   p{max-width:66ch}
 
-  /* Two-up cards */
+  .note-toggle{flex:none;border:1px solid var(--line);background:var(--panel);color:var(--forest);border-radius:9px;width:34px;height:34px;cursor:pointer;font-weight:700;font-size:18px;line-height:1}
+  .note-toggle:hover{border-color:var(--forest)}
+  .notes{display:none;margin:18px 0 4px;background:#1C2A22;color:#CFE0D4;border-radius:12px;padding:16px 20px;font-size:14.5px;line-height:1.55}
+  .notes.open, body.notes-on .notes{display:block}
+  .notes b{color:#fff;display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;color:#9FCBAE}
+  .notes ul{margin:0;padding-left:18px}
+  .notes li{margin:3px 0}
+
   .duo{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px}
   .card h3{font-family:var(--serif);font-size:21px;margin:0 0 6px;color:var(--forest-deep)}
   .card .tag{display:inline-block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:4px 10px;border-radius:999px;margin-bottom:12px}
   .tag.a{background:rgba(62,107,140,.12);color:var(--blue)}
   .tag.b{background:rgba(61,164,104,.14);color:var(--forest)}
-  .card p{font-size:16.5px;color:var(--ink);margin:0}
+  .card p{font-size:16.5px;color:var(--ink);margin:0;max-width:none}
 
-  /* Findings */
   .finding{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start;margin:0 0 22px}
   .finding .mark{font-family:var(--serif);font-weight:700;font-size:20px;color:#fff;background:var(--forest);width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none}
   .finding.win .mark{background:var(--green)}
   .finding h3{margin:2px 0 6px;font-size:19px;font-family:var(--serif);color:var(--forest-deep)}
   .finding p{margin:0;font-size:16.5px;color:var(--ink)}
 
-  /* Figures */
   .figure{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 22px 18px;margin:26px 0}
   .figure svg{width:100%;height:auto;display:block}
-  .figcap{font-size:15.5px;color:var(--ink-soft);margin:14px 2px 0;display:flex;gap:10px;align-items:baseline}
+  .figcap{font-size:15.5px;color:var(--ink-soft);margin:14px 2px 0}
   .figcap b{color:var(--ink);font-weight:700}
   .fignum{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);font-weight:700;margin:0 0 4px}
+  .eqn{font-family:var(--serif);font-size:16px;color:var(--forest-deep);background:var(--ground);border-radius:8px;padding:8px 12px;display:inline-block;margin:10px 2px 0}
   .legend{display:flex;flex-wrap:wrap;gap:16px;margin:6px 2px 2px;font-size:14px;color:var(--ink-soft)}
   .legend span{display:inline-flex;align-items:center;gap:7px}
   .swatch{width:13px;height:13px;border-radius:3px;display:inline-block}
+  .dosegrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 
-  /* chart text */
   .chart text{font-family:var(--sans);fill:var(--ink)}
   .chart .axis{font-size:13px;fill:#73776E}
   .chart .axisbold{font-size:13.5px;fill:#44483F;font-weight:600}
@@ -97,25 +90,46 @@
   .chart .err{stroke:#2B2F27;stroke-width:2;fill:none}
   .chart .ref{stroke:#9AA09A;stroke-width:1.6;stroke-dasharray:6 5}
   .chart .reflab{font-size:12.5px;fill:#9AA09A}
+  .chart .fit{stroke:var(--forest);stroke-width:2.4;fill:none}
+  .chart .fitcurve{stroke:var(--green);stroke-width:2.4;fill:none}
 
-  /* details */
   details{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:6px 22px;margin-top:24px}
   summary{cursor:pointer;font-weight:600;color:var(--forest);padding:14px 0;font-size:16px;list-style:none}
   summary::-webkit-details-marker{display:none}
   summary::before{content:"+ ";font-weight:700}
-  details[open] summary::before{content:"– "}
+  details[open] summary::before{content:"\2212 "}
   details .body{padding:0 0 18px;font-size:16px;color:var(--ink-soft)}
   details .body p{max-width:none}
 
-  /* recommendation panel */
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 18px}
+  .scn-tab,.cmp-tab{border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:999px;padding:9px 18px;cursor:pointer;font-family:var(--sans);font-size:14.5px;font-weight:600}
+  .scn-tab.active,.cmp-tab.active{background:var(--forest-deep);color:#fff;border-color:var(--forest-deep)}
+  .scn-table{display:none}
+  .scn-table.show{display:block}
+  table{width:100%;border-collapse:collapse;font-size:15px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{background:#EFEBE1;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft)}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  tbody tr:last-child td{border-bottom:none}
+  td .pl{color:var(--ink-soft);font-size:13.5px}
+  .tnote{font-size:14px;color:var(--ink-soft);margin-top:12px;max-width:70ch}
+
+  .cmp-svg{display:none}
+  .cmp-svg.show{display:block}
+
+  dl.gloss{display:grid;grid-template-columns:1fr;gap:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:20px}
+  dl.gloss > div{padding:16px 20px;border-bottom:1px solid var(--line)}
+  dl.gloss > div:last-child{border-bottom:none}
+  dl.gloss dt{font-family:var(--serif);font-weight:700;color:var(--forest-deep);font-size:17px;margin-bottom:4px}
+  dl.gloss dd{margin:0;font-size:15.5px;color:var(--ink);max-width:none}
+
   .rec{background:var(--forest-deep);color:#EAF1EA;border-radius:18px;padding:34px}
   .rec h2{color:#fff;margin-top:0}
   .rec .plain{color:#EAF1EA}
   .rec p{color:#C9D6CB;font-size:16.5px}
   .rec strong{color:#fff}
 
-  /* integrity */
-  .integrity{font-size:13.5px;color:var(--ink-soft);line-height:1.55;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--green);border-radius:10px;padding:20px 22px}
+  .integrity{font-size:13.5px;color:var(--ink-soft);line-height:1.55;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--green);border-radius:10px;padding:20px 22px;margin-top:20px}
   .integrity b{color:var(--ink)}
 
   footer{border-top:1px solid var(--line);padding:34px 0 56px;font-size:14.5px;color:var(--ink-soft)}
@@ -123,12 +137,13 @@
 
   @media (max-width:820px){
     .stats{grid-template-columns:repeat(2,1fr)}
-    .duo{grid-template-columns:1fr}
+    .duo,.dosegrid{grid-template-columns:1fr}
+    table{font-size:14px}
+    th,td{padding:9px 10px}
   }
   @media (max-width:480px){
     body{font-size:17px}
     .stats{grid-template-columns:1fr 1fr}
-    .hero{padding:44px 0 28px}
   }
 </style>
 </head>
@@ -137,7 +152,10 @@
 <div class="topbar">
   <div class="wrap">
     <div class="brand">Black Point Analytics<small>Blackpoint Lab</small></div>
-    <a class="backlink" href="../">&larr; Back to the lab</a>
+    <div class="topright">
+      <button class="gnotes" id="globalNotes">Speaker notes: off</button>
+      <a class="backlink" href="../">&larr; Lab</a>
+    </div>
   </div>
 </div>
 
@@ -145,11 +163,11 @@
   <div class="wrap">
     <p class="eyebrow">Decision-support simulation</p>
     <h1>Where do Cape&nbsp;Breton's emergency patients end&nbsp;up?</h1>
-    <p class="lede">Today one in five people who walk into this emergency department leave before anyone sees them. We built a model to find out why, and what fixes it.</p>
+    <p class="lede">Today one in five people who arrive at this emergency department leave before any provider sees them. This model identifies why, and what changes it.</p>
 
     <div class="stats">
       <div class="stat"><div class="num">38,900</div><div class="lab">emergency visits a year</div></div>
-      <div class="stat alarm"><div class="num">1 in 5</div><div class="lab">walk out today without being seen</div></div>
+      <div class="stat alarm"><div class="num">1 in 5</div><div class="lab">leave today without being seen</div></div>
       <div class="stat"><div class="num">2.5%</div><div class="lab">walkouts after one fast-track nurse practitioner</div></div>
       <div class="stat"><div class="num">5.7&rarr;3.7 h</div><div class="lab">average wait to a provider</div></div>
       <div class="stat"><div class="num">~1,800</div><div class="lab">patients a year resolved in their community</div></div>
@@ -157,55 +175,40 @@
   </div>
 </header>
 
-<!-- BEAT 1: THE PROBLEM -->
+<!-- THE PROBLEM -->
 <section>
   <div class="wrap">
-    <p class="kicker">The problem</p>
+    <div class="sec-head"><div><p class="kicker">The problem</p></div><button class="note-toggle" aria-label="Speaker notes" onclick="toggleNotes(this)">+</button></div>
     <h2>Roughly 7,000 people a year give up and walk out.</h2>
-    <p class="plain">At Cape Breton Regional Hospital's emergency department, the province's published 2023-24 figures tell a hard story: about 38,900 visits a year, an average wait of 5.73 hours to see a physician, and 18.24 percent of patients leaving without ever being seen. That last number is the crisis. It is thousands of people who arrive needing care and leave without it.</p>
-    <p>The question we set out to answer was simple to ask and hard to answer: who are these patients, why do they leave, and would either of two practical changes actually fix it.</p>
+    <p class="plain">At Cape Breton Regional Hospital's emergency department, the province's published 2023-24 figures describe a hard pattern: about 38,900 visits a year, an average wait of 5.73 hours to see a physician, and 18.24 percent of patients leaving without ever being seen. That last figure is the crisis. It represents thousands of people who arrive needing care and leave without it.</p>
+    <p>The analysis set out to answer a question that is simple to ask and hard to resolve: who these patients are, why they leave, and whether either of two practical changes would fix it.</p>
+    <div class="notes"><b>Say</b><ul>
+      <li>38,900 visits per year.</li>
+      <li>1 in 5 leave without being seen (18.24 percent).</li>
+      <li>5.73 h average wait to a physician.</li>
+      <li>Roughly 7,000 walkouts a year.</li>
+      <li>Source: public 2023-24 accountability data.</li>
+    </ul></div>
   </div>
 </section>
 
-<!-- BEAT 2: WHAT WE BUILT -->
+<!-- WHAT THE MODEL REPRESENTS -->
 <section>
   <div class="wrap">
-    <p class="kicker">What we built</p>
+    <div class="sec-head"><div><p class="kicker">What the model represents</p></div><button class="note-toggle" aria-label="Speaker notes" onclick="toggleNotes(this)">+</button></div>
     <h2>A working model of the department, calibrated to reality.</h2>
-    <p class="plain">We built a simulation of the emergency department and tuned it until it reproduced both published figures at once, the 5.73 hour wait and the 18.24 percent walkout rate, then checked it across ten independent runs with confidence intervals rather than trusting a single lucky result.</p>
-    <p>The model fills the department the way the real one fills: patients arrive on a realistic daily rhythm, a triage step sorts them by urgency, and physicians always see the sickest first. At this site about three in four arrivals are high-urgency, so the less-urgent patients keep getting pushed to the back of the line. The walkouts emerge from that pressure on their own. We did not program a walkout rate into the model; the model produced the real one.</p>
+    <p class="plain">The model reproduces both published figures at once, the 5.73 hour wait and the 18.24 percent walkout rate. Calibration closed only when ten independent runs held both figures inside their confidence intervals, rather than relying on a single fortunate result.</p>
+    <p>The model fills the department the way the real one fills. Patients arrive on a realistic daily rhythm, a triage step sorts them by urgency, and physicians always see the sickest first. At this site about three in four arrivals are high-urgency, so less-urgent patients are repeatedly pushed to the back of the line. The walkouts are not programmed in. They emerge from that pressure on their own, and the model reproduces the real rate.</p>
 
     <div class="figure">
       <p class="fignum">Figure 1</p>
-      <!-- CTAS MIX -->
-      <svg class="chart" viewBox="0 0 640 400" role="img" aria-label="Share of annual arrivals by urgency level. CTAS 1 one percent, CTAS 2 thirty-two percent, CTAS 3 forty-four percent, CTAS 4 twenty-one percent, CTAS 5 two percent.">
-        <!-- gridlines -->
-        <line class="grid" x1="70" y1="330" x2="610" y2="330"/>
-        <line class="grid" x1="70" y1="269.6" x2="610" y2="269.6"/>
-        <line class="grid" x1="70" y1="209.2" x2="610" y2="209.2"/>
-        <line class="grid" x1="70" y1="148.7" x2="610" y2="148.7"/>
-        <line class="grid" x1="70" y1="88.3" x2="610" y2="88.3"/>
-        <text class="axis" x="60" y="334" text-anchor="end">0</text>
-        <text class="axis" x="60" y="273.6" text-anchor="end">10</text>
-        <text class="axis" x="60" y="213.2" text-anchor="end">20</text>
-        <text class="axis" x="60" y="152.7" text-anchor="end">30</text>
-        <text class="axis" x="60" y="92.3" text-anchor="end">40%</text>
+      <svg class="chart" viewBox="0 0 640 400" role="img" aria-label="Share of annual arrivals by urgency. CTAS 1 one percent, CTAS 2 thirty-two percent, CTAS 3 forty-four percent, CTAS 4 twenty-one percent, CTAS 5 two percent.">
+        <line class="grid" x1="70" y1="330" x2="610" y2="330"/><line class="grid" x1="70" y1="269.6" x2="610" y2="269.6"/><line class="grid" x1="70" y1="209.2" x2="610" y2="209.2"/><line class="grid" x1="70" y1="148.7" x2="610" y2="148.7"/><line class="grid" x1="70" y1="88.3" x2="610" y2="88.3"/>
+        <text class="axis" x="60" y="334" text-anchor="end">0</text><text class="axis" x="60" y="273.6" text-anchor="end">10</text><text class="axis" x="60" y="213.2" text-anchor="end">20</text><text class="axis" x="60" y="152.7" text-anchor="end">30</text><text class="axis" x="60" y="92.3" text-anchor="end">40%</text>
         <line class="baseaxis" x1="70" y1="330" x2="70" y2="40"/>
-        <!-- high-acuity band note -->
         <text class="axis" x="232" y="56" text-anchor="middle" style="fill:#B0463A;font-weight:600">High-urgency: 76% of arrivals</text>
-        <!-- bars -->
-        <rect x="92" y="324.0" width="64" height="6.0" rx="3" fill="#8B2E26"/>
-        <rect x="200" y="136.7" width="64" height="193.3" rx="3" fill="#C0463A"/>
-        <rect x="308" y="64.2" width="64" height="265.8" rx="3" fill="#D69A3C"/>
-        <rect x="416" y="203.1" width="64" height="126.9" rx="3" fill="#3DA468"/>
-        <rect x="524" y="317.9" width="64" height="12.1" rx="3" fill="#3E6B8C"/>
-        <!-- value labels -->
-        <text class="val" x="124" y="314" text-anchor="middle">1%</text>
-        <text class="val" x="232" y="126" text-anchor="middle">32%</text>
-        <text class="val" x="340" y="54" text-anchor="middle">44%</text>
-        <text class="val" x="448" y="193" text-anchor="middle">21%</text>
-        <text class="val" x="556" y="308" text-anchor="middle">2%</text>
-        <!-- x labels -->
+        <rect x="92" y="324.0" width="64" height="6.0" rx="3" fill="#8B2E26"/><rect x="200" y="136.7" width="64" height="193.3" rx="3" fill="#C0463A"/><rect x="308" y="64.2" width="64" height="265.8" rx="3" fill="#D69A3C"/><rect x="416" y="203.1" width="64" height="126.9" rx="3" fill="#3DA468"/><rect x="524" y="317.9" width="64" height="12.1" rx="3" fill="#3E6B8C"/>
+        <text class="val" x="124" y="314" text-anchor="middle">1%</text><text class="val" x="232" y="126" text-anchor="middle">32%</text><text class="val" x="340" y="54" text-anchor="middle">44%</text><text class="val" x="448" y="193" text-anchor="middle">21%</text><text class="val" x="556" y="308" text-anchor="middle">2%</text>
         <g class="axisbold" text-anchor="middle">
           <text x="124" y="352">CTAS 1</text><text class="axis" x="124" y="370">Resuscitation</text>
           <text x="232" y="352">CTAS 2</text><text class="axis" x="232" y="370">Emergent</text>
@@ -214,29 +217,37 @@
           <text x="556" y="352">CTAS 5</text><text class="axis" x="556" y="370">Non-urgent</text>
         </g>
       </svg>
-      <p class="figcap"><b>Who comes to the ED.</b> Three in four arrivals are high-urgency. The fixes we tested target the smaller, underserved CTAS 4-5 group on the right.</p>
+      <p class="figcap"><b>Who comes to the ED.</b> Three in four arrivals are high-urgency. The changes tested target the smaller, underserved CTAS 4-5 group on the right.</p>
     </div>
 
     <details>
       <summary>How the simulation works, one layer deeper</summary>
       <div class="body">
-        <p>The engine is a discrete-event simulation built in AnyLogic. Patients arrive on a time-of-day curve calibrated so the year produces the real annual volume, and every run validates that count before any other result is trusted. Seeing a physician requires a physician and a staffed bed at the same moment. Admitted patients then board about 17.5 hours waiting for an inpatient bed and hold their emergency bed the whole time, which is what starves bed supply for everyone behind them. Staffed beds are set at 22 of 36 physical, consistent with a reported 80 percent LPN vacancy. Staffing levels are stated assumptions where no public source exists, and every parameter carries an evidence tier. Both interventions live in one model as parameters, so the defaults reproduce the baseline exactly and each scenario changes only what it is meant to change.</p>
+        <p>The engine is a discrete-event simulation built in AnyLogic. Patients arrive on a time-of-day curve calibrated so the year produces the real annual volume, and every run validates that count before any other result is trusted. Seeing a physician requires a physician and a staffed bed at the same moment. Admitted patients then board about 17.5 hours waiting for an inpatient bed and hold their emergency bed the whole time, which starves bed supply for everyone behind them. The model holds staffed beds at 22 of 36 physical, consistent with a reported 80 percent LPN vacancy. Staffing levels are stated assumptions where no public source exists, and every parameter carries an evidence tier. Both interventions live in one model as parameters, so the defaults reproduce the baseline exactly and each scenario changes only what it is meant to change.</p>
       </div>
     </details>
+
+    <div class="notes"><b>Say</b><ul>
+      <li>Discrete-event simulation, AnyLogic.</li>
+      <li>Calibrated to wait 5.73 h and LWBS 18.24 percent at the same time.</li>
+      <li>10 replications, 95 percent confidence intervals.</li>
+      <li>76 percent high-acuity (CTAS 1-3).</li>
+      <li>Seeing a physician needs a physician and a staffed bed together.</li>
+    </ul></div>
   </div>
 </section>
 
-<!-- BEAT 3: WHAT WE TESTED -->
+<!-- WHAT WAS TESTED + REALISM -->
 <section>
   <div class="wrap">
-    <p class="kicker">What we tested</p>
+    <div class="sec-head"><div><p class="kicker">What the analysis tested</p></div><button class="note-toggle" aria-label="Speaker notes" onclick="toggleNotes(this)">+</button></div>
     <h2>Two practical changes, alone and together.</h2>
-    <p class="plain">Both target the same underserved group, the less-urgent patients who do most of the walking out. One change works before the front door, the other just inside it.</p>
+    <p class="plain">Both target the same underserved group, the less-urgent patients who account for most of the walkouts. One change works before the front door, the other just inside it.</p>
     <div class="duo">
       <div class="card">
         <span class="tag a">Scenario A</span>
         <h3>Community diversion</h3>
-        <p>At triage, route one in five less-urgent patients to community care instead: an urgent treatment centre, a pharmacist who can prescribe, or a virtual visit. Fewer low-urgency patients enter the waiting room at all.</p>
+        <p>At triage, route one in five less-urgent patients to community care instead: a Nova Scotia urgent treatment centre, a pharmacist who can prescribe and assess, or provincial virtual care. Fewer low-urgency patients enter the waiting room at all.</p>
       </div>
       <div class="card">
         <span class="tag b">Scenario B</span>
@@ -244,170 +255,123 @@
         <p>Open a parallel fast-track lane staffed by a single nurse practitioner who sees only less-urgent patients, so they no longer compete with the sickest patients for a physician and a bed.</p>
       </div>
     </div>
+
+    <h2 class="sub" style="margin-top:38px">How each change works in the real department.</h2>
+    <p><b>Scenario A, community rerouting.</b> The model redirects a fifth of low-acuity (CTAS 4-5) arrivals at triage to capacity that already exists in the patient's own community: Nova Scotia urgent treatment centres, pharmacist prescribing and assessment, and provincial virtual care. These patients are tracked as redirected, not abandoned. The support condition is stated plainly: this only works if the receiving capacity is real and same-day, so the recommendation pairs the diversion fraction with a stated assumption about community appointment availability, labeled an assumption rather than a measured input. The model captures the routing effect only. The booking and coordination that would happen in the real world is named as out of scope for the simulation.</p>
+    <p><b>Scenario B, what the freed physician time buys.</b> Moving low-acuity patients to the nurse-practitioner lane clears them out of the physician queue, which gives physicians time back to work the high-acuity queue. With CTAS 4-5 handled in parallel, physicians clear the CTAS 1-3 backlog faster, taking the sickest first and then working CTAS 3, the largest high-acuity tier and the one most at risk of deteriorating while waiting. The visible signature in the results is the physician queue dropping from about 41 waiting to about 17, even though physicians never see a single fast-track patient. This is the equity point: the priority discipline that protects the sickest is exactly what starves CTAS 4-5, so the fast-track lane is a structural correction for the group the system is built to deprioritize.</p>
+
+    <div class="notes"><b>Say</b><ul>
+      <li>Scenario A: divert 20 percent of CTAS 4-5 at triage to existing community capacity.</li>
+      <li>Scenario B: one nurse-practitioner fast-track lane for low-acuity only.</li>
+      <li>Both target the same CTAS 4-5 population; tested alone and combined.</li>
+      <li>B signature: physician queue falls from about 41 to about 17 with no fast-track patient ever seen by a physician.</li>
+    </ul></div>
   </div>
 </section>
 
-<!-- BEAT 4: WHAT WE FOUND -->
+<!-- WHAT THE ANALYSIS FOUND -->
 <section>
   <div class="wrap">
-    <p class="kicker">What we found</p>
+    <div class="sec-head"><div><p class="kicker">What the analysis found</p></div><button class="note-toggle" aria-label="Speaker notes" onclick="toggleNotes(this)">+</button></div>
     <h2>One nurse practitioner does what diversion cannot.</h2>
 
-    <div class="finding">
-      <div class="mark">1</div>
-      <div>
-        <h3>The surprise: diversion lowers walkouts but cannot move the wait.</h3>
-        <p>Diverting one in five low-urgency patients cuts walkouts from 19.0 to 15.7 percent, yet the average wait barely changes, from 5.51 to 5.43 hours. The reason: staffed beds run at 98 percent occupancy in every scenario. The wait is a bed problem caused by admitted patients boarding for hours, and a low-urgency change cannot reach it.</p>
-      </div>
-    </div>
-    <div class="finding win">
-      <div class="mark">2</div>
-      <div>
-        <h3>The win: one fast-track nurse practitioner nearly ends the walkouts.</h3>
-        <p>A single nurse practitioner in a fast-track lane collapses walkouts from 19.0 to 2.5 percent and cuts the average wait to a provider to 3.66 hours. Fast-track patients wait about 6 minutes, there were zero fast-track walkouts across ten simulated years, and the nurse practitioner is busy only 36 percent of the time. One hire absorbs the entire underserved group.</p>
-      </div>
-    </div>
-    <div class="finding">
-      <div class="mark">3</div>
-      <div>
-        <h3>The interaction: combining the two substitutes rather than adds.</h3>
-        <p>Run together, the two changes do not stack, because both serve the same low-urgency patients. Inside the building the combined result matches the fast-track alone. What the combination adds is about 1,816 patients a year whose needs are met in their own community instead of in an emergency department.</p>
+    <div class="finding"><div class="mark">1</div><div>
+      <h3>The surprise: diversion lowers walkouts but cannot move the wait.</h3>
+      <p>Diverting one in five low-urgency patients cuts walkouts from 19.0 to 15.7 percent, yet the average wait barely changes, from 5.51 to 5.43 hours. The reason: staffed beds run at about 98 percent occupancy in every scenario. The wait is a bed problem caused by admitted patients boarding for hours, and a low-urgency change cannot reach it.</p>
+    </div></div>
+    <div class="finding win"><div class="mark">2</div><div>
+      <h3>The win: one fast-track nurse practitioner nearly ends the walkouts.</h3>
+      <p>A single nurse practitioner in a fast-track lane collapses walkouts from 19.0 to 2.5 percent and cuts the average wait to a provider to 3.66 hours. Fast-track patients wait about 6 minutes, there were zero fast-track walkouts across ten simulated years, and the nurse practitioner is busy only about 35 percent of the time. One hire absorbs the entire underserved group.</p>
+    </div></div>
+    <div class="finding"><div class="mark">3</div><div>
+      <h3>The interaction: combining the two substitutes rather than adds.</h3>
+      <p>Run together, the two changes do not stack, because both serve the same low-urgency patients. Inside the building the combined result matches the fast-track alone. What the combination adds is about 1,816 patients a year whose needs are met in their own community instead of in an emergency department.</p>
+    </div></div>
+
+    <!-- DOSE-RESPONSE REGRESSION -->
+    <div class="figure">
+      <p class="fignum">Figure 2 · Dose-response regression</p>
+      <div class="dosegrid">
+        <div>
+          <svg class="chart" viewBox="0 0 640 380" role="img" aria-label="Diversion dose-response. Walkout percent falls roughly linearly as the diversion fraction rises.">
+            <line class="grid" x1="80" y1="320" x2="600" y2="320"/><line class="grid" x1="80" y1="226.7" x2="600" y2="226.7"/><line class="grid" x1="80" y1="133.3" x2="600" y2="133.3"/><line class="grid" x1="80" y1="40" x2="600" y2="40"/>
+            <text class="axis" x="72" y="324" text-anchor="end">14</text><text class="axis" x="72" y="230.7" text-anchor="end">16</text><text class="axis" x="72" y="137.3" text-anchor="end">18</text><text class="axis" x="72" y="44" text-anchor="end">20%</text>
+            <line class="baseaxis" x1="80" y1="320" x2="80" y2="32"/>
+            <line class="fit" x1="80" y1="70.0" x2="600" y2="249.5"/>
+            <circle cx="80" cy="86.2" r="5.5" fill="#1E4D34"/><circle cx="317.5" cy="124.9" r="5.5" fill="#1E4D34"/><circle cx="426.7" cy="179.1" r="5.5" fill="#1E4D34"/><circle cx="549.7" cy="253.7" r="5.5" fill="#1E4D34"/>
+            <g class="axis" text-anchor="middle"><text x="80" y="342">0</text><text x="253.3" y="342">0.10</text><text x="426.7" y="342">0.20</text><text x="600" y="342">0.30</text></g>
+            <text class="axisbold" x="340" y="366" text-anchor="middle">Diversion fraction (divertFrac)</text>
+          </svg>
+          <span class="eqn">LWBS% = 19.36 - 12.82 &middot; divertFrac &nbsp; R&sup2; = 0.90</span>
+          <p class="figcap"><b>Diversion is linear, and it never bends toward the wait.</b> Each 10 points of diversion removes roughly 1.3 points of walkouts. Across the same range the door-to-doctor wait stays flat near 5.4 to 5.7 hours, which is the surprise.</p>
+        </div>
+        <div>
+          <svg class="chart" viewBox="0 0 640 380" role="img" aria-label="Fast-track dose-response. Walkout percent drops sharply with the first nurse practitioner then flattens.">
+            <line class="grid" x1="80" y1="320" x2="600" y2="320"/><line class="grid" x1="80" y1="250" x2="600" y2="250"/><line class="grid" x1="80" y1="180" x2="600" y2="180"/><line class="grid" x1="80" y1="110" x2="600" y2="110"/><line class="grid" x1="80" y1="40" x2="600" y2="40"/>
+            <text class="axis" x="72" y="324" text-anchor="end">0</text><text class="axis" x="72" y="254" text-anchor="end">1</text><text class="axis" x="72" y="184" text-anchor="end">2</text><text class="axis" x="72" y="114" text-anchor="end">3</text><text class="axis" x="72" y="44" text-anchor="end">4%</text>
+            <line class="baseaxis" x1="80" y1="320" x2="80" y2="32"/>
+            <polyline class="fitcurve" points="145,97.4 192.5,110.4 240,119.7 287.5,126.9 335,132.7 382.5,137.6 430,141.9"/>
+            <circle cx="145" cy="80.6" r="5.5" fill="#1E4D34"/><circle cx="275" cy="155.5" r="5.5" fill="#1E4D34"/><circle cx="405" cy="127.5" r="5.5" fill="#1E4D34"/><circle cx="535" cy="128.2" r="5.5" fill="#1E4D34"/>
+            <g class="axis" text-anchor="middle"><text x="145" y="342">1</text><text x="275" y="342">2</text><text x="405" y="342">3</text><text x="535" y="342">4</text></g>
+            <text class="axisbold" x="340" y="366" text-anchor="middle">Nurse practitioners in fast-track (nNPPA)</text>
+          </svg>
+          <span class="eqn">LWBS% = 3.18 - 0.46 &middot; ln(nNPPA) &nbsp; R&sup2; = 0.39</span>
+          <p class="figcap"><b>One nurse practitioner does almost all the work.</b> Adding more barely moves the result and leaves them idle: utilization halves with each added provider (35.6%, 17.1%, 11.6%, 8.8%). The low R-squared is itself the point, beyond the first provider the points scatter within run-to-run noise.</p>
+        </div>
       </div>
     </div>
 
-    <!-- FIG 2: WALKOUT % -->
+    <!-- FOUR-SCENARIO DOT-AND-CI -->
     <div class="figure">
-      <p class="fignum">Figure 2</p>
-      <svg class="chart" viewBox="0 0 640 400" role="img" aria-label="Walkout rate by scenario with confidence intervals. Baseline 19 percent, community diversion 15.7 percent, NP fast-track 2.5 percent, combined 2.4 percent. Reported 2023-24 rate 18.24 percent.">
-        <line class="grid" x1="70" y1="330" x2="610" y2="330"/>
-        <line class="grid" x1="70" y1="261.0" x2="610" y2="261.0"/>
-        <line class="grid" x1="70" y1="191.9" x2="610" y2="191.9"/>
-        <line class="grid" x1="70" y1="122.9" x2="610" y2="122.9"/>
-        <line class="grid" x1="70" y1="53.8" x2="610" y2="53.8"/>
-        <text class="axis" x="60" y="334" text-anchor="end">0</text>
-        <text class="axis" x="60" y="265" text-anchor="end">5</text>
-        <text class="axis" x="60" y="195.9" text-anchor="end">10</text>
-        <text class="axis" x="60" y="126.9" text-anchor="end">15</text>
-        <text class="axis" x="60" y="57.8" text-anchor="end">20%</text>
-        <line class="baseaxis" x1="70" y1="330" x2="70" y2="36"/>
-        <!-- reported reference line at 18.24% -> y=78.1 -->
-        <line class="ref" x1="70" y1="78.1" x2="610" y2="78.1"/>
-        <text class="reflab" x="606" y="72" text-anchor="end">Reported 2023-24: 18.24%</text>
-        <!-- bars -->
-        <rect x="102.5" y="67.6" width="70" height="262.4" rx="4" fill="#9AA09A"/>
-        <rect x="237.5" y="113.2" width="70" height="216.8" rx="4" fill="#3E6B8C"/>
-        <rect x="372.5" y="295.5" width="70" height="34.5" rx="4" fill="#3DA468"/>
-        <rect x="507.5" y="296.9" width="70" height="33.1" rx="4" fill="#1E4D34"/>
-        <!-- error bars -->
+      <p class="fignum">Figure 3 · Four-scenario comparison</p>
+      <div class="tabs">
+        <button class="cmp-tab active" data-cmp="cmp-lwbs">Walkout rate</button>
+        <button class="cmp-tab" data-cmp="cmp-wait">Wait to a provider</button>
+      </div>
+      <svg id="cmp-lwbs" class="chart cmp-svg show" viewBox="0 0 640 380" role="img" aria-label="Walkout percent by scenario with 95 percent confidence intervals.">
+        <line class="grid" x1="80" y1="320" x2="600" y2="320"/><line class="grid" x1="80" y1="256.4" x2="600" y2="256.4"/><line class="grid" x1="80" y1="192.7" x2="600" y2="192.7"/><line class="grid" x1="80" y1="129.1" x2="600" y2="129.1"/><line class="grid" x1="80" y1="65.5" x2="600" y2="65.5"/>
+        <text class="axis" x="72" y="324" text-anchor="end">0</text><text class="axis" x="72" y="260.4" text-anchor="end">5</text><text class="axis" x="72" y="196.7" text-anchor="end">10</text><text class="axis" x="72" y="133.1" text-anchor="end">15</text><text class="axis" x="72" y="69.5" text-anchor="end">20%</text>
+        <line class="baseaxis" x1="80" y1="320" x2="80" y2="40"/>
         <g class="err">
-          <line x1="137.5" y1="53.2" x2="137.5" y2="82.1"/><line x1="129.5" y1="53.2" x2="145.5" y2="53.2"/><line x1="129.5" y1="82.1" x2="145.5" y2="82.1"/>
-          <line x1="272.5" y1="103.5" x2="272.5" y2="122.9"/><line x1="264.5" y1="103.5" x2="280.5" y2="103.5"/><line x1="264.5" y1="122.9" x2="280.5" y2="122.9"/>
-          <line x1="407.5" y1="289.3" x2="407.5" y2="301.7"/><line x1="399.5" y1="289.3" x2="415.5" y2="289.3"/><line x1="399.5" y1="301.7" x2="415.5" y2="301.7"/>
-          <line x1="542.5" y1="296.0" x2="542.5" y2="298.6"/><line x1="534.5" y1="296.0" x2="550.5" y2="296.0"/><line x1="534.5" y1="298.6" x2="550.5" y2="298.6"/>
+          <line x1="145" y1="63.7" x2="145" y2="92.3"/><line x1="137" y1="63.7" x2="153" y2="63.7"/><line x1="137" y1="92.3" x2="153" y2="92.3"/>
+          <line x1="275" y1="111.5" x2="275" y2="129.2"/><line x1="267" y1="111.5" x2="283" y2="111.5"/><line x1="267" y1="129.2" x2="283" y2="129.2"/>
+          <line x1="405" y1="282.7" x2="405" y2="293.8"/><line x1="397" y1="282.7" x2="413" y2="282.7"/><line x1="397" y1="293.8" x2="413" y2="293.8"/>
+          <line x1="535" y1="287.5" x2="535" y2="291.9"/><line x1="527" y1="287.5" x2="543" y2="287.5"/><line x1="527" y1="291.9" x2="543" y2="291.9"/>
         </g>
-        <!-- value labels -->
-        <text class="val" x="137.5" y="44" text-anchor="middle">19.0%</text>
-        <text class="val" x="272.5" y="95" text-anchor="middle">15.7%</text>
-        <text class="val" x="407.5" y="281" text-anchor="middle">2.5%</text>
-        <text class="val" x="542.5" y="288" text-anchor="middle">2.4%</text>
-        <!-- x labels -->
-        <g class="axisbold" text-anchor="middle">
-          <text x="137.5" y="352">Baseline</text>
-          <text x="272.5" y="352">A: Diversion</text>
-          <text x="407.5" y="352">B: Fast-track</text>
-          <text x="542.5" y="352">A+B: Combined</text>
-        </g>
+        <circle cx="145" cy="78.1" r="6" fill="#9AA09A"/><circle cx="275" cy="120.3" r="6" fill="#3E6B8C"/><circle cx="405" cy="288.3" r="6" fill="#3DA468"/><circle cx="535" cy="289.7" r="6" fill="#1E4D34"/>
+        <g class="val" text-anchor="middle"><text x="145" y="52">19.0%</text><text x="275" y="100">15.7%</text><text x="405" y="272">2.5%</text><text x="535" y="272">2.4%</text></g>
+        <g class="axisbold" text-anchor="middle"><text x="145" y="344">Base</text><text x="275" y="344">A</text><text x="405" y="344">B</text><text x="535" y="344">A+B</text></g>
       </svg>
-      <p class="figcap"><b>One nurse practitioner removes almost every walkout.</b> Bars show the mean of ten runs with 95 percent confidence intervals.</p>
-    </div>
-
-    <!-- FIG 3: WAIT HOURS -->
-    <div class="figure">
-      <p class="fignum">Figure 3</p>
-      <svg class="chart" viewBox="0 0 640 400" role="img" aria-label="Average wait to first provider by scenario. Baseline 5.5 hours, diversion 5.4 hours, fast-track 3.7 hours, combined 3.8 hours.">
-        <line class="grid" x1="70" y1="330" x2="610" y2="330"/>
-        <line class="grid" x1="70" y1="281.7" x2="610" y2="281.7"/>
-        <line class="grid" x1="70" y1="233.3" x2="610" y2="233.3"/>
-        <line class="grid" x1="70" y1="185.0" x2="610" y2="185.0"/>
-        <line class="grid" x1="70" y1="136.7" x2="610" y2="136.7"/>
-        <line class="grid" x1="70" y1="88.3" x2="610" y2="88.3"/>
-        <line class="grid" x1="70" y1="40.0" x2="610" y2="40.0"/>
-        <text class="axis" x="60" y="334" text-anchor="end">0</text>
-        <text class="axis" x="60" y="285.7" text-anchor="end">1</text>
-        <text class="axis" x="60" y="237.3" text-anchor="end">2</text>
-        <text class="axis" x="60" y="189" text-anchor="end">3</text>
-        <text class="axis" x="60" y="140.7" text-anchor="end">4</text>
-        <text class="axis" x="60" y="92.3" text-anchor="end">5</text>
-        <text class="axis" x="60" y="44" text-anchor="end">6 h</text>
-        <line class="baseaxis" x1="70" y1="330" x2="70" y2="36"/>
-        <rect x="102.5" y="63.7" width="70" height="266.3" rx="4" fill="#9AA09A"/>
-        <rect x="237.5" y="67.5" width="70" height="262.5" rx="4" fill="#3E6B8C"/>
-        <rect x="372.5" y="153.1" width="70" height="176.9" rx="4" fill="#3DA468"/>
-        <rect x="507.5" y="147.3" width="70" height="182.7" rx="4" fill="#1E4D34"/>
+      <svg id="cmp-wait" class="chart cmp-svg" viewBox="0 0 640 380" role="img" aria-label="Wait to a provider by scenario with 95 percent confidence intervals.">
+        <line class="grid" x1="80" y1="320" x2="600" y2="320"/><line class="grid" x1="80" y1="276.9" x2="600" y2="276.9"/><line class="grid" x1="80" y1="233.8" x2="600" y2="233.8"/><line class="grid" x1="80" y1="190.8" x2="600" y2="190.8"/><line class="grid" x1="80" y1="147.7" x2="600" y2="147.7"/><line class="grid" x1="80" y1="104.6" x2="600" y2="104.6"/><line class="grid" x1="80" y1="61.5" x2="600" y2="61.5"/>
+        <text class="axis" x="72" y="324" text-anchor="end">0</text><text class="axis" x="72" y="280.9" text-anchor="end">1</text><text class="axis" x="72" y="237.8" text-anchor="end">2</text><text class="axis" x="72" y="194.8" text-anchor="end">3</text><text class="axis" x="72" y="151.7" text-anchor="end">4</text><text class="axis" x="72" y="108.6" text-anchor="end">5</text><text class="axis" x="72" y="65.5" text-anchor="end">6 h</text>
+        <line class="baseaxis" x1="80" y1="320" x2="80" y2="50"/>
         <g class="err">
-          <line x1="137.5" y1="54.1" x2="137.5" y2="73.4"/><line x1="129.5" y1="54.1" x2="145.5" y2="54.1"/><line x1="129.5" y1="73.4" x2="145.5" y2="73.4"/>
-          <line x1="272.5" y1="61.3" x2="272.5" y2="74.0"/><line x1="264.5" y1="61.3" x2="280.5" y2="61.3"/><line x1="264.5" y1="74.0" x2="280.5" y2="74.0"/>
-          <line x1="407.5" y1="144.4" x2="407.5" y2="161.8"/><line x1="399.5" y1="144.4" x2="415.5" y2="144.4"/><line x1="399.5" y1="161.8" x2="415.5" y2="161.8"/>
-          <line x1="542.5" y1="139.6" x2="542.5" y2="155.0"/><line x1="534.5" y1="139.6" x2="550.5" y2="139.6"/><line x1="534.5" y1="155.0" x2="550.5" y2="155.0"/>
+          <line x1="145" y1="74.5" x2="145" y2="90.8"/><line x1="137" y1="74.5" x2="153" y2="74.5"/><line x1="137" y1="90.8" x2="153" y2="90.8"/>
+          <line x1="275" y1="79.6" x2="275" y2="92.1"/><line x1="267" y1="79.6" x2="283" y2="79.6"/><line x1="267" y1="92.1" x2="283" y2="92.1"/>
+          <line x1="405" y1="154.2" x2="405" y2="170.5"/><line x1="397" y1="154.2" x2="413" y2="154.2"/><line x1="397" y1="170.5" x2="413" y2="170.5"/>
+          <line x1="535" y1="149.8" x2="535" y2="163.6"/><line x1="527" y1="149.8" x2="543" y2="149.8"/><line x1="527" y1="163.6" x2="543" y2="163.6"/>
         </g>
-        <text class="val" x="137.5" y="46" text-anchor="middle">5.5 h</text>
-        <text class="val" x="272.5" y="53" text-anchor="middle">5.4 h</text>
-        <text class="val" x="407.5" y="136" text-anchor="middle">3.7 h</text>
-        <text class="val" x="542.5" y="130" text-anchor="middle">3.8 h</text>
-        <g class="axisbold" text-anchor="middle">
-          <text x="137.5" y="352">Baseline</text>
-          <text x="272.5" y="352">A: Diversion</text>
-          <text x="407.5" y="352">B: Fast-track</text>
-          <text x="542.5" y="352">A+B: Combined</text>
-        </g>
+        <circle cx="145" cy="82.6" r="6" fill="#9AA09A"/><circle cx="275" cy="86.1" r="6" fill="#3E6B8C"/><circle cx="405" cy="162.3" r="6" fill="#3DA468"/><circle cx="535" cy="156.7" r="6" fill="#1E4D34"/>
+        <g class="val" text-anchor="middle"><text x="145" y="66">5.5 h</text><text x="275" y="70">5.4 h</text><text x="405" y="146">3.7 h</text><text x="535" y="140">3.8 h</text></g>
+        <g class="axisbold" text-anchor="middle"><text x="145" y="344">Base</text><text x="275" y="344">A</text><text x="405" y="344">B</text><text x="535" y="344">A+B</text></g>
       </svg>
-      <p class="figcap"><b>Diversion alone cannot move the wait; the fast-track lane cuts it by a third.</b> The wait is driven by bed scarcity, not physician supply.</p>
+      <p class="figcap"><b>The statistical proof.</b> The B and A+B intervals do not overlap Base or A, so the fast-track effect is real, not chance. A and A+B overlap each other on in-department metrics, which is the substitution finding.</p>
     </div>
 
-    <!-- FIG 4: DISPOSITION STACKED -->
+    <!-- DISPOSITION -->
     <div class="figure">
-      <p class="fignum">Figure 4</p>
-      <svg class="chart" viewBox="0 0 680 420" role="img" aria-label="Where patients end up each year, stacked by outcome, across the four scenarios. Walkouts fall from 7,397 at baseline to 936 when both changes are combined.">
-        <line class="grid" x1="80" y1="360" x2="660" y2="360"/>
-        <line class="grid" x1="80" y1="282.5" x2="660" y2="282.5"/>
-        <line class="grid" x1="80" y1="205.0" x2="660" y2="205.0"/>
-        <line class="grid" x1="80" y1="127.5" x2="660" y2="127.5"/>
-        <line class="grid" x1="80" y1="50.0" x2="660" y2="50.0"/>
-        <text class="axis" x="70" y="364" text-anchor="end">0</text>
-        <text class="axis" x="70" y="286.5" text-anchor="end">10,000</text>
-        <text class="axis" x="70" y="209" text-anchor="end">20,000</text>
-        <text class="axis" x="70" y="131.5" text-anchor="end">30,000</text>
-        <text class="axis" x="70" y="54" text-anchor="end">40,000</text>
+      <p class="fignum">Figure 4 · Patient disposition</p>
+      <svg class="chart" viewBox="0 0 680 420" role="img" aria-label="Where patients end up each year, stacked by outcome, across the four scenarios.">
+        <line class="grid" x1="80" y1="360" x2="660" y2="360"/><line class="grid" x1="80" y1="282.5" x2="660" y2="282.5"/><line class="grid" x1="80" y1="205.0" x2="660" y2="205.0"/><line class="grid" x1="80" y1="127.5" x2="660" y2="127.5"/><line class="grid" x1="80" y1="50.0" x2="660" y2="50.0"/>
+        <text class="axis" x="70" y="364" text-anchor="end">0</text><text class="axis" x="70" y="286.5" text-anchor="end">10,000</text><text class="axis" x="70" y="209" text-anchor="end">20,000</text><text class="axis" x="70" y="131.5" text-anchor="end">30,000</text><text class="axis" x="70" y="54" text-anchor="end">40,000</text>
         <line class="baseaxis" x1="80" y1="360" x2="80" y2="46"/>
-        <!-- Baseline -->
-        <rect x="112.5" y="115.9" width="80" height="244.1" rx="3" fill="#3E6B8C"/>
-        <rect x="112.5" y="58.6"  width="80" height="57.3"  rx="3" fill="#C0463A"/>
-        <!-- A -->
-        <rect x="257.5" y="120.5" width="80" height="239.5" rx="3" fill="#3E6B8C"/>
-        <rect x="257.5" y="105.9" width="80" height="14.6"  rx="3" fill="#D69A3C"/>
-        <rect x="257.5" y="58.5"  width="80" height="47.4"  rx="3" fill="#C0463A"/>
-        <!-- B -->
-        <rect x="402.5" y="138.1" width="80" height="221.9" rx="3" fill="#3E6B8C"/>
-        <rect x="402.5" y="66.0"  width="80" height="72.1"  rx="3" fill="#3DA468"/>
-        <rect x="402.5" y="58.5"  width="80" height="7.5"   rx="3" fill="#C0463A"/>
-        <!-- A+B -->
-        <rect x="547.5" y="137.2" width="80" height="222.8" rx="3" fill="#3E6B8C"/>
-        <rect x="547.5" y="79.8"  width="80" height="57.4"  rx="3" fill="#3DA468"/>
-        <rect x="547.5" y="65.7"  width="80" height="14.1"  rx="3" fill="#D69A3C"/>
-        <rect x="547.5" y="58.4"  width="80" height="7.3"   rx="3" fill="#C0463A"/>
-        <!-- walkout callouts -->
-        <g class="val" text-anchor="middle" style="fill:#B0463A">
-          <text x="152.5" y="50">7,397 walk out</text>
-          <text x="297.5" y="50">6,110 walk out</text>
-          <text x="442.5" y="50">971 walk out</text>
-          <text x="587.5" y="50">936 walk out</text>
-        </g>
-        <g class="axisbold" text-anchor="middle">
-          <text x="152.5" y="382">Baseline</text>
-          <text x="297.5" y="382">A: Diversion</text>
-          <text x="442.5" y="382">B: Fast-track</text>
-          <text x="587.5" y="382">A+B: Combined</text>
-        </g>
+        <rect x="112.5" y="115.9" width="80" height="244.1" rx="3" fill="#3E6B8C"/><rect x="112.5" y="58.6" width="80" height="57.3" rx="3" fill="#C0463A"/>
+        <rect x="257.5" y="120.5" width="80" height="239.5" rx="3" fill="#3E6B8C"/><rect x="257.5" y="105.9" width="80" height="14.6" rx="3" fill="#D69A3C"/><rect x="257.5" y="58.5" width="80" height="47.4" rx="3" fill="#C0463A"/>
+        <rect x="402.5" y="138.1" width="80" height="221.9" rx="3" fill="#3E6B8C"/><rect x="402.5" y="66.0" width="80" height="72.1" rx="3" fill="#3DA468"/><rect x="402.5" y="58.5" width="80" height="7.5" rx="3" fill="#C0463A"/>
+        <rect x="547.5" y="137.2" width="80" height="222.8" rx="3" fill="#3E6B8C"/><rect x="547.5" y="79.8" width="80" height="57.4" rx="3" fill="#3DA468"/><rect x="547.5" y="65.7" width="80" height="14.1" rx="3" fill="#D69A3C"/><rect x="547.5" y="58.4" width="80" height="7.3" rx="3" fill="#C0463A"/>
+        <g class="val" text-anchor="middle" style="fill:#B0463A"><text x="152.5" y="50">7,397 walk out</text><text x="297.5" y="50">6,110 walk out</text><text x="442.5" y="50">971 walk out</text><text x="587.5" y="50">936 walk out</text></g>
+        <g class="axisbold" text-anchor="middle"><text x="152.5" y="382">Baseline</text><text x="297.5" y="382">A: Diversion</text><text x="442.5" y="382">B: Fast-track</text><text x="587.5" y="382">A+B: Combined</text></g>
       </svg>
       <div class="legend">
         <span><i class="swatch" style="background:#3E6B8C"></i>Seen by ED physician</span>
@@ -417,26 +381,197 @@
       </div>
       <p class="figcap"><b>Where the patients end up.</b> The red band at the top is the walkout crisis. The fast-track lane converts it into care.</p>
     </div>
+
+    <!-- MODELLING REALITY -->
+    <h2 class="sub" style="margin-top:40px">How reality was encoded.</h2>
+    <p class="plain">The model is only as trustworthy as the real-world detail inside it. Four things were built in deliberately, and the assumptions and blind spots are stated alongside them.</p>
+
+    <div class="figure">
+      <p class="fignum">Figure 5 · Arrivals through the day</p>
+      <svg class="chart" viewBox="0 0 640 230" role="img" aria-label="Arrivals rise through the morning, peak in the late afternoon and early evening, and fall overnight.">
+        <line class="grid" x1="40" y1="180" x2="610" y2="180"/>
+        <path d="M40,180 L40,153 L86.7,162 L133.3,165 L180,156 L226.7,112.5 L273.3,78 L320,63 L366.7,52.5 L413.3,42 L460,30 L483.3,34.5 L506.7,60 L553.3,105 L600,142.5 L600,180 Z" fill="rgba(62,107,140,.16)" stroke="none"/>
+        <polyline points="40,153 86.7,162 133.3,165 180,156 226.7,112.5 273.3,78 320,63 366.7,52.5 413.3,42 460,30 483.3,34.5 506.7,60 553.3,105 600,142.5" fill="none" stroke="#3E6B8C" stroke-width="2.6"/>
+        <line class="baseaxis" x1="40" y1="180" x2="600" y2="180"/>
+        <g class="axis" text-anchor="middle"><text x="40" y="200">12a</text><text x="180" y="200">6a</text><text x="320" y="200">12p</text><text x="460" y="200">6p</text><text x="600" y="200">12a</text></g>
+        <text class="axisbold" x="320" y="222" text-anchor="middle">Hour of day</text>
+      </svg>
+      <p class="figcap"><b>Realistic patient traffic.</b> Arrivals ramp through the morning, peak in the late afternoon and early evening, and fall overnight. The year still totals the real annual volume, validated on every run before any result is trusted.</p>
+    </div>
+
+    <div class="duo">
+      <div class="card">
+        <h3>The parameters, in plain language</h3>
+        <p>Staffed beds, set at 22 of 36 physical because staffing and not walls is the limit. The number of physicians and nurses on shift. The average time a diagnostic test takes. How long admitted patients wait for an inpatient bed. And how a patient's patience changes with urgency.</p>
+      </div>
+      <div class="card">
+        <h3>Assumptions, stated honestly</h3>
+        <p>Physician and nurse counts are assumptions where no public source reports an annual average. Diagnostic time is a held estimate. Community capacity for diversion is an assumption about same-day availability. Each is labeled an assumption, not a measured input.</p>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <h3>Limitations</h3>
+      <p>The model releases patients from the physician queue, so anyone who left before triage in the real department is invisible to it. The site's acuity mix is more acute than the provincial average, so results are specific to Cape Breton. And the coordination layer that would book community appointments is not simulated.</p>
+    </div>
+
+    <div class="notes"><b>Say</b><ul>
+      <li>A: walkouts 19.0 to 15.7 percent, wait unchanged at 5.5 to 5.4 h.</li>
+      <li>B: walkouts to 2.5 percent, wait to 3.7 h, NP busy about 35 percent.</li>
+      <li>Beds at about 98 percent in every scenario, the binding constraint.</li>
+      <li>A+B substitutes, adds about 1,816 community resolutions a year.</li>
+      <li>Diversion fit linear (R-squared 0.90); fast-track returns diminish after one NP.</li>
+    </ul></div>
   </div>
 </section>
 
-<!-- BEAT 5: RECOMMENDATION -->
+<!-- SCENARIO STATISTICS TABLES -->
+<section>
+  <div class="wrap">
+    <p class="kicker">Full statistics</p>
+    <h2>Every metric, every scenario.</h2>
+    <p class="plain">Ten-replication results. Select a scenario to see its complete key-performance set with run-to-run spread and confidence intervals.</p>
+    <div class="tabs">
+      <button class="scn-tab active" data-scn="scn-base">Base</button>
+      <button class="scn-tab" data-scn="scn-a">Scenario A</button>
+      <button class="scn-tab" data-scn="scn-b">Scenario B</button>
+      <button class="scn-tab" data-scn="scn-ab">Scenario A+B</button>
+    </div>
+
+    <div id="scn-base" class="scn-table show">
+      <table><thead><tr><th>Metric</th><th>Plain-English name</th><th class="num">Mean</th><th class="num">Std dev</th><th class="num">95% CI</th></tr></thead><tbody>
+        <tr><td>Door-to-doctor wait (h)</td><td class="pl">Time to see a physician</td><td class="num">5.51</td><td class="num">0.27</td><td class="num">[5.32, 5.70]</td></tr>
+        <tr><td>LWBS %</td><td class="pl">Left without being seen</td><td class="num">19.01</td><td class="num">1.57</td><td class="num">[17.89, 20.14]</td></tr>
+        <tr><td>Diverted</td><td class="pl">Sent to community care</td><td class="num">0</td><td class="num">0</td><td class="num">[0, 0]</td></tr>
+        <tr><td>Qavg</td><td class="pl">Average people waiting for a physician</td><td class="num">40.65</td><td class="num">2.34</td><td class="num">[38.98, 42.32]</td></tr>
+        <tr><td>Qmax</td><td class="pl">Peak people waiting</td><td class="num">97.1</td><td class="num">2.5</td><td class="num">[95.3, 98.9]</td></tr>
+        <tr><td>Throughput (pts/hr)</td><td class="pl">Patients fully handled per hour</td><td class="num">3.592</td><td class="num">0.063</td><td class="num">[3.546, 3.637]</td></tr>
+        <tr><td>TIS discharged (h)</td><td class="pl">Total time in ED, sent-home patients</td><td class="num">8.83</td><td class="num">0.29</td><td class="num">[8.62, 9.04]</td></tr>
+        <tr><td>TIS admitted (h)</td><td class="pl">Total time in ED, admitted patients</td><td class="num">28.04</td><td class="num">0.35</td><td class="num">[27.79, 28.30]</td></tr>
+        <tr><td>WIP avg</td><td class="pl">Average patients in the department</td><td class="num">63.67</td><td class="num">2.37</td><td class="num">[61.97, 65.36]</td></tr>
+        <tr><td>WIP max</td><td class="pl">Peak patients in the department</td><td class="num">119.2</td><td class="num">2.4</td><td class="num">[117.5, 120.9]</td></tr>
+        <tr><td>Physician utilization %</td><td class="pl">Share of time physicians are busy</td><td class="num">57.5</td><td class="num">n/a</td><td class="num">~57 to 58</td></tr>
+        <tr><td>Bed utilization %</td><td class="pl">Share of time staffed beds are full</td><td class="num">98</td><td class="num">n/a</td><td class="num">~98</td></tr>
+      </tbody></table>
+    </div>
+
+    <div id="scn-a" class="scn-table">
+      <table><thead><tr><th>Metric</th><th>Plain-English name</th><th class="num">Mean</th><th class="num">Std dev</th><th class="num">95% CI</th></tr></thead><tbody>
+        <tr><td>Door-to-doctor wait (h)</td><td class="pl">Time to see a physician</td><td class="num">5.43</td><td class="num">0.21</td><td class="num">[5.29, 5.58]</td></tr>
+        <tr><td>LWBS %</td><td class="pl">Left without being seen</td><td class="num">15.69</td><td class="num">0.97</td><td class="num">[14.99, 16.38]</td></tr>
+        <tr><td>Diverted</td><td class="pl">Sent to community care</td><td class="num">1,848</td><td class="num">44.8</td><td class="num">[1,816, 1,880]</td></tr>
+        <tr><td>Qavg</td><td class="pl">Average waiting for a physician</td><td class="num">36.03</td><td class="num">1.66</td><td class="num">[34.84, 37.22]</td></tr>
+        <tr><td>Qmax</td><td class="pl">Peak waiting</td><td class="num">90.8</td><td class="num">3.0</td><td class="num">[88.7, 92.9]</td></tr>
+        <tr><td>Throughput (pts/hr)</td><td class="pl">Patients handled per hour</td><td class="num">3.533</td><td class="num">0.033</td><td class="num">[3.509, 3.557]</td></tr>
+        <tr><td>TIS discharged (h)</td><td class="pl">Time in ED, sent home</td><td class="num">8.77</td><td class="num">0.23</td><td class="num">[8.60, 8.93]</td></tr>
+        <tr><td>TIS admitted (h)</td><td class="pl">Time in ED, admitted</td><td class="num">28.19</td><td class="num">0.22</td><td class="num">[28.03, 28.34]</td></tr>
+        <tr><td>WIP avg</td><td class="pl">Average in department</td><td class="num">59.03</td><td class="num">1.73</td><td class="num">[57.79, 60.27]</td></tr>
+        <tr><td>WIP max</td><td class="pl">Peak in department</td><td class="num">113.3</td><td class="num">3.3</td><td class="num">[111.0, 115.6]</td></tr>
+        <tr><td>Physician utilization %</td><td class="pl">Physicians busy</td><td class="num">~57</td><td class="num">n/a</td><td class="num">~57</td></tr>
+        <tr><td>Bed utilization %</td><td class="pl">Staffed beds full</td><td class="num">~98</td><td class="num">n/a</td><td class="num">~98</td></tr>
+      </tbody></table>
+    </div>
+
+    <div id="scn-b" class="scn-table">
+      <table><thead><tr><th>Metric</th><th>Plain-English name</th><th class="num">Mean</th><th class="num">Std dev</th><th class="num">95% CI</th></tr></thead><tbody>
+        <tr><td>Blended door-to-provider wait (h)</td><td class="pl">Time to see any provider, both lanes</td><td class="num">3.66</td><td class="num">0.26</td><td class="num">[3.47, 3.85]</td></tr>
+        <tr><td>LWBS %</td><td class="pl">Left without being seen</td><td class="num">2.49</td><td class="num">0.61</td><td class="num">[2.06, 2.93]</td></tr>
+        <tr><td>Fast-track served</td><td class="pl">Patients seen by the nurse practitioner</td><td class="num">9,224</td><td class="num">138</td><td class="num">n/a</td></tr>
+        <tr><td>Qavg</td><td class="pl">Average waiting for a physician</td><td class="num">16.60</td><td class="num">1.50</td><td class="num">[15.53, 17.68]</td></tr>
+        <tr><td>Qmax</td><td class="pl">Peak waiting</td><td class="num">61.9</td><td class="num">4.3</td><td class="num">[58.8, 65.0]</td></tr>
+        <tr><td>Throughput total (pts/hr)</td><td class="pl">All patients handled per hour</td><td class="num">4.330</td><td class="num">0.025</td><td class="num">[4.312, 4.348]</td></tr>
+        <tr><td>TIS discharged blended (h)</td><td class="pl">Time in ED, sent home, both lanes</td><td class="num">6.09</td><td class="num">0.25</td><td class="num">[5.91, 6.27]</td></tr>
+        <tr><td>TIS admitted (h)</td><td class="pl">Time in ED, admitted</td><td class="num">28.08</td><td class="num">0.39</td><td class="num">[27.80, 28.36]</td></tr>
+        <tr><td>WIP avg</td><td class="pl">Average in department</td><td class="num">39.66</td><td class="num">1.59</td><td class="num">[38.52, 40.80]</td></tr>
+        <tr><td>WIP max</td><td class="pl">Peak in department</td><td class="num">85.0</td><td class="num">3.9</td><td class="num">[82.2, 87.8]</td></tr>
+        <tr><td>NP utilization %</td><td class="pl">Share of time the nurse practitioner is busy</td><td class="num">35.1</td><td class="num">0.6</td><td class="num">[34.7, 35.5]</td></tr>
+        <tr><td>Bed utilization %</td><td class="pl">Staffed beds full</td><td class="num">~96</td><td class="num">n/a</td><td class="num">~96</td></tr>
+      </tbody></table>
+    </div>
+
+    <div id="scn-ab" class="scn-table">
+      <table><thead><tr><th>Metric</th><th>Plain-English name</th><th class="num">Mean</th><th class="num">Std dev</th><th class="num">95% CI</th></tr></thead><tbody>
+        <tr><td>Blended door-to-provider wait (h)</td><td class="pl">Time to see any provider</td><td class="num">3.79</td><td class="num">0.23</td><td class="num">[3.63, 3.95]</td></tr>
+        <tr><td>LWBS %</td><td class="pl">Left without being seen</td><td class="num">2.38</td><td class="num">0.24</td><td class="num">[2.21, 2.55]</td></tr>
+        <tr><td>Diverted</td><td class="pl">Sent to community care</td><td class="num">1,816</td><td class="num">47</td><td class="num">[1,782, 1,850]</td></tr>
+        <tr><td>Fast-track served</td><td class="pl">Seen by the nurse practitioner</td><td class="num">7,362</td><td class="num">n/a</td><td class="num">n/a</td></tr>
+        <tr><td>Qavg</td><td class="pl">Average waiting for a physician</td><td class="num">16.38</td><td class="num">1.04</td><td class="num">[15.64, 17.13]</td></tr>
+        <tr><td>Qmax</td><td class="pl">Peak waiting</td><td class="num">60.4</td><td class="num">3.5</td><td class="num">[57.9, 62.9]</td></tr>
+        <tr><td>Throughput total (pts/hr)</td><td class="pl">All patients handled per hour</td><td class="num">4.132</td><td class="num">0.017</td><td class="num">[4.120, 4.144]</td></tr>
+        <tr><td>TIS discharged blended (h)</td><td class="pl">Time in ED, sent home</td><td class="num">6.37</td><td class="num">0.22</td><td class="num">[6.22, 6.53]</td></tr>
+        <tr><td>TIS admitted (h)</td><td class="pl">Time in ED, admitted</td><td class="num">27.96</td><td class="num">0.27</td><td class="num">[27.76, 28.15]</td></tr>
+        <tr><td>WIP avg</td><td class="pl">Average in department</td><td class="num">39.32</td><td class="num">1.15</td><td class="num">[38.50, 40.15]</td></tr>
+        <tr><td>WIP max</td><td class="pl">Peak in department</td><td class="num">83.1</td><td class="num">3.7</td><td class="num">[80.5, 85.7]</td></tr>
+        <tr><td>NP utilization %</td><td class="pl">Nurse practitioner busy</td><td class="num">28.1</td><td class="num">0.3</td><td class="num">[27.8, 28.3]</td></tr>
+        <tr><td>Bed utilization %</td><td class="pl">Staffed beds full</td><td class="num">~96</td><td class="num">n/a</td><td class="num">~96</td></tr>
+      </tbody></table>
+    </div>
+
+    <p class="tnote">Std dev is the run-to-run spread across ten independent simulated years. The 95% confidence interval is the range the true average is expected to fall within. Non-overlapping intervals between scenarios indicate a real difference, not chance. All scenarios use ten replications; Scenario A+B uses seeds 1 to 8, 10, and 11, with seed 9 excluded by the validation rule.</p>
+  </div>
+</section>
+
+<!-- GLOSSARY -->
+<section>
+  <div class="wrap">
+    <p class="kicker">Glossary</p>
+    <h2>What each term means in this model.</h2>
+    <dl class="gloss">
+      <div><dt>CTAS (Canadian Triage and Acuity Scale)</dt><dd>The 1-to-5 urgency rating assigned at triage. In this model it sets queue priority and patience: CTAS 1-3 are high-acuity and seen first; CTAS 4-5 are low-acuity and the population the two interventions target.</dd></div>
+      <div><dt>LWBS (Left Without Being Seen)</dt><dd>A patient who leaves before any provider sees them. In this model it is not programmed; it emerges when a low-acuity patient's patience runs out while higher-acuity patients keep taking priority.</dd></div>
+      <div><dt>TIS (Time In System)</dt><dd>Total time from arrival to leaving, reported separately for discharged and admitted patients. Admitted TIS stays near 28 hours in every scenario because of bed boarding.</dd></div>
+      <div><dt>WIP (Work In Progress)</dt><dd>The number of patients physically in the department at once.</dd></div>
+      <div><dt>Qavg / Qmax</dt><dd>The average and peak number of patients waiting in the physician queue.</dd></div>
+      <div><dt>NP / PA (Nurse Practitioner / Physician Assistant)</dt><dd>The fast-track provider in Scenario B, serving only low-acuity patients in a parallel lane.</dd></div>
+      <div><dt>divertFrac</dt><dd>The share of low-acuity patients routed to community care at triage; the continuous knob swept in the dose-response chart.</dd></div>
+      <div><dt>nNPPA</dt><dd>The number of nurse practitioners staffing the fast-track lane.</dd></div>
+      <div><dt>Throughput</dt><dd>Patients fully handled per hour. The blended total counts both the main lane and the fast-track lane; the dashboard's main-lane figure alone understates the system when the fast lane is active.</dd></div>
+      <div><dt>Boarding</dt><dd>Admitted patients holding an ED bed while waiting for an inpatient bed, about 17.5 hours here; the root cause of the wait that no low-acuity intervention can move.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- REGISTERED MODES -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><div><p class="kicker">Registered failure modes</p></div><button class="note-toggle" aria-label="Speaker notes" onclick="toggleNotes(this)">+</button></div>
+    <h2>The honesty is the point.</h2>
+    <p class="plain">Every modelling error and limitation was logged, dated, and either resolved or disclosed. The register holds 19 entries: 15 were resolved, and 4 are disclosed limitations.</p>
+    <table><thead><tr><th>What could go wrong</th><th>What happened</th></tr></thead><tbody>
+      <tr><td>Unit mismatch in a time field</td><td>Caught before calibration and corrected.</td></tr>
+      <tr><td>Miswired admit and discharge branch</td><td>Caught by checking the share of patients down each path.</td></tr>
+      <tr><td>Patient-count sign error</td><td>Caught by arithmetic that produced an impossible total.</td></tr>
+      <tr><td>Single-run luck</td><td>Retired by moving to ten replications with confidence intervals.</td></tr>
+      <tr><td>Random-seed reproduction</td><td>The same seed stopped reproducing the old baseline once the scenario switches were added. Diagnosed to mechanism; the baseline was shown to be still valid.</td></tr>
+      <tr><td>Out-of-band annual volume</td><td>One replication drew a year outside the acceptance band. The validation guard fired as designed, and the run was replaced on the record.</td></tr>
+      <tr><td>Pre-triage walkouts invisible</td><td>Disclosed limitation: the model only sees patients who reach the physician queue.</td></tr>
+      <tr><td>Site acuity skew</td><td>Disclosed limitation: this site is more acute than the provincial average.</td></tr>
+      <tr><td>Unverifiable staffing</td><td>Disclosed limitation: physician and nurse counts are assumptions, not measured inputs.</td></tr>
+    </tbody></table>
+    <div class="notes"><b>Say</b><ul>
+      <li>19 entries logged: 15 resolved, 4 disclosed limitations.</li>
+      <li>Seed 9 excluded by the validation guard, replaced on the record.</li>
+      <li>The register is a credibility asset, not a disclaimer.</li>
+    </ul></div>
+  </div>
+</section>
+
+<!-- RECOMMENDATION -->
 <section>
   <div class="wrap">
     <div class="rec">
-      <p class="kicker" style="color:#9DBBA6">The recommendation, honestly stated</p>
+      <div class="sec-head"><div><p class="kicker" style="color:#9DBBA6">The recommendation, honestly stated</p></div><button class="note-toggle" aria-label="Speaker notes" onclick="toggleNotes(this)">+</button></div>
       <h2>Adopt both, and be clear about why.</h2>
-      <p class="plain">We recommend the combination: community diversion plus a one-nurse-practitioner fast-track. It gives the same underserved population two independent paths to care, one before the front door and one behind it.</p>
-      <p>We say plainly what the numbers say. Inside the department, the combination performs the same as the fast-track alone, so the second change earns its place at the system level, by resolving roughly 1,800 patients a year in their own community rather than by speeding the emergency department further.</p>
-      <p>And we name what nothing fixed. Admitted patients still spend about 28 hours in the system because inpatient beds are scarce. Boarding is the real constraint on waits, and it is the clear next investigation.</p>
+      <p class="plain">The recommendation is to adopt the combination: community diversion plus a one-nurse-practitioner fast-track. It gives the same underserved population two independent paths to care, one before the front door and one behind it.</p>
+      <p>The analysis states plainly what the numbers say. Inside the department, the combination performs the same as the fast-track alone, so the second change earns its place at the system level, by resolving roughly 1,800 patients a year in their own community rather than by speeding the emergency department further.</p>
+      <p>It also names what nothing fixed. Admitted patients still spend about 28 hours in the system because inpatient beds are scarce. Boarding is the real constraint on waits, and it is the clear next investigation.</p>
+      <div class="notes"><b>Say</b><ul>
+        <li>Recommend A+B.</li>
+        <li>In-department performance equals B alone, stated openly.</li>
+        <li>Extra value is about 1,816 patients a year resolved in community.</li>
+        <li>Boarding at about 28 h admitted time-in-system is untouched, the next frontier.</li>
+      </ul></div>
     </div>
-  </div>
-</section>
 
-<!-- INTEGRITY -->
-<section>
-  <div class="wrap">
-    <p class="kicker">On the record</p>
     <p class="integrity">
       Built as an MBAN 5630 graduate project at Saint Mary's University and calibrated to the Nova Scotia ED Accountability Report 2023-24.
       <b>Staffing levels are labeled assumptions</b> where no public source reports them. Staffed beds are set at 22 of 36 physical, evidenced by a reported 80 percent LPN vacancy and confirmed by a sensitivity run, at 36 staffed beds the crisis disappears entirely.
@@ -450,9 +585,38 @@
   <div class="wrap">
     <div class="name">Gavin Shklanka</div>
     Master of Business Analytics, Sobey School of Business, Saint Mary's University.<br>
-    Black Point Analytics · Blackpoint Lab · MBAN 5630 Project 1.
+    Black Point Analytics &middot; Blackpoint Lab &middot; MBAN 5630 Project 1.
   </div>
 </footer>
 
+<script>
+  function toggleNotes(btn){
+    var p=btn.closest('section').querySelector('.notes');
+    if(!p) return;
+    p.classList.toggle('open');
+    btn.textContent=p.classList.contains('open')?'−':'+';
+  }
+  document.getElementById('globalNotes').addEventListener('click',function(){
+    var on=document.body.classList.toggle('notes-on');
+    this.classList.toggle('active',on);
+    this.textContent='Speaker notes: '+(on?'on':'off');
+  });
+  document.querySelectorAll('.scn-tab').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.scn-tab').forEach(function(x){x.classList.remove('active');});
+      document.querySelectorAll('.scn-table').forEach(function(t){t.classList.remove('show');});
+      b.classList.add('active');
+      document.getElementById(b.dataset.scn).classList.add('show');
+    });
+  });
+  document.querySelectorAll('.cmp-tab').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.cmp-tab').forEach(function(x){x.classList.remove('active');});
+      document.querySelectorAll('.cmp-svg').forEach(function(s){s.classList.remove('show');});
+      b.classList.add('active');
+      document.getElementById(b.dataset.cmp).classList.add('show');
+    });
+  });
+</script>
 </body>
 </html>
