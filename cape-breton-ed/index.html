@@ -48,10 +48,15 @@
   .plain{font-size:clamp(18px,2.2vw,21px);max-width:62ch;margin:0 0 20px}
   p{max-width:66ch}
 
-  .note-toggle{flex:none;border:1px solid var(--line);background:var(--panel);color:var(--forest);border-radius:9px;width:34px;height:34px;cursor:pointer;font-weight:700;font-size:18px;line-height:1}
+  .note-toggle{flex:none;border:1px solid var(--line);background:var(--panel);color:var(--forest);border-radius:9px;width:34px;height:34px;cursor:pointer;font-weight:700;font-size:18px;line-height:1;display:none}
+  body.notes-on .note-toggle{display:block}
   .note-toggle:hover{border-color:var(--forest)}
-  .notes{display:none;margin:18px 0 4px;background:#1C2A22;color:#CFE0D4;border-radius:12px;padding:16px 20px;font-size:14.5px;line-height:1.55}
-  .notes.open, body.notes-on .notes{display:block}
+  .notes{display:none;margin:18px 0 4px;background:var(--forest-deep);color:#CFE0D4;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px 20px;font-size:14.5px;line-height:1.55}
+  .notes.open{display:block}
+  .callout{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--amber);border-radius:10px;padding:18px 22px;margin:22px 0;font-size:16px;color:var(--ink)}
+  .callout p{margin:0;max-width:none}
+  .callout .lab{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--ink-soft);margin-bottom:8px}
+  .callout.ext{border-left-color:var(--green)}
   .notes b{color:#fff;display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;color:#9FCBAE}
   .notes ul{margin:0;padding-left:18px}
   .notes li{margin:3px 0}
@@ -258,7 +263,9 @@
 
     <h2 class="sub" style="margin-top:38px">How each change works in the real department.</h2>
     <p><b>Scenario A, community rerouting.</b> The model redirects a fifth of low-acuity (CTAS 4-5) arrivals at triage to capacity that already exists in the patient's own community: Nova Scotia urgent treatment centres, pharmacist prescribing and assessment, and provincial virtual care. These patients are tracked as redirected, not abandoned. The support condition is stated plainly: this only works if the receiving capacity is real and same-day, so the recommendation pairs the diversion fraction with a stated assumption about community appointment availability, labeled an assumption rather than a measured input. The model captures the routing effect only. The booking and coordination that would happen in the real world is named as out of scope for the simulation.</p>
+    <div class="callout"><span class="lab">How the model handles it</span><p>Diversion is a single branch at triage. A set share of low-acuity patients is routed to community care; everyone else continues into the main physician queue exactly as in the baseline. The model adds no special handling for the patients who are not diverted: they wait under the same priority order and the same patience limit, which is why a share of them still leaves in Scenario A.</p></div>
     <p><b>Scenario B, what the freed physician time buys.</b> Moving low-acuity patients to the nurse-practitioner lane clears them out of the physician queue, which gives physicians time back to work the high-acuity queue. With CTAS 4-5 handled in parallel, physicians clear the CTAS 1-3 backlog faster, taking the sickest first and then working CTAS 3, the largest high-acuity tier and the one most at risk of deteriorating while waiting. The visible signature in the results is the physician queue dropping from about 41 waiting to about 17, even though physicians never see a single fast-track patient. This is the equity point: the priority discipline that protects the sickest is exactly what starves CTAS 4-5, so the fast-track lane is a structural correction for the group the system is built to deprioritize.</p>
+    <div class="callout ext"><span class="lab">Effect modeled · ambulance lane is a future extension</span><p>What clearing low-acuity demand buys, in plain terms: pulling CTAS 4-5 patients out of the main queue, by diversion ahead of the door or a fast-track lane behind it, leaves the main emergency queue freer for the sickest patients and for ambulance (Emergency Health Services) arrivals. The model shows this effect indirectly: the physician queue falls from about 41 people waiting to about 17 once low-acuity demand is handled elsewhere, which is headroom the department can redirect to genuine emergencies. This study models that freed-capacity effect. A dedicated ambulance-arrival lane is named as a future extension, not a mechanism built into the current model.</p></div>
 
     <div class="notes"><b>Say</b><ul>
       <li>Scenario A: divert 20 percent of CTAS 4-5 at triage to existing community capacity.</li>
@@ -288,6 +295,8 @@
       <p>Run together, the two changes do not stack, because both serve the same low-urgency patients. Inside the building the combined result matches the fast-track alone. What the combination adds is about 1,816 patients a year whose needs are met in their own community instead of in an emergency department.</p>
     </div></div>
 
+    <div class="callout"><span class="lab">Why walkouts compound</span><p>A patient who leaves without being seen does not stop being sick. Without reliable access to care, a condition that was low-acuity at the door can worsen and return later as a higher-acuity visit, often by ambulance, adding load back onto the same department. Reducing walkouts is not only a service-quality measure; it lowers the repeat and escalation demand the department faces later.</p></div>
+
     <!-- DOSE-RESPONSE REGRESSION -->
     <div class="figure">
       <p class="fignum">Figure 2 · Dose-response regression</p>
@@ -310,7 +319,7 @@
             <line class="grid" x1="80" y1="320" x2="600" y2="320"/><line class="grid" x1="80" y1="250" x2="600" y2="250"/><line class="grid" x1="80" y1="180" x2="600" y2="180"/><line class="grid" x1="80" y1="110" x2="600" y2="110"/><line class="grid" x1="80" y1="40" x2="600" y2="40"/>
             <text class="axis" x="72" y="324" text-anchor="end">0</text><text class="axis" x="72" y="254" text-anchor="end">1</text><text class="axis" x="72" y="184" text-anchor="end">2</text><text class="axis" x="72" y="114" text-anchor="end">3</text><text class="axis" x="72" y="44" text-anchor="end">4%</text>
             <line class="baseaxis" x1="80" y1="320" x2="80" y2="32"/>
-            <polyline class="fitcurve" points="145,97.4 192.5,110.4 240,119.7 287.5,126.9 335,132.7 382.5,137.6 430,141.9"/>
+            <polyline class="fitcurve" points="145,97.4 210,110.4 275,119.7 340,126.9 405,132.7 470,137.6 535,141.9"/>
             <circle cx="145" cy="80.6" r="5.5" fill="#1E4D34"/><circle cx="275" cy="155.5" r="5.5" fill="#1E4D34"/><circle cx="405" cy="127.5" r="5.5" fill="#1E4D34"/><circle cx="535" cy="128.2" r="5.5" fill="#1E4D34"/>
             <g class="axis" text-anchor="middle"><text x="145" y="342">1</text><text x="275" y="342">2</text><text x="405" y="342">3</text><text x="535" y="342">4</text></g>
             <text class="axisbold" x="340" y="366" text-anchor="middle">Nurse practitioners in fast-track (nNPPA)</text>
@@ -402,7 +411,7 @@
     <div class="duo">
       <div class="card">
         <h3>The parameters, in plain language</h3>
-        <p>Staffed beds, set at 22 of 36 physical because staffing and not walls is the limit. The number of physicians and nurses on shift. The average time a diagnostic test takes. How long admitted patients wait for an inpatient bed. And how a patient's patience changes with urgency.</p>
+        <p>The model uses 22 staffed beds, not the 36 the building physically has, because the limit is how many beds the hospital can staff, not how many rooms exist. The number of physicians and nurses on shift. The average time a diagnostic test takes. How long admitted patients wait for an inpatient bed. And how a patient's patience changes with urgency.</p>
       </div>
       <div class="card">
         <h3>Assumptions, stated honestly</h3>
@@ -469,6 +478,7 @@
         <tr><td>Physician utilization %</td><td class="pl">Physicians busy</td><td class="num">~57</td><td class="num">n/a</td><td class="num">~57</td></tr>
         <tr><td>Bed utilization %</td><td class="pl">Staffed beds full</td><td class="num">~98</td><td class="num">n/a</td><td class="num">~98</td></tr>
       </tbody></table>
+      <div class="callout"><span class="lab">Why Scenario A still shows a high walkout rate</span><p>Diversion at the chosen 20 percent setting removes only about one in five low-acuity patients before they enter. The rest stay in the main queue, where the same priority order pushes them to the back, and diversion does nothing to free the staffed beds that cap the department. The cause of walkouts is structural, so a partial diversion gives only a partial reduction.</p></div>
     </div>
 
     <div id="scn-b" class="scn-table">
@@ -600,6 +610,10 @@
     var on=document.body.classList.toggle('notes-on');
     this.classList.toggle('active',on);
     this.textContent='Speaker notes: '+(on?'on':'off');
+    if(!on){
+      document.querySelectorAll('.notes.open').forEach(function(p){p.classList.remove('open');});
+      document.querySelectorAll('.note-toggle').forEach(function(b){b.textContent='+';});
+    }
   });
   document.querySelectorAll('.scn-tab').forEach(function(b){
     b.addEventListener('click',function(){
