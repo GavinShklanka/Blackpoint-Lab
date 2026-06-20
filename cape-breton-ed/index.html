@@ -657,6 +657,48 @@
   </div>
 </section>
 
+<!-- THE MODEL, FULLY SPECIFIED (glossary) -->
+<section>
+  <div class="wrap">
+    <p class="kicker">The model, fully specified</p>
+    <h2>Every dial, and what it was set to.</h2>
+    <p class="plain">A simulation is only as honest as the inputs inside it. These are the model's parameters and tracked variables, grouped by the part of the system they govern, with how each was configured and how trustworthy the source is. Tier A is primary-sourced and verified, Tier B is derived from a Tier A anchor, Tier C is an assumption that was swept rather than sourced.</p>
+    <table>
+      <thead><tr><th>Name (on the model)</th><th>What it sets</th><th>Configured as</th><th>Tier</th></tr></thead>
+      <tbody>
+        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">Front door and arrivals</td></tr>
+        <tr><td>arrivalsByHour</td><td>Patient arrivals shaped across the day</td><td>Hourly rate curve, totals the real annual volume (38,500 to 39,300 band)</td><td>A</td></tr>
+        <tr><td>divertFrac</td><td>Share of low-urgency patients sent to community</td><td>0.2</td><td>A</td></tr>
+        <tr><td>useFastTrack, nNPPA</td><td>The nurse-practitioner fast-track lane and its staffing</td><td>true, 1 NP</td><td>A</td></tr>
+        <tr><td>admitFracHighAcuity</td><td>Share of arrivals that are high-acuity</td><td>0.16</td><td>A</td></tr>
+        <tr><td>patienceByCtas, renegeWaitStat</td><td>How long patients wait before leaving, by triage level; drives walkouts</td><td>Patience falls with lower urgency</td><td>B</td></tr>
+        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">Treatment</td></tr>
+        <tr><td>nPhysicians, nNurses</td><td>Clinicians on shift</td><td>5, 3 *</td><td>C *</td></tr>
+        <tr><td>nBeds</td><td>Staffed ED treatment beds (not the 36 physical)</td><td>22</td><td>A</td></tr>
+        <tr><td>phMode, plMode</td><td>Physician service time, high and low acuity (minutes)</td><td>45, 20 *</td><td>C *</td></tr>
+        <tr><td>diagMeanMin</td><td>Mean diagnostic test time (minutes)</td><td>120 *</td><td>C *</td></tr>
+        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">Admission and boarding</td></tr>
+        <tr><td>selectAdmit, admit fraction</td><td>The fork from ED visit to inpatient admission</td><td>About one in nine arrivals (~11.7%)</td><td>A</td></tr>
+        <tr><td>boardMeanMin</td><td>The wait for a ward bed (boarding), as a spread, not a constant</td><td>triangular(0.6x, 1x, 1.8x) on 1050 min, true mean ~1190 min (~19.8 h)</td><td>A (form)</td></tr>
+        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">The ward</td></tr>
+        <tr><td>nWardBeds</td><td>Inpatient ward beds</td><td>162 baseline, 234 expanded (+72, the real CBRH expansion)</td><td>A</td></tr>
+        <tr><td>wardLOSmedianMin, wardLOSsigma</td><td>How long a ward stay lasts (lognormal)</td><td>median ~6,624 min (~4.6 d) *, sigma 0.98</td><td>C *</td></tr>
+        <tr><td>acuteLOSmedianMin</td><td>The acute part of the ward stay, before any placement wait</td><td>~6,624 min *</td><td>C *</td></tr>
+        <tr><td>transferInRate</td><td>Background inter-facility ward admissions per day, keeps the ward realistically loaded</td><td>~4.5 per day</td><td>C</td></tr>
+        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">Long-stay placement (ALC)</td></tr>
+        <tr><td>pALC</td><td>Share of admits who become long-stay (ALC)</td><td>0.02, seated to the 17 to 28% bed-day band</td><td>C</td></tr>
+        <tr><td>alcPlacementMeanMin</td><td>The placement wait an ALC patient holds a bed for</td><td>triangular(55, 102, 188) days, mean 115 d; 75 d in the speed scenario</td><td>A/B</td></tr>
+        <tr><td>dischargeDestCapacity</td><td>Community placement slots; a non-binding guard, not a real-world count</td><td>250 (always above the largest ward)</td><td>design</td></tr>
+        <tr><td>communityPlacementDemand, commResidenceMedianMin</td><td>An older background loop, now inert</td><td>0 (off); on the cleanup list</td><td>n/a</td></tr>
+        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">Community channels (Docket B)</td></tr>
+        <tr><td>channel shares</td><td>How diverted patients split across the five services</td><td>UTC 0.33, pharmacy 0.36, virtual 0.14, collab 0.12, referral 0.05</td><td>C</td></tr>
+        <tr><td>pNoService</td><td>Share of diverted patients who hit a closed or full service (loopback risk)</td><td>~0.05, swept 0 to 0.10</td><td>C</td></tr>
+      </tbody>
+    </table>
+    <p class="tnote">Values marked with an asterisk are from the decision register and the frozen anchor and are pending final confirmation against the live model. Tracked variables for live counts and validation: ctasCount (arrivals by triage level), hourlyRate and arrivalsByHour (the daily arrival shape), patienceByCtas and renegeWaitStat (the abandonment behavior that produces walkouts).</p>
+  </div>
+</section>
+
 <!-- HOW A PATIENT MOVES THROUGH THE MODEL -->
 <section>
   <div class="wrap">
