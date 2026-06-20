@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cape Breton ED Capacity Simulation · Black Point Analytics</title>
-<meta name="description" content="A discrete-event simulation of the Cape Breton Regional Hospital emergency department, showing how one nurse-practitioner fast-track lane removes almost every patient walkout.">
+<title>Cape Breton ED Capacity Simulation · Projects 1 and 2 · Black Point Analytics</title>
+<meta name="description" content="A discrete-event simulation of the Cape Breton Regional Hospital emergency department. Project 1 models the front door and a nurse-practitioner fast-track; Project 2 models the whole system, including ward beds and long-stay placement, across twenty validated runs.">
 <style>
   :root{
     --ground:#F6F3EC; --panel:#FFFFFF; --ink:#23271F; --ink-soft:#5C6157;
@@ -162,6 +162,9 @@
   .matrix thead th:first-child{background:#EFEBE1}
   .matrix td.hi{color:var(--forest);font-weight:700}
   .split{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin-top:24px}
+  .pill{display:inline-block;font-size:12.5px;font-weight:700;padding:3px 11px;border-radius:999px;letter-spacing:.02em}
+  .pill.met{background:rgba(61,164,104,.16);color:var(--forest)}
+  .pill.no{background:rgba(214,154,60,.18);color:#9a6a1e}
   @media (max-width:820px){ .p2stats{grid-template-columns:1fr} .split{grid-template-columns:1fr} }
 </style>
 </head>
@@ -171,13 +174,15 @@
   <div class="wrap">
     <div class="brand">Black Point Analytics<small>Blackpoint Lab</small></div>
     <div class="topright">
+      <a class="backlink" href="#project-1">Project 1</a>
+      <a class="backlink" href="#project-2">Project 2</a>
       <button class="gnotes" id="globalNotes">Speaker notes: off</button>
       <a class="backlink" href="../">&larr; Lab</a>
     </div>
   </div>
 </div>
 
-<header class="hero">
+<header class="hero" id="project-1">
   <div class="wrap">
     <p class="eyebrow">Decision-support simulation</p>
     <h1>Where do Cape&nbsp;Breton's emergency patients end&nbsp;up?</h1>
@@ -609,7 +614,8 @@
   <div class="wrap">
     <span class="p2tag">Project 2 · 2026 · n = 20</span>
     <h2>The back door: modeling the whole system.</h2>
-    <p class="plain">Project 1 mapped the front door of the emergency department, the people waiting to be seen and the one in five who left without care. Project 2 models the whole system, including the back door: the admitted patients who wait more than a day for a bed on a hospital ward upstairs.</p>
+    <p class="plain">Project 1 mapped the front door of the emergency department, the people waiting to be seen and the one in five who left without care, and found two fixes that cut walkouts: a fast-track lane and community diversion. But it ended on an open question. Admitted patients were still spending more than a day stranded in the emergency department, waiting for a bed on a hospital ward upstairs, and the Project 1 model could not see why, because it stopped at the emergency-department doors. Project 2 rebuilt the model to follow patients through the back door: into the ward, through the long wait for a long-term-care placement, and back out to the community. Because the new model captures the whole system, its starting numbers differ slightly from Project 1's front-door-only figures. Everything below is the Project 2 whole-system model, twenty runs per scenario.</p>
+    <div class="callout"><span class="lab">The target</span><p>Both projects share one goal: a hospital full enough to run efficiently, but not so full it fails patients. In practice that means three things at once, a ward kept below the safety line, walkouts driven down, and waits brought under target. Project 1 found the levers for the front door. Project 2 found the levers for the back door. The scorecard for how close the full package gets is further down.</p></div>
     <p>Four changes were tested. The department turns out to have two separate jams that need two separate fixes.</p>
 
     <h2 class="sub" style="margin-top:34px">The two-door finding.</h2>
@@ -623,7 +629,23 @@
     </div>
     <p class="figcap" style="margin-top:14px"><b>All four changes together.</b> Mean of twenty runs with 95% confidence intervals.</p>
 
-    <div class="callout ext"><span class="lab">The reversal, stated honestly</span><p>Adding beds was expected to fail, on the theory that long-stay patients waiting for nursing-home placement would quietly refill them. At Cape Breton's placement levels, that did not happen. The new beds worked and stayed largely empty. Freeing the long-stay beds is a separate lever: faster nursing-home placement, which recovered about eight blocked beds without changing the emergency-department numbers at all.</p></div>
+    <div class="callout ext"><span class="lab">The reversal, stated honestly</span><p>Adding beds was expected to fail, on the theory that long-stay patients waiting for nursing-home placement would quietly refill them. At Cape Breton's placement levels, that did not happen. The new beds worked and stayed largely empty. Freeing the long-stay beds is a separate lever: faster nursing-home placement, which recovered about eight blocked beds without changing the emergency-department numbers at all. This is realistic because Cape Breton's typical placement wait is about 115 days against a provincial average near 75; closing that gap is the lever, and in the model it freed about eight ward beds and dropped the long-stay share from about 17 percent to 13.</p></div>
+  </div>
+</section>
+
+<!-- HOW THE MODEL WORKS (on-ramp) -->
+<section>
+  <div class="wrap">
+    <p class="kicker">How the model works</p>
+    <h2>What we built, in plain language.</h2>
+    <p class="plain">Project 2 follows a patient past the emergency-department doors and into the hospital. Five pieces of the model carry that story.</p>
+    <dl class="gloss">
+      <div><dt>The admission decision (selectAdmit)</dt><dd>When treatment ends, most patients go home, but some are sick enough to need a hospital bed upstairs. This is that fork, the moment a visit becomes an admission. About one in nine arrivals takes it.</dd></div>
+      <div><dt>The emergency-department beds (bedPool)</dt><dd>The 22 staffed treatment beds. A patient holds one until they leave or move upstairs. When all 22 are full, the next patient waits. These stay near full in every scenario, which is the punchline at the end.</dd></div>
+      <div><dt>The ward beds upstairs (wardPool)</dt><dd>The 162 inpatient beds. An admitted patient needs one to leave the emergency department. When the ward is full, that patient is stranded in an ED bed. That wait is the back-door jam, and it is why an admitted patient spends about 30 hours here before reaching the ward.</dd></div>
+      <div><dt>The placement pipeline (dischargeDestinationPool)</dt><dd>The route to a long-term-care or home-care spot for patients ready to leave the hospital. We kept the spots plentiful on purpose, because the real Cape Breton bottleneck is the wait to get one, not the number of spots.</dd></div>
+      <div><dt>The long-stay wait (ALC placement)</dt><dd>A patient who is medically done but waiting for placement keeps holding a ward bed until one is found. We model that wait on Cape Breton's real numbers: about 115 days, ranging from under two months to over six.</dd></div>
+    </dl>
   </div>
 </section>
 
@@ -633,6 +655,13 @@
     <p class="kicker">The comparison</p>
     <h2>Seven scenarios, every metric.</h2>
     <p class="plain">All values are means of twenty runs with 95% confidence intervals. Lower is better for waits, walkouts, queues, and occupancy.</p>
+    <details>
+      <summary>What the trickier numbers mean</summary>
+      <div class="body">
+        <p><b>90th-percentile wait.</b> Line every patient up from shortest wait to longest. This is the wait nine in ten beat and one in ten exceed. It is the experience of the unlucky tenth, the people the average hides, and it is the number that barely improves, which is the honest point.</p>
+        <p><b>Longest wait.</b> The single worst case that year. <b>Waited over four hours.</b> The share whose wait to be seen passed the four-hour clinical target. <b>ALC bed-day share.</b> The portion of occupied ward beds held by patients ready to leave but waiting for placement. <b>Throughput.</b> Patients finishing their emergency-department care each hour, counting admitted, discharged, and fast-track.</p>
+      </div>
+    </details>
 
     <div class="tablewrap">
       <table class="matrix"><thead><tr>
@@ -660,7 +689,8 @@
 
     <div class="callout"><span class="lab">How we know</span><p>The baseline reproduces identically across the backend and frontend builds using common random numbers. At 234 beds, faster placement leaves the emergency-department numbers identical and moves only the long-stay share, which proves the two-door split directly. Combined admitted time in ED, 28.04 hours, equals beds alone at 28.04 hours, so the levers compose cleanly with no interaction anomaly.</p></div>
 
-    <div class="figure">
+    <div class="split">
+      <div class="figure" style="margin:0">
       <p class="fignum">Figure P2-1</p>
       <svg class="chart" viewBox="0 0 720 400" role="img" aria-label="Walkouts by scenario, baseline to combined, with 95 percent confidence intervals.">
         <line class="grid" x1="70" y1="330" x2="700" y2="330"/><line class="grid" x1="70" y1="274.2" x2="700" y2="274.2"/><line class="grid" x1="70" y1="218.5" x2="700" y2="218.5"/><line class="grid" x1="70" y1="162.7" x2="700" y2="162.7"/><line class="grid" x1="70" y1="106.9" x2="700" y2="106.9"/><line class="grid" x1="70" y1="51.2" x2="700" y2="51.2"/>
@@ -679,10 +709,17 @@
         <g class="val" style="font-size:13px" text-anchor="middle"><text x="115" y="51">23.50</text><text x="205" y="108">18.14</text><text x="295" y="262">4.72</text><text x="385" y="88">20.18</text><text x="475" y="107">18.69</text><text x="565" y="107">18.69</text><text x="655" y="291">2.56</text></g>
         <g class="axis" style="font-size:11.5px" text-anchor="middle"><text x="115" y="352">Baseline</text><text x="205" y="352">Diversion</text><text x="295" y="352">Fast-track</text><text x="385" y="352">Speed-162</text><text x="475" y="352">Beds-234</text><text x="565" y="352">Beds+Speed</text><text x="655" y="352">Combined</text></g>
       </svg>
-      <p class="figcap"><b>The front-door levers and the combined package crush walkouts.</b> The bed-only scenarios barely move them.</p>
+      <p class="figcap"><b>The front-door levers and the combined package crush walkouts.</b> The bed-only scenarios move them only modestly.</p>
+      </div>
+      <div class="callout"><span class="lab">How to read this</span>
+        <p>Each dot is one scenario, read left to right from today to all four changes combined. The dot is the average of twenty runs; the whiskers show the range we are confident the true value sits in. Lower is better.</p>
+        <p style="margin-top:10px">Watch the front-door changes, diversion and fast-track, pull walkouts down hard, while the bed-only changes move them only modestly. Walkouts are a front-door problem.</p>
+        <p style="margin-top:10px;font-size:13.5px;color:var(--ink-soft)">Scenarios, left to right: Today, Divert to community, Fast-track lane, Faster placement, More ward beds, Beds and placement, Everything.</p>
+      </div>
     </div>
 
-    <div class="figure">
+    <div class="split">
+      <div class="figure" style="margin:0">
       <p class="fignum">Figure P2-2</p>
       <svg class="chart" viewBox="0 0 720 400" role="img" aria-label="Admitted-patient time in the emergency department by scenario, with 95 percent confidence intervals. Vertical axis starts at 27 hours.">
         <line class="grid" x1="70" y1="330" x2="700" y2="330"/><line class="grid" x1="70" y1="257.5" x2="700" y2="257.5"/><line class="grid" x1="70" y1="185" x2="700" y2="185"/><line class="grid" x1="70" y1="112.5" x2="700" y2="112.5"/><line class="grid" x1="70" y1="40" x2="700" y2="40"/>
@@ -702,6 +739,11 @@
         <g class="axis" style="font-size:11.5px" text-anchor="middle"><text x="115" y="352">Baseline</text><text x="205" y="352">Diversion</text><text x="295" y="352">Fast-track</text><text x="385" y="352">Speed-162</text><text x="475" y="352">Beds-234</text><text x="565" y="352">Beds+Speed</text><text x="655" y="352">Combined</text></g>
       </svg>
       <p class="figcap"><b>Only beds move the back door.</b> The bed scenarios drop the admitted wait to 28 hours; the front-door levers leave it near 30. The vertical axis starts at 27 hours to show the step.</p>
+      </div>
+      <div class="callout"><span class="lab">How to read this</span>
+        <p>Same scenarios, same left-to-right order. Note the vertical axis starts at 27 hours to show the step.</p>
+        <p style="margin-top:10px">Now watch the opposite: the front-door changes barely move the admitted wait; only adding beds brings it down. The admitted wait is a back-door problem. This is the two-door story in two charts.</p>
+      </div>
     </div>
 
     <div class="figure">
@@ -728,6 +770,13 @@
     <p class="kicker">The community split</p>
     <h2>Where the diverted patients go.</h2>
     <p class="plain">Of the lower-urgency patients redirected from the emergency department, the model sends about a third to an urgent treatment centre, just over a third to community pharmacies for minor ailments, one in seven to virtual care, one in eight to a collaborative care clinic, and a small group, about five percent, to a referral path.</p>
+    <p>Patients are sorted on arrival by the Canadian Triage and Acuity Scale, the five-level urgency rating used across Canada. Levels 4 and 5 are the least urgent cases, sprains, minor infections, prescription renewals, and these are what community services are built to handle, which is why diverting a share of them is clinically appropriate, not a shortcut. The five destinations are real Nova Scotia programs: urgent treatment centres recorded about 60,611 visits provincewide in 2023-24, community pharmacies have a funded scope for minor ailments, VirtualCareNS connects patients to providers remotely, and collaborative care clinics take lower-acuity primary care.</p>
+    <dl class="gloss">
+      <div><dt>Urgent treatment centre, about a third</dt><dd>Walk-in care for injuries and acute-but-minor problems: musculoskeletal injuries, lacerations, mild mental-health needs.</dd></div>
+      <div><dt>Community pharmacy, just over a third</dt><dd>Minor ailments a pharmacist can assess and prescribe for: skin conditions, urinary infections, eye complaints, mild respiratory issues, and prescription renewals.</dd></div>
+      <div><dt>Virtual care, about one in seven</dt><dd>Remote assessment for low-acuity advice and pharmacy-eligible overflow.</dd></div>
+      <div><dt>Collaborative care clinic, about one in eight</dt><dd>Team-based primary care for non-specific and other low-acuity complaints.</dd></div>
+    </dl>
     <div class="split">
       <div class="figure" style="margin:0">
         <p class="fignum">Figure P2-4</p>
@@ -765,14 +814,19 @@
     <h2 class="sub" style="margin-top:36px">Objective and constraints.</h2>
     <p class="plain">Goal: the lowest system cost while keeping ward occupancy at or below 85 percent and walkouts and waits under target.</p>
     <table>
-      <thead><tr><th>Constraint</th><th>Limit</th><th>Baseline</th><th>Combined</th></tr></thead>
+      <thead><tr><th>Constraint</th><th>Limit</th><th>Baseline</th><th>Combined</th><th>Status</th></tr></thead>
       <tbody>
-        <tr><td>Ward occupancy</td><td>at or below 85%</td><td>91.41% (violated)</td><td>61.33% (met)</td></tr>
-        <tr><td>Walkouts</td><td>under target</td><td>23.50% (violated)</td><td>2.56% (met)</td></tr>
-        <tr><td>ED treatment beds</td><td>at or below 85%</td><td>98.68% (violated)</td><td>96.69% (violated)</td></tr>
+        <tr><td>Ward occupancy</td><td>at or below 85%</td><td>91.41%</td><td>61.33%</td><td><span class="pill met">Met</span></td></tr>
+        <tr><td>Walkouts</td><td>under target</td><td>23.50%</td><td>2.56%</td><td><span class="pill met">Met</span></td></tr>
+        <tr><td>ED treatment beds</td><td>at or below 85%</td><td>98.68%</td><td>96.69%</td><td><span class="pill no">Not yet</span></td></tr>
       </tbody>
     </table>
-    <p class="tnote">Combined satisfies the ward-occupancy and walkout limits and still violates the ED-bed limit. That last violation is the honest residual above.</p>
+    <p class="tnote">Combined satisfies the ward-occupancy and walkout limits and still falls short on the ED-bed limit. That last gap is the honest residual above.</p>
+
+    <div class="card" style="margin-top:26px">
+      <h3>One patient, four levers</h3>
+      <p>Picture one patient. She arrives with a low-urgency complaint and is offered community care before she ever sits down, or seen quickly in the fast-track lane if she stays. The person behind her who needs admission gets a ward bed instead of being stranded in the emergency department, because the ward has room. And that bed is still available next week, because the long-stay patient who held it was placed into the community sooner. Four levers, one smoother path, for her and for everyone behind her.</p>
+    </div>
   </div>
 </section>
 
@@ -794,7 +848,7 @@
   <div class="wrap">
     <div class="name">Gavin Shklanka</div>
     Master of Business Analytics, Sobey School of Business, Saint Mary's University.<br>
-    Black Point Analytics &middot; Blackpoint Lab &middot; MBAN 5630 Project 1.
+    Black Point Analytics &middot; Blackpoint Lab &middot; MBAN 5630 Projects 1 and 2.
   </div>
 </footer>
 
