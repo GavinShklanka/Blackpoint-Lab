@@ -170,6 +170,9 @@
   .navlink{font-size:14px;text-decoration:none;color:var(--ink-soft);font-weight:600}
   .navlink:hover{color:var(--forest)}
   @media (max-width:560px){ .navlink{display:none} }
+  .matrix .mm{display:none;color:var(--ink-soft);font-size:13px;font-weight:400;margin-top:5px;line-height:1.4;white-space:normal}
+  .matrix.show-mm .mm{display:block}
+  .matrix td:first-child,.matrix th:first-child{min-width:220px}
   @media (max-width:820px){ .p2stats{grid-template-columns:1fr} .split{grid-template-columns:1fr} }
 </style>
 </head>
@@ -654,6 +657,26 @@
   </div>
 </section>
 
+<!-- HOW A PATIENT MOVES THROUGH THE MODEL -->
+<section>
+  <div class="wrap">
+    <p class="kicker">How a patient moves through the model</p>
+    <h2>One pass through the system, step by step.</h2>
+    <ol style="max-width:66ch;padding-left:20px;line-height:1.7">
+      <li><b>Arrival and triage</b> (source, triage). A patient arrives on the real daily rhythm and is sorted by urgency on the five-level triage scale.</li>
+      <li><b>The diversion fork</b> (selectDivert, selectCommunity). A share of the lowest-urgency patients is routed out to community services and split across five channels.</li>
+      <li><b>Fast-track or physician</b> (selectFastTrack to the nurse-practitioner lane: ftQueue, ftSeize, ftService, ftRelease; or the main line: physicianQueue, seizeMD, physicianDelay, releaseMD). Quick cases clear through the NP lane; the rest wait for a physician and a bed.</li>
+      <li><b>Diagnostics</b> (diagnosticDelay). Tests and results add time before a disposition is decided.</li>
+      <li><b>The admission fork</b> (selectAdmit). Most patients are discharged (releaseBedDisc, tisEndDisc, dischargeSink). Some are admitted and continue.</li>
+      <li><b>Boarding</b> (boardDelay, seizeWardBg_ED, releaseBedAdmit). The admitted patient waits for a ward bed while still holding an ED bed. This is the back-door jam, and the clock for admitted time in the ED stops here (tisEndAdmit).</li>
+      <li><b>The ward stay</b> (acuteHold). The patient occupies a ward bed for the clinical length of stay.</li>
+      <li><b>The long-stay fork</b> (selectALC). Most patients finish and leave (releaseWardBg_ED, admitSink). The long-stay few seize a placement slot and wait (seizeDischargeDest, alcPlacementHold for the 115-day placement wait, releaseDischargeDest, releaseWardBgALC), holding the ward bed the whole time.</li>
+      <li><b>The background ward census</b> (wardDemandSource, seizeWardBg, wardHoldBg, releaseWardBg). A steady stream of inpatient admissions from the rest of the system keeps the ward realistically full, so the ED competes for real beds.</li>
+      <li><b>Measurement</b> (tisStart at arrival, tisEndAdmit and tisEndDisc at exit). Time in the system is measured at the ED exit, not after the ward stay, so the numbers describe the emergency-department experience.</li>
+    </ol>
+  </div>
+</section>
+
 <!-- COMPARISON: MATRIX + CHARTS -->
 <section>
   <div class="wrap">
@@ -675,25 +698,26 @@
       <button class="mtx-tab" data-bucket="full">How full the building is</button>
       <button class="mtx-tab" data-bucket="flow">How fast it moves</button>
     </div>
+    <button class="mtx-tab" id="mmToggle" style="margin-bottom:14px">Show plain meanings</button>
     <div class="tablewrap">
       <table class="matrix"><thead><tr>
         <th>Metric (plain meaning)</th><th class="num">Baseline</th><th class="num">Diversion</th><th class="num">Fast-track</th><th class="num">Speed-162</th><th class="num">Beds-234</th><th class="num">Beds+Speed</th><th class="num" style="color:#fff;background:var(--forest)">Combined</th>
       </tr></thead><tbody>
-        <tr data-bucket="wait"><td>Admitted time in ED, hours</td><td class="num">30.43 ± 0.39</td><td class="num">29.73 ± 0.51</td><td class="num">29.85 ± 0.51</td><td class="num">28.65 ± 0.22</td><td class="num">28.04 ± 0.15</td><td class="num">28.04 ± 0.15</td><td class="num hi">28.04 ± 0.19</td></tr>
-        <tr data-bucket="wait"><td>Door-to-doctor, average (h)</td><td class="num">5.97 ± 0.08</td><td class="num">5.70 ± 0.16</td><td class="num">5.17 ± 0.19</td><td class="num">5.65 ± 0.11</td><td class="num">5.47 ± 0.10</td><td class="num">5.47 ± 0.10</td><td class="num hi">4.77 ± 0.16</td></tr>
-        <tr data-bucket="wait"><td>Door-to-doctor, 90th percentile (h)</td><td class="num">15.81 ± 0.38</td><td class="num">15.24 ± 0.33</td><td class="num">14.74 ± 0.51</td><td class="num">14.91 ± 0.23</td><td class="num">14.51 ± 0.23</td><td class="num">14.51 ± 0.23</td><td class="num hi">13.55 ± 0.47</td></tr>
-        <tr data-bucket="wait"><td>Door-to-doctor, longest (h)</td><td class="num">40.09 ± 0.35</td><td class="num">39.68 ± 0.54</td><td class="num">28.30 ± 0.45</td><td class="num">39.86 ± 0.40</td><td class="num">40.20 ± 0.30</td><td class="num">40.20 ± 0.30</td><td class="num hi">27.34 ± 0.57</td></tr>
-        <tr data-bucket="wait"><td>Admitted time in ED, longest (h)</td><td class="num">82.83 ± 3.83</td><td class="num">75.70 ± 5.55</td><td class="num">80.72 ± 5.37</td><td class="num">67.67 ± 6.14</td><td class="num">53.92 ± 0.82</td><td class="num">53.92 ± 0.82</td><td class="num hi">54.93 ± 1.16</td></tr>
-        <tr data-bucket="leftbehind"><td>Walkouts, left without being seen (%)</td><td class="num">23.50 ± 0.78</td><td class="num">18.14 ± 1.03</td><td class="num">4.72 ± 0.63</td><td class="num">20.18 ± 0.76</td><td class="num">18.69 ± 0.53</td><td class="num">18.69 ± 0.53</td><td class="num hi">2.56 ± 0.23</td></tr>
-        <tr data-bucket="leftbehind"><td>Waited over 4 hours (%)</td><td class="num">45.03 ± 1.25</td><td class="num">44.75 ± 0.96</td><td class="num">40.70 ± 1.62</td><td class="num">43.43 ± 1.26</td><td class="num">43.05 ± 1.14</td><td class="num">43.05 ± 1.14</td><td class="num hi">39.70 ± 1.86</td></tr>
-        <tr data-bucket="full"><td>ED bed utilization (%)</td><td class="num">98.68 ± 0.08</td><td class="num">98.44 ± 0.15</td><td class="num">97.13 ± 0.25</td><td class="num">98.41 ± 0.13</td><td class="num">98.31 ± 0.13</td><td class="num">98.31 ± 0.13</td><td class="num hi">96.69 ± 0.23</td></tr>
-        <tr data-bucket="full"><td>Ward occupancy (%)</td><td class="num">91.41 ± 0.57</td><td class="num">90.49 ± 0.77</td><td class="num">90.88 ± 0.70</td><td class="num">88.06 ± 0.70</td><td class="num">64.17 ± 0.69</td><td class="num">61.18 ± 0.57</td><td class="num hi">61.33 ± 0.67</td></tr>
-        <tr data-bucket="flow"><td>Queue for a physician, average</td><td class="num">45.57 ± 0.83</td><td class="num">38.65 ± 1.32</td><td class="num">19.11 ± 0.94</td><td class="num">42.03 ± 1.07</td><td class="num">40.21 ± 0.85</td><td class="num">40.21 ± 0.85</td><td class="num hi">16.55 ± 0.65</td></tr>
-        <tr data-bucket="flow"><td>Queue for a physician, peak</td><td class="num">104.60 ± 2.62</td><td class="num">97.30 ± 2.40</td><td class="num">69.80 ± 3.69</td><td class="num">100.95 ± 3.13</td><td class="num">98.00 ± 1.60</td><td class="num">98.00 ± 1.60</td><td class="num hi">60.75 ± 1.76</td></tr>
-        <tr data-bucket="flow"><td>Throughput (per hour, ED-completed)</td><td class="num">3.38 ± 0.04</td><td class="num">3.41 ± 0.04</td><td class="num">4.21 ± 0.03</td><td class="num">3.53 ± 0.03</td><td class="num">3.59 ± 0.02</td><td class="num">3.59 ± 0.02</td><td class="num hi">4.11 ± 0.01</td></tr>
-        <tr data-bucket="flow"><td>Nurse-practitioner utilization (%)</td><td class="num">0</td><td class="num">0</td><td class="num">35.01 ± 0.23</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num hi">28.16 ± 0.21</td></tr>
-        <tr data-bucket="full"><td>ALC bed-day share (%)</td><td class="num">17.62 ± 0.74</td><td class="num">17.11 ± 0.79</td><td class="num">17.13 ± 0.83</td><td class="num">13.27 ± 0.53</td><td class="num">17.28 ± 0.60</td><td class="num">13.24 ± 0.52</td><td class="num hi">13.07 ± 0.54</td></tr>
-        <tr data-bucket="flow"><td>Fast-track served (per year)</td><td class="num">0</td><td class="num">0</td><td class="num">9,201</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num hi">7,398</td></tr>
+        <tr data-bucket="wait"><td>Admitted time in ED, hours<span class="mm">From walking in to leaving the ED for a ward bed upstairs. The back-door wait.</span></td><td class="num">30.43 ± 0.39</td><td class="num">29.73 ± 0.51</td><td class="num">29.85 ± 0.51</td><td class="num">28.65 ± 0.22</td><td class="num">28.04 ± 0.15</td><td class="num">28.04 ± 0.15</td><td class="num hi">28.04 ± 0.19</td></tr>
+        <tr data-bucket="wait"><td>Door-to-doctor, average (h)<span class="mm">From arrival to first seeing a provider, the typical case.</span></td><td class="num">5.97 ± 0.08</td><td class="num">5.70 ± 0.16</td><td class="num">5.17 ± 0.19</td><td class="num">5.65 ± 0.11</td><td class="num">5.47 ± 0.10</td><td class="num">5.47 ± 0.10</td><td class="num hi">4.77 ± 0.16</td></tr>
+        <tr data-bucket="wait"><td>Door-to-doctor, 90th percentile (h)<span class="mm">The wait the unlucky one in ten exceed. The tail the average hides.</span></td><td class="num">15.81 ± 0.38</td><td class="num">15.24 ± 0.33</td><td class="num">14.74 ± 0.51</td><td class="num">14.91 ± 0.23</td><td class="num">14.51 ± 0.23</td><td class="num">14.51 ± 0.23</td><td class="num hi">13.55 ± 0.47</td></tr>
+        <tr data-bucket="wait"><td>Door-to-doctor, longest (h)<span class="mm">The single worst wait that year.</span></td><td class="num">40.09 ± 0.35</td><td class="num">39.68 ± 0.54</td><td class="num">28.30 ± 0.45</td><td class="num">39.86 ± 0.40</td><td class="num">40.20 ± 0.30</td><td class="num">40.20 ± 0.30</td><td class="num hi">27.34 ± 0.57</td></tr>
+        <tr data-bucket="wait"><td>Admitted time in ED, longest (h)<span class="mm">The worst boarding case, the most extreme stranded-admit wait.</span></td><td class="num">82.83 ± 3.83</td><td class="num">75.70 ± 5.55</td><td class="num">80.72 ± 5.37</td><td class="num">67.67 ± 6.14</td><td class="num">53.92 ± 0.82</td><td class="num">53.92 ± 0.82</td><td class="num hi">54.93 ± 1.16</td></tr>
+        <tr data-bucket="leftbehind"><td>Walkouts, left without being seen (%)<span class="mm">Share of arrivals who leave before any provider sees them. The crisis number.</span></td><td class="num">23.50 ± 0.78</td><td class="num">18.14 ± 1.03</td><td class="num">4.72 ± 0.63</td><td class="num">20.18 ± 0.76</td><td class="num">18.69 ± 0.53</td><td class="num">18.69 ± 0.53</td><td class="num hi">2.56 ± 0.23</td></tr>
+        <tr data-bucket="leftbehind"><td>Waited over 4 hours (%)<span class="mm">Share whose wait to be seen passed the four-hour clinical target.</span></td><td class="num">45.03 ± 1.25</td><td class="num">44.75 ± 0.96</td><td class="num">40.70 ± 1.62</td><td class="num">43.43 ± 1.26</td><td class="num">43.05 ± 1.14</td><td class="num">43.05 ± 1.14</td><td class="num hi">39.70 ± 1.86</td></tr>
+        <tr data-bucket="full"><td>ED bed utilization (%)<span class="mm">How full the 22 staffed ED treatment beds are on average.</span></td><td class="num">98.68 ± 0.08</td><td class="num">98.44 ± 0.15</td><td class="num">97.13 ± 0.25</td><td class="num">98.41 ± 0.13</td><td class="num">98.31 ± 0.13</td><td class="num">98.31 ± 0.13</td><td class="num hi">96.69 ± 0.23</td></tr>
+        <tr data-bucket="full"><td>Ward occupancy (%)<span class="mm">How full the 162 inpatient ward beds are. Above 85 percent is the danger zone.</span></td><td class="num">91.41 ± 0.57</td><td class="num">90.49 ± 0.77</td><td class="num">90.88 ± 0.70</td><td class="num">88.06 ± 0.70</td><td class="num">64.17 ± 0.69</td><td class="num">61.18 ± 0.57</td><td class="num hi">61.33 ± 0.67</td></tr>
+        <tr data-bucket="flow"><td>Queue for a physician, average<span class="mm">Typical number of people waiting for a physician.</span></td><td class="num">45.57 ± 0.83</td><td class="num">38.65 ± 1.32</td><td class="num">19.11 ± 0.94</td><td class="num">42.03 ± 1.07</td><td class="num">40.21 ± 0.85</td><td class="num">40.21 ± 0.85</td><td class="num hi">16.55 ± 0.65</td></tr>
+        <tr data-bucket="flow"><td>Queue for a physician, peak<span class="mm">The worst-moment number waiting.</span></td><td class="num">104.60 ± 2.62</td><td class="num">97.30 ± 2.40</td><td class="num">69.80 ± 3.69</td><td class="num">100.95 ± 3.13</td><td class="num">98.00 ± 1.60</td><td class="num">98.00 ± 1.60</td><td class="num hi">60.75 ± 1.76</td></tr>
+        <tr data-bucket="flow"><td>Throughput (per hour, ED-completed)<span class="mm">Patients finishing ED care each hour, counting admitted, discharged, and fast-track.</span></td><td class="num">3.38 ± 0.04</td><td class="num">3.41 ± 0.04</td><td class="num">4.21 ± 0.03</td><td class="num">3.53 ± 0.03</td><td class="num">3.59 ± 0.02</td><td class="num">3.59 ± 0.02</td><td class="num hi">4.11 ± 0.01</td></tr>
+        <tr data-bucket="flow"><td>Nurse-practitioner utilization (%)<span class="mm">How busy the fast-track nurse-practitioner lane is.</span></td><td class="num">0</td><td class="num">0</td><td class="num">35.01 ± 0.23</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num hi">28.16 ± 0.21</td></tr>
+        <tr data-bucket="full"><td>ALC bed-day share (%)<span class="mm">Share of occupied ward beds held by patients ready to leave but waiting for placement.</span></td><td class="num">17.62 ± 0.74</td><td class="num">17.11 ± 0.79</td><td class="num">17.13 ± 0.83</td><td class="num">13.27 ± 0.53</td><td class="num">17.28 ± 0.60</td><td class="num">13.24 ± 0.52</td><td class="num hi">13.07 ± 0.54</td></tr>
+        <tr data-bucket="flow"><td>Fast-track served (per year)<span class="mm">Patients per year cleared through the nurse-practitioner lane.</span></td><td class="num">0</td><td class="num">0</td><td class="num">9,201</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num hi">7,398</td></tr>
       </tbody></table>
     </div>
 
@@ -782,13 +806,6 @@
     <p class="kicker">The community split</p>
     <h2>Where the diverted patients go.</h2>
     <p class="plain">Of the lower-urgency patients redirected from the emergency department, the model sends about a third to an urgent treatment centre, just over a third to community pharmacies for minor ailments, one in seven to virtual care, one in eight to a collaborative care clinic, and a small group, about five percent, to a referral path.</p>
-    <p>Patients are sorted on arrival by the Canadian Triage and Acuity Scale, the five-level urgency rating used across Canada. Levels 4 and 5 are the least urgent cases, sprains, minor infections, prescription renewals, and these are what community services are built to handle, which is why diverting a share of them is clinically appropriate, not a shortcut. The five destinations are real Nova Scotia programs: urgent treatment centres recorded about 60,611 visits provincewide in 2023-24, community pharmacies have a funded scope for minor ailments, VirtualCareNS connects patients to providers remotely, and collaborative care clinics take lower-acuity primary care.</p>
-    <dl class="gloss">
-      <div><dt>Urgent treatment centre, about a third</dt><dd>Walk-in care for injuries and acute-but-minor problems: musculoskeletal injuries, lacerations, mild mental-health needs.</dd></div>
-      <div><dt>Community pharmacy, just over a third</dt><dd>Minor ailments a pharmacist can assess and prescribe for: skin conditions, urinary infections, eye complaints, mild respiratory issues, and prescription renewals.</dd></div>
-      <div><dt>Virtual care, about one in seven</dt><dd>Remote assessment for low-acuity advice and pharmacy-eligible overflow.</dd></div>
-      <div><dt>Collaborative care clinic, about one in eight</dt><dd>Team-based primary care for non-specific and other low-acuity complaints.</dd></div>
-    </dl>
     <div class="split">
       <div class="figure" style="margin:0">
         <p class="fignum">Figure P2-4</p>
@@ -810,6 +827,17 @@
       </div>
       <div class="callout"><span class="lab">On the referral channel</span><p>That last group, about five percent, are the people who would hit a closed or fully booked service and risk coming back to the emergency department. The model counts how many are at that risk. It does not estimate whether they return, because it does not produce a return or readmission rate.</p></div>
     </div>
+
+    <h2 class="sub" style="margin-top:30px">What each channel is, and why it holds.</h2>
+    <p class="plain">Patients are sorted by the Canadian Triage and Acuity Scale. Levels 4 and 5, the less-urgent and non-urgent cases, are what community services are designed to treat, which is what makes the diversion clinically sound rather than a shortcut. Each channel is an existing Nova Scotia service, and the split follows the kinds of complaints each one is built for.</p>
+    <dl class="gloss">
+      <div><dt>Urgent treatment centre, 33 percent</dt><dd>Walk-in care for injuries and acute-but-minor problems: musculoskeletal injuries, lacerations, mild mental-health needs. Nova Scotia urgent treatment centres recorded about 60,611 visits in 2023-24, so the capacity to absorb this load is real, not hypothetical.</dd></div>
+      <div><dt>Community pharmacy, 36 percent</dt><dd>The largest channel, because pharmacists now have a funded scope for common conditions: skin complaints, urinary infections, eye issues, mild respiratory problems, and prescription renewals. These are high-volume, low-acuity visits that do not need an emergency department.</dd></div>
+      <div><dt>Virtual care, 14 percent</dt><dd>VirtualCareNS connects patients to a provider remotely, for low-acuity advice and the overflow a pharmacist could also handle.</dd></div>
+      <div><dt>Collaborative care clinic, 12 percent</dt><dd>Team-based primary care, a family physician working with nurses and other providers, for non-specific abdominal pain and other lower-acuity complaints that need an assessment but not emergency resources. It is the channel for patients who really need a primary-care visit they could not get, which is often why they came to the emergency department in the first place.</dd></div>
+      <div><dt>Referral, at risk, 5 percent</dt><dd>The honest channel. These are patients who would reach a closed or fully booked service and could bounce back to the emergency department. The model counts how many are at that risk; it does not claim whether they return, because it does not produce a return rate.</dd></div>
+    </dl>
+    <p class="tnote">The split itself is a Tier C assumption derived from the community resource docket's complaint categories and is swept, because the exact Cape Breton triage-4-and-5 complaint mix is not published.</p>
   </div>
 </section>
 
@@ -847,6 +875,25 @@
       </tbody>
     </table>
     <p class="tnote">Combined satisfies the ward-occupancy and walkout limits and still falls short on the ED-bed limit. That last gap is the honest residual above.</p>
+  </div>
+</section>
+
+<!-- FROM THE MODEL TO THE METRICS -->
+<section>
+  <div class="wrap">
+    <p class="kicker">How the build maps to the numbers</p>
+    <h2>Every metric is measured off a real part of the model.</h2>
+    <p class="plain">A number is only trustworthy if you can point to where it comes from. Each headline metric is read directly from a block or a resource pool on the canvas, not computed on the side.</p>
+    <dl class="gloss">
+      <div><dt>Door-to-doctor wait</dt><dd>The clock from triage (tisStart) to the moment a provider is seized (the physician or fast-track service). It measures the waiting room, nothing after.</dd></div>
+      <div><dt>Walkouts (LWBS)</dt><dd>The count at lwbsSink over arrivals. A patient leaves when the wait exceeds their patience, set by triage level (patienceByCtas), so the walkout rate is an emergent result, not an input.</dd></div>
+      <div><dt>Admitted time in ED</dt><dd>tisStart to tisEndAdmit, which sits before the ward stay (acuteHold). The metric describes the emergency-department experience, including boarding, and deliberately stops at the ED exit.</dd></div>
+      <div><dt>Ward occupancy and the acute-versus-ALC split</dt><dd>Read from wardPool utilization() as a year-long time average, separated by the long-stay flag, so it is a true bed-day share rather than an end-of-run snapshot.</dd></div>
+      <div><dt>ALC bed-day share</dt><dd>Long-stay beds over total occupied ward beds, the same definition national reporting uses, which is why it can be compared to the 17 to 28 percent band.</dd></div>
+      <div><dt>ED bed utilization</dt><dd>bedPool utilization(), the share of the 22 staffed beds in use.</dd></div>
+      <div><dt>Throughput</dt><dd>Every patient who completes care, counted at dischargeSink, admitSink, and ftSink, divided by time. The fast-track term is zero when the lane is off, so the same measure is correct in every scenario.</dd></div>
+    </dl>
+    <div class="callout"><span class="lab">Why it is reproducible</span><p>Every scenario runs twenty times with a fixed per-replication seed, so the same scenario gives the same result and the differences between scenarios are tested with confidence intervals, not eyeballed. The baseline reproduces identically across the two builds, which is the check that the model was not quietly changed between runs.</p></div>
   </div>
 </section>
 
@@ -904,9 +951,9 @@
       document.getElementById(b.dataset.cmp).classList.add('show');
     });
   });
-  document.querySelectorAll('.mtx-tab').forEach(function(b){
+  document.querySelectorAll('.mtx-tab[data-bucket]').forEach(function(b){
     b.addEventListener('click',function(){
-      document.querySelectorAll('.mtx-tab').forEach(function(x){x.classList.remove('active');});
+      document.querySelectorAll('.mtx-tab[data-bucket]').forEach(function(x){x.classList.remove('active');});
       b.classList.add('active');
       var k=b.dataset.bucket;
       document.querySelectorAll('table.matrix tbody tr').forEach(function(tr){
@@ -914,6 +961,13 @@
       });
     });
   });
+  var mt=document.getElementById('mmToggle');
+  if(mt){mt.addEventListener('click',function(){
+    var t=document.querySelector('table.matrix');
+    var on=t.classList.toggle('show-mm');
+    mt.classList.toggle('active',on);
+    mt.textContent=on?'Hide plain meanings':'Show plain meanings';
+  });}
 </script>
 </body>
 </html>
