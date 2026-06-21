@@ -627,17 +627,17 @@
     <p>Four changes were tested. The department turns out to have two separate jams that need two separate fixes.</p>
 
     <h2 class="sub" style="margin-top:34px">The two-door finding.</h2>
-    <p class="plain">The back door is the admitted-patient wait for a ward bed, called boarding. Only one thing moves it: adding ward beds. Seventy-two more beds cut that wait from about 30 hours to 28 and emptied the ward from 91 percent full to 61.</p>
-    <p>The front door is the waiting room, where people sit and some leave. Two things move it: a fast-track lane staffed by a nurse practitioner, and sending lower-urgency patients to community services. The fast-track lane alone cut walkouts from about 23 percent to under 5. Run all four changes together and walkouts fall to under 3 percent, the admitted wait holds at 28 hours, and the ward sits at 61 percent.</p>
+    <p class="plain">The back door is the admitted-patient wait for a ward bed, called boarding. Adding ward beds is the dominant lever for it: seventy-two more beds cut that wait from 29.8 hours to 28.0 and dropped the ward from 90.7 percent full to 64.3. Faster long-term-care placement is a partial substitute, trimming the admitted wait about 1.11 hours at the current bed count, roughly three-fifths of the 1.79 hours the beds deliver, by freeing the ward beds long-stay patients block.</p>
+    <p>The front door is the waiting room, where people sit and some leave. Two changes move it: a fast-track lane staffed by a nurse practitioner, and sending lower-urgency patients to community services. The fast-track lane alone cut walkouts from 22.3 percent to 4.3. Run all four changes together and walkouts fall to 2.4 percent, the admitted wait settles at 27.8 hours, and the ward sits at 61.1 percent. The separation between the two doors is dominant, not absolute: the bed change also trims walkouts about 3.6 points and diversion about 3.9, as smaller cross-effects.</p>
 
     <div class="stats p2stats">
-      <div class="stat alarm"><div class="num">2.6%</div><div class="lab">walkouts (left without being seen)</div><div class="from">from 23.5%</div></div>
-      <div class="stat"><div class="num">28 h</div><div class="lab">admitted-patient wait for a ward bed</div><div class="from">from about 30 h</div></div>
-      <div class="stat"><div class="num">61%</div><div class="lab">ward occupancy, now below the 85% safe line</div><div class="from">from 91%</div></div>
+      <div class="stat alarm"><div class="num">2.36%</div><div class="lab">walkouts (left without being seen)</div><div class="from">from 22.32%</div></div>
+      <div class="stat"><div class="num">27.84 h</div><div class="lab">admitted-patient wait for a ward bed</div><div class="from">from 29.82 h</div></div>
+      <div class="stat"><div class="num">61.1%</div><div class="lab">ward occupancy, now below the 85% safe line</div><div class="from">from 90.7%</div></div>
     </div>
     <p class="figcap" style="margin-top:14px"><b>All four changes together.</b> Mean of twenty runs with 95% confidence intervals.</p>
 
-    <div class="callout ext"><span class="lab">The reversal, stated honestly</span><p>Adding beds was expected to fail, on the theory that long-stay patients waiting for nursing-home placement would quietly refill them. At Cape Breton's placement levels, that did not happen. The new beds worked and stayed largely empty. Freeing the long-stay beds is a separate lever: faster nursing-home placement, which recovered about eight blocked beds without changing the emergency-department numbers at all. This is realistic because Cape Breton's typical placement wait is about 115 days against a provincial average near 75; closing that gap is the lever, and in the model it freed about eight ward beds and dropped the long-stay share from about 17 percent to 13.</p></div>
+    <div class="callout ext"><span class="lab">The reversal, stated honestly</span><p>Adding beds was expected to fail, on the theory that long-stay patients waiting for nursing-home placement would quietly refill them. At Cape Breton's placement levels, that did not happen. The new beds worked and stayed largely empty. Freeing the long-stay beds is a separate lever: faster nursing-home placement, which recovered about seven blocked beds without changing the emergency-department numbers at all. This is realistic because Cape Breton's typical placement wait is about 115 days against a provincial average near 75; closing that gap is the lever, and in the model it freed about seven ward beds, roughly 23 down to 16, and dropped the long-stay share of ward beds from about 15.4 percent to 11.5.</p></div>
   </div>
 </section>
 
@@ -745,27 +745,29 @@
       <table class="matrix"><thead><tr>
         <th>Metric (plain meaning)</th><th class="num">Baseline</th><th class="num">Diversion</th><th class="num">Fast-track</th><th class="num">Speed-162</th><th class="num">Beds-234</th><th class="num">Beds+Speed</th><th class="num" style="color:#fff;background:var(--forest)">Combined</th>
       </tr></thead><tbody>
-        <tr data-bucket="wait"><td>Admitted time in ED, hours<span class="mm">From walking in to leaving the ED for a ward bed upstairs. The back-door wait.</span></td><td class="num">30.43 ± 0.39</td><td class="num">29.73 ± 0.51</td><td class="num">29.85 ± 0.51</td><td class="num">28.65 ± 0.22</td><td class="num">28.04 ± 0.15</td><td class="num">28.04 ± 0.15</td><td class="num hi">28.04 ± 0.19</td></tr>
-        <tr data-bucket="wait"><td>Door-to-doctor, average (h)<span class="mm">From arrival to first seeing a provider, the typical case.</span></td><td class="num">5.97 ± 0.08</td><td class="num">5.70 ± 0.16</td><td class="num">5.17 ± 0.19</td><td class="num">5.65 ± 0.11</td><td class="num">5.47 ± 0.10</td><td class="num">5.47 ± 0.10</td><td class="num hi">4.77 ± 0.16</td></tr>
-        <tr data-bucket="wait"><td>Door-to-doctor, 90th percentile (h)<span class="mm">The wait the unlucky one in ten exceed. The tail the average hides.</span></td><td class="num">15.81 ± 0.38</td><td class="num">15.24 ± 0.33</td><td class="num">14.74 ± 0.51</td><td class="num">14.91 ± 0.23</td><td class="num">14.51 ± 0.23</td><td class="num">14.51 ± 0.23</td><td class="num hi">13.55 ± 0.47</td></tr>
-        <tr data-bucket="wait"><td>Door-to-doctor, longest (h)<span class="mm">The single worst wait that year.</span></td><td class="num">40.09 ± 0.35</td><td class="num">39.68 ± 0.54</td><td class="num">28.30 ± 0.45</td><td class="num">39.86 ± 0.40</td><td class="num">40.20 ± 0.30</td><td class="num">40.20 ± 0.30</td><td class="num hi">27.34 ± 0.57</td></tr>
-        <tr data-bucket="wait"><td>Admitted time in ED, longest (h)<span class="mm">The worst boarding case, the most extreme stranded-admit wait.</span></td><td class="num">82.83 ± 3.83</td><td class="num">75.70 ± 5.55</td><td class="num">80.72 ± 5.37</td><td class="num">67.67 ± 6.14</td><td class="num">53.92 ± 0.82</td><td class="num">53.92 ± 0.82</td><td class="num hi">54.93 ± 1.16</td></tr>
-        <tr data-bucket="leftbehind"><td>Walkouts, left without being seen (%)<span class="mm">Share of arrivals who leave before any provider sees them. The crisis number.</span></td><td class="num">23.50 ± 0.78</td><td class="num">18.14 ± 1.03</td><td class="num">4.72 ± 0.63</td><td class="num">20.18 ± 0.76</td><td class="num">18.69 ± 0.53</td><td class="num">18.69 ± 0.53</td><td class="num hi">2.56 ± 0.23</td></tr>
-        <tr data-bucket="leftbehind"><td>Waited over 4 hours (%)<span class="mm">Share whose wait to be seen passed the four-hour clinical target.</span></td><td class="num">45.03 ± 1.25</td><td class="num">44.75 ± 0.96</td><td class="num">40.70 ± 1.62</td><td class="num">43.43 ± 1.26</td><td class="num">43.05 ± 1.14</td><td class="num">43.05 ± 1.14</td><td class="num hi">39.70 ± 1.86</td></tr>
-        <tr data-bucket="full"><td>ED bed utilization (%)<span class="mm">How full the 22 staffed ED treatment beds are on average.</span></td><td class="num">98.68 ± 0.08</td><td class="num">98.44 ± 0.15</td><td class="num">97.13 ± 0.25</td><td class="num">98.41 ± 0.13</td><td class="num">98.31 ± 0.13</td><td class="num">98.31 ± 0.13</td><td class="num hi">96.69 ± 0.23</td></tr>
-        <tr data-bucket="full"><td>Ward occupancy (%)<span class="mm">How full the 162 inpatient ward beds are. Above 85 percent is the danger zone.</span></td><td class="num">91.41 ± 0.57</td><td class="num">90.49 ± 0.77</td><td class="num">90.88 ± 0.70</td><td class="num">88.06 ± 0.70</td><td class="num">64.17 ± 0.69</td><td class="num">61.18 ± 0.57</td><td class="num hi">61.33 ± 0.67</td></tr>
-        <tr data-bucket="flow"><td>Queue for a physician, average<span class="mm">Typical number of people waiting for a physician.</span></td><td class="num">45.57 ± 0.83</td><td class="num">38.65 ± 1.32</td><td class="num">19.11 ± 0.94</td><td class="num">42.03 ± 1.07</td><td class="num">40.21 ± 0.85</td><td class="num">40.21 ± 0.85</td><td class="num hi">16.55 ± 0.65</td></tr>
-        <tr data-bucket="flow"><td>Queue for a physician, peak<span class="mm">The worst-moment number waiting.</span></td><td class="num">104.60 ± 2.62</td><td class="num">97.30 ± 2.40</td><td class="num">69.80 ± 3.69</td><td class="num">100.95 ± 3.13</td><td class="num">98.00 ± 1.60</td><td class="num">98.00 ± 1.60</td><td class="num hi">60.75 ± 1.76</td></tr>
-        <tr data-bucket="flow"><td>Throughput (per hour, ED-completed)<span class="mm">Patients finishing ED care each hour, counting admitted, discharged, and fast-track.</span></td><td class="num">3.38 ± 0.04</td><td class="num">3.41 ± 0.04</td><td class="num">4.21 ± 0.03</td><td class="num">3.53 ± 0.03</td><td class="num">3.59 ± 0.02</td><td class="num">3.59 ± 0.02</td><td class="num hi">4.11 ± 0.01</td></tr>
-        <tr data-bucket="flow"><td>Nurse-practitioner utilization (%)<span class="mm">How busy the fast-track nurse-practitioner lane is.</span></td><td class="num">0</td><td class="num">0</td><td class="num">35.01 ± 0.23</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num hi">28.16 ± 0.21</td></tr>
-        <tr data-bucket="full"><td>ALC bed-day share (%)<span class="mm">Share of occupied ward beds held by patients ready to leave but waiting for placement.</span></td><td class="num">17.62 ± 0.74</td><td class="num">17.11 ± 0.79</td><td class="num">17.13 ± 0.83</td><td class="num">13.27 ± 0.53</td><td class="num">17.28 ± 0.60</td><td class="num">13.24 ± 0.52</td><td class="num hi">13.07 ± 0.54</td></tr>
-        <tr data-bucket="flow"><td>Fast-track served (per year)<span class="mm">Patients per year cleared through the nurse-practitioner lane.</span></td><td class="num">0</td><td class="num">0</td><td class="num">9,201</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num hi">7,398</td></tr>
+        <tr data-bucket="wait"><td>Admitted time in ED, hours<span class="mm">From walking in to leaving the ED for a ward bed upstairs. The back-door wait.</span></td><td class="num">29.82 ± 0.42</td><td class="num">29.90 ± 0.38</td><td class="num">29.58 ± 0.46</td><td class="num">28.71 ± 0.28</td><td class="num">28.03 ± 0.10</td><td class="num">28.03 ± 0.10</td><td class="num hi">27.84 ± 0.15</td></tr>
+        <tr data-bucket="wait"><td>Admitted time in ED, longest (h)<span class="mm">The worst boarding case, the most extreme stranded-admit wait.</span></td><td class="num">75.5 ± 4.2</td><td class="num">77.4 ± 2.9</td><td class="num">75.1 ± 4.3</td><td class="num">67.6 ± 4.6</td><td class="num">53.7 ± 0.9</td><td class="num">53.7 ± 0.9</td><td class="num hi">53.8 ± 1.2</td></tr>
+        <tr data-bucket="wait"><td>Discharged patient ED time (h)<span class="mm">Total ED time for a patient sent home rather than admitted.</span></td><td class="num">9.16 ± 0.13</td><td class="num">9.02 ± 0.13</td><td class="num">8.60 ± 0.17</td><td class="num">8.96 ± 0.15</td><td class="num">8.76 ± 0.09</td><td class="num">8.76 ± 0.09</td><td class="num hi">7.99 ± 0.13</td></tr>
+        <tr data-bucket="wait"><td>Door-to-doctor, average (h)<span class="mm">From arrival to first seeing a provider, the typical case.</span></td><td class="num">5.84 ± 0.12</td><td class="num">5.69 ± 0.12</td><td class="num">5.17 ± 0.17</td><td class="num">5.63 ± 0.14</td><td class="num">5.45 ± 0.08</td><td class="num">5.45 ± 0.08</td><td class="num hi">4.58 ± 0.13</td></tr>
+        <tr data-bucket="wait"><td>Door-to-doctor, 90th percentile (h)<span class="mm">The wait the unlucky one in ten exceed. The tail the average hides.</span></td><td class="num">15.51 ± 0.36</td><td class="num">15.37 ± 0.38</td><td class="num">14.59 ± 0.54</td><td class="num">15.05 ± 0.32</td><td class="num">14.66 ± 0.38</td><td class="num">14.66 ± 0.38</td><td class="num hi">13.42 ± 0.26</td></tr>
+        <tr data-bucket="wait"><td>Door-to-doctor, longest (h)<span class="mm">The single worst wait that year.</span></td><td class="num">39.9 ± 0.3</td><td class="num">39.8 ± 0.5</td><td class="num">27.7 ± 0.5</td><td class="num">40.2 ± 0.3</td><td class="num">40.2 ± 0.3</td><td class="num">40.2 ± 0.3</td><td class="num hi">26.9 ± 0.4</td></tr>
+        <tr data-bucket="leftbehind"><td>Walkouts, left without being seen (%)<span class="mm">Share of arrivals who leave before any provider sees them. The crisis number.</span></td><td class="num">22.32 ± 0.98</td><td class="num">18.44 ± 0.76</td><td class="num">4.26 ± 0.52</td><td class="num">20.18 ± 0.85</td><td class="num">18.76 ± 0.42</td><td class="num">18.76 ± 0.42</td><td class="num hi">2.36 ± 0.21</td></tr>
+        <tr data-bucket="leftbehind"><td>Waited over 4 hours (%)<span class="mm">Share whose wait to be seen passed the four-hour clinical target.</span></td><td class="num">44.6 ± 1.5</td><td class="num">45.0 ± 1.3</td><td class="num">41.7 ± 1.6</td><td class="num">44.7 ± 1.1</td><td class="num">43.0 ± 1.1</td><td class="num">43.0 ± 1.1</td><td class="num hi">38.1 ± 1.0</td></tr>
+        <tr data-bucket="full"><td>ED bed utilization (%)<span class="mm">How full the 22 staffed ED treatment beds are on average.</span></td><td class="num">98.53</td><td class="num">98.35</td><td class="num">97.29</td><td class="num">98.45</td><td class="num">98.27</td><td class="num">98.27</td><td class="num hi">96.57</td></tr>
+        <tr data-bucket="full"><td>Ward occupancy (%)<span class="mm">How full the inpatient ward beds are, 162 at baseline and 234 expanded. Above 85 percent is the danger zone.</span></td><td class="num">90.73</td><td class="num">90.64</td><td class="num">90.49</td><td class="num">87.95</td><td class="num">64.26</td><td class="num">61.24</td><td class="num hi">61.09</td></tr>
+        <tr data-bucket="full"><td>Long-stay (ALC) beds, time-average<span class="mm">Average number of ward beds held by long-stay patients at any moment.</span></td><td class="num">22.7</td><td class="num">22.4</td><td class="num">22.0</td><td class="num">16.2</td><td class="num">23.6</td><td class="num">16.5</td><td class="num hi">16.6</td></tr>
+        <tr data-bucket="full"><td>Acute beds, time-average<span class="mm">Average number of ward beds in genuine acute use.</span></td><td class="num">124</td><td class="num">124</td><td class="num">125</td><td class="num">126</td><td class="num">127</td><td class="num">127</td><td class="num hi">126</td></tr>
+        <tr data-bucket="full"><td>ALC bed-day share (%)<span class="mm">Share of occupied ward beds held by patients ready to leave but waiting for placement.</span></td><td class="num">15.44</td><td class="num">15.24</td><td class="num">14.98</td><td class="num">11.38</td><td class="num">15.65</td><td class="num">11.49</td><td class="num hi">11.62</td></tr>
+        <tr data-bucket="flow"><td>Queue for a physician, average<span class="mm">Typical number of people waiting for a physician.</span></td><td class="num">44.2 ± 1.2</td><td class="num">38.7 ± 1.0</td><td class="num">18.8 ± 0.8</td><td class="num">41.9 ± 1.2</td><td class="num">40.1 ± 0.7</td><td class="num">40.1 ± 0.7</td><td class="num hi">15.8 ± 0.6</td></tr>
+        <tr data-bucket="flow"><td>Throughput (per hour, ED-completed)<span class="mm">Patients finishing ED care each hour, counting admitted, discharged, and fast-track.</span></td><td class="num">3.44</td><td class="num">3.39</td><td class="num">4.24</td><td class="num">3.53</td><td class="num">3.58</td><td class="num">3.58</td><td class="num hi">4.11</td></tr>
+        <tr data-bucket="flow"><td>Nurse-practitioner utilization (%)<span class="mm">How busy the fast-track nurse-practitioner lane is.</span></td><td class="num">0</td><td class="num">0</td><td class="num">35.07</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num hi">28.13</td></tr>
+        <tr data-bucket="flow"><td>Fast-track served (per year)<span class="mm">Patients per year cleared through the nurse-practitioner lane.</span></td><td class="num">0</td><td class="num">0</td><td class="num">9,217</td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num hi">7,391</td></tr>
       </tbody></table>
     </div>
 
     <p class="tnote"><b>Scenario key.</b> Baseline is the current state. Diversion sends 20 percent of lower-urgency patients to community care. Fast-track turns on the nurse-practitioner lane. Speed-162 finds nursing-home placements faster at the current bed count. Beds-234 adds 72 ward beds. Beds+Speed adds the 72 beds and faster placement. Combined runs all four changes together. ALC means Alternate Level of Care, a patient ready to leave who stays because no placement is available.</p>
 
-    <div class="callout"><span class="lab">How we know</span><p>The baseline reproduces identically across the backend and frontend builds using common random numbers. At 234 beds, faster placement leaves the emergency-department numbers identical and moves only the long-stay share, which proves the two-door split directly. Combined admitted time in ED, 28.04 hours, equals beds alone at 28.04 hours, so the levers compose cleanly with no interaction anomaly.</p></div>
+    <div class="callout"><span class="lab">How we know</span><p>The baseline reproduces identically across the backend and frontend builds using common random numbers. At 234 beds, faster placement leaves the emergency-department numbers identical and moves only the long-stay share, which proves the two-door split directly. Combined admitted time in ED, 27.84 hours, sits just below beds alone at 28.03 hours, so the levers compose cleanly with no interaction anomaly.</p></div>
 
     <div class="split">
       <div class="figure" style="margin:0">
@@ -775,16 +777,16 @@
         <text class="axis" x="62" y="334" text-anchor="end">0</text><text class="axis" x="62" y="278.2" text-anchor="end">5</text><text class="axis" x="62" y="222.5" text-anchor="end">10</text><text class="axis" x="62" y="166.7" text-anchor="end">15</text><text class="axis" x="62" y="110.9" text-anchor="end">20</text><text class="axis" x="62" y="55.2" text-anchor="end">25%</text>
         <line class="baseaxis" x1="70" y1="330" x2="70" y2="36"/>
         <g class="err">
-          <line x1="115" y1="59.1" x2="115" y2="76.7"/><line x1="108" y1="59.1" x2="122" y2="59.1"/><line x1="108" y1="76.7" x2="122" y2="76.7"/>
-          <line x1="205" y1="116.2" x2="205" y2="139.2"/><line x1="198" y1="116.2" x2="212" y2="116.2"/><line x1="198" y1="139.2" x2="212" y2="139.2"/>
-          <line x1="295" y1="270.3" x2="295" y2="284.4"/><line x1="288" y1="270.3" x2="302" y2="270.3"/><line x1="288" y1="284.4" x2="302" y2="284.4"/>
-          <line x1="385" y1="96.4" x2="385" y2="113.4"/><line x1="378" y1="96.4" x2="392" y2="96.4"/><line x1="378" y1="113.4" x2="392" y2="113.4"/>
-          <line x1="475" y1="115.7" x2="475" y2="127.5"/><line x1="468" y1="115.7" x2="482" y2="115.7"/><line x1="468" y1="127.5" x2="482" y2="127.5"/>
-          <line x1="565" y1="115.7" x2="565" y2="127.5"/><line x1="558" y1="115.7" x2="572" y2="115.7"/><line x1="558" y1="127.5" x2="572" y2="127.5"/>
-          <line x1="655" y1="298.9" x2="655" y2="304.0"/><line x1="648" y1="298.9" x2="662" y2="298.9"/><line x1="648" y1="304.0" x2="662" y2="304.0"/>
+          <line x1="115" y1="70.0" x2="115" y2="91.9"/><line x1="108" y1="70.0" x2="122" y2="70.0"/><line x1="108" y1="91.9" x2="122" y2="91.9"/>
+          <line x1="205" y1="115.9" x2="205" y2="132.8"/><line x1="198" y1="115.9" x2="212" y2="115.9"/><line x1="198" y1="132.8" x2="212" y2="132.8"/>
+          <line x1="295" y1="276.7" x2="295" y2="288.3"/><line x1="288" y1="276.7" x2="302" y2="276.7"/><line x1="288" y1="288.3" x2="302" y2="288.3"/>
+          <line x1="385" y1="95.4" x2="385" y2="114.4"/><line x1="378" y1="95.4" x2="392" y2="95.4"/><line x1="378" y1="114.4" x2="392" y2="114.4"/>
+          <line x1="475" y1="116.1" x2="475" y2="125.4"/><line x1="468" y1="116.1" x2="482" y2="116.1"/><line x1="468" y1="125.4" x2="482" y2="125.4"/>
+          <line x1="565" y1="116.1" x2="565" y2="125.4"/><line x1="558" y1="116.1" x2="572" y2="116.1"/><line x1="558" y1="125.4" x2="572" y2="125.4"/>
+          <line x1="655" y1="301.3" x2="655" y2="306.0"/><line x1="648" y1="301.3" x2="662" y2="301.3"/><line x1="648" y1="306.0" x2="662" y2="306.0"/>
         </g>
-        <circle cx="115" cy="67.9" r="6" fill="#9AA09A"/><circle cx="205" cy="127.7" r="6" fill="#3E6B8C"/><circle cx="295" cy="277.4" r="6" fill="#3DA468"/><circle cx="385" cy="104.9" r="6" fill="#D69A3C"/><circle cx="475" cy="121.6" r="6" fill="#D69A3C"/><circle cx="565" cy="121.6" r="6" fill="#D69A3C"/><circle cx="655" cy="301.5" r="6" fill="#143524"/>
-        <g class="val" style="font-size:13px" text-anchor="middle"><text x="115" y="51">23.50</text><text x="205" y="108">18.14</text><text x="295" y="262">4.72</text><text x="385" y="88">20.18</text><text x="475" y="107">18.69</text><text x="565" y="107">18.69</text><text x="655" y="291">2.56</text></g>
+        <circle cx="115" cy="81.0" r="6" fill="#9AA09A"/><circle cx="205" cy="124.3" r="6" fill="#3E6B8C"/><circle cx="295" cy="282.5" r="6" fill="#3DA468"/><circle cx="385" cy="104.9" r="6" fill="#D69A3C"/><circle cx="475" cy="120.8" r="6" fill="#D69A3C"/><circle cx="565" cy="120.8" r="6" fill="#D69A3C"/><circle cx="655" cy="303.7" r="6" fill="#143524"/>
+        <g class="val" style="font-size:13px" text-anchor="middle"><text x="115" y="62">22.32</text><text x="205" y="108">18.44</text><text x="295" y="269">4.26</text><text x="385" y="88">20.18</text><text x="475" y="108">18.76</text><text x="565" y="108">18.76</text><text x="655" y="294">2.36</text></g>
         <g class="axis" style="font-size:11.5px" text-anchor="middle"><text x="115" y="352">Baseline</text><text x="205" y="352">Diversion</text><text x="295" y="352">Fast-track</text><text x="385" y="352">Speed-162</text><text x="475" y="352">Beds-234</text><text x="565" y="352">Beds+Speed</text><text x="655" y="352">Combined</text></g>
       </svg>
       <p class="figcap"><b>The front-door levers and the combined package crush walkouts.</b> The bed-only scenarios move them only modestly.</p>
@@ -804,23 +806,23 @@
         <text class="axis" x="62" y="334" text-anchor="end">27</text><text class="axis" x="62" y="261.5" text-anchor="end">28</text><text class="axis" x="62" y="189" text-anchor="end">29</text><text class="axis" x="62" y="116.5" text-anchor="end">30</text><text class="axis" x="62" y="44" text-anchor="end">31 h</text>
         <line class="baseaxis" x1="70" y1="330" x2="70" y2="36"/>
         <g class="err">
-          <line x1="115" y1="53.1" x2="115" y2="109.6"/><line x1="108" y1="53.1" x2="122" y2="53.1"/><line x1="108" y1="109.6" x2="122" y2="109.6"/>
-          <line x1="205" y1="94.5" x2="205" y2="169.1"/><line x1="198" y1="94.5" x2="212" y2="94.5"/><line x1="198" y1="169.1" x2="212" y2="169.1"/>
-          <line x1="295" y1="86.4" x2="295" y2="160.4"/><line x1="288" y1="86.4" x2="302" y2="86.4"/><line x1="288" y1="160.4" x2="302" y2="160.4"/>
-          <line x1="385" y1="194.4" x2="385" y2="226.3"/><line x1="378" y1="194.4" x2="392" y2="194.4"/><line x1="378" y1="226.3" x2="392" y2="226.3"/>
-          <line x1="475" y1="243.7" x2="475" y2="265.5"/><line x1="468" y1="243.7" x2="482" y2="243.7"/><line x1="468" y1="265.5" x2="482" y2="265.5"/>
-          <line x1="565" y1="243.7" x2="565" y2="265.5"/><line x1="558" y1="243.7" x2="572" y2="243.7"/><line x1="558" y1="265.5" x2="572" y2="265.5"/>
-          <line x1="655" y1="240.8" x2="655" y2="268.4"/><line x1="648" y1="240.8" x2="662" y2="240.8"/><line x1="648" y1="268.4" x2="662" y2="268.4"/>
+          <line x1="115" y1="95.1" x2="115" y2="156.0"/><line x1="108" y1="95.1" x2="122" y2="95.1"/><line x1="108" y1="156.0" x2="122" y2="156.0"/>
+          <line x1="205" y1="92.2" x2="205" y2="147.3"/><line x1="198" y1="92.2" x2="212" y2="92.2"/><line x1="198" y1="147.3" x2="212" y2="147.3"/>
+          <line x1="295" y1="109.1" x2="295" y2="176.3"/><line x1="288" y1="109.1" x2="302" y2="109.1"/><line x1="288" y1="176.3" x2="302" y2="176.3"/>
+          <line x1="385" y1="185.7" x2="385" y2="226.3"/><line x1="378" y1="185.7" x2="392" y2="185.7"/><line x1="378" y1="226.3" x2="392" y2="226.3"/>
+          <line x1="475" y1="248.1" x2="475" y2="262.6"/><line x1="468" y1="248.1" x2="482" y2="248.1"/><line x1="468" y1="262.6" x2="482" y2="262.6"/>
+          <line x1="565" y1="248.1" x2="565" y2="262.6"/><line x1="558" y1="248.1" x2="572" y2="248.1"/><line x1="558" y1="262.6" x2="572" y2="262.6"/>
+          <line x1="655" y1="258.2" x2="655" y2="280.0"/><line x1="648" y1="258.2" x2="662" y2="258.2"/><line x1="648" y1="280.0" x2="662" y2="280.0"/>
         </g>
-        <circle cx="115" cy="81.3" r="6" fill="#9AA09A"/><circle cx="205" cy="132.1" r="6" fill="#3E6B8C"/><circle cx="295" cy="123.4" r="6" fill="#3DA468"/><circle cx="385" cy="210.4" r="6" fill="#D69A3C"/><circle cx="475" cy="254.6" r="6" fill="#D69A3C"/><circle cx="565" cy="254.6" r="6" fill="#D69A3C"/><circle cx="655" cy="254.6" r="6" fill="#143524"/>
-        <g class="val" style="font-size:13px" text-anchor="middle"><text x="115" y="45">30.43</text><text x="205" y="86">29.73</text><text x="295" y="78">29.85</text><text x="385" y="186">28.65</text><text x="475" y="236">28.04</text><text x="565" y="236">28.04</text><text x="655" y="233">28.04</text></g>
+        <circle cx="115" cy="125.6" r="6" fill="#9AA09A"/><circle cx="205" cy="119.8" r="6" fill="#3E6B8C"/><circle cx="295" cy="143.0" r="6" fill="#3DA468"/><circle cx="385" cy="206.0" r="6" fill="#D69A3C"/><circle cx="475" cy="255.3" r="6" fill="#D69A3C"/><circle cx="565" cy="255.3" r="6" fill="#D69A3C"/><circle cx="655" cy="269.1" r="6" fill="#143524"/>
+        <g class="val" style="font-size:13px" text-anchor="middle"><text x="115" y="88">29.82</text><text x="205" y="85">29.90</text><text x="295" y="102">29.58</text><text x="385" y="178">28.71</text><text x="475" y="240">28.03</text><text x="565" y="240">28.03</text><text x="655" y="251">27.84</text></g>
         <g class="axis" style="font-size:11.5px" text-anchor="middle"><text x="115" y="352">Baseline</text><text x="205" y="352">Diversion</text><text x="295" y="352">Fast-track</text><text x="385" y="352">Speed-162</text><text x="475" y="352">Beds-234</text><text x="565" y="352">Beds+Speed</text><text x="655" y="352">Combined</text></g>
       </svg>
-      <p class="figcap"><b>Only beds move the back door.</b> The bed scenarios drop the admitted wait to 28 hours; the front-door levers leave it near 30. The vertical axis starts at 27 hours to show the step.</p>
+      <p class="figcap"><b>Beds are the dominant back-door lever, with faster placement a partial substitute.</b> Adding beds drops the admitted wait to 28.0 hours and faster placement reaches 28.7; the front-door levers leave it near 30. The separation is dominant, not absolute. The vertical axis starts at 27 hours to show the step.</p>
       </div>
       <div class="callout"><span class="lab">How to read this</span>
         <p>Same scenarios, same left-to-right order. Note the vertical axis starts at 27 hours to show the step.</p>
-        <p style="margin-top:10px">Now watch the opposite: the front-door changes barely move the admitted wait; only adding beds brings it down. The admitted wait is a back-door problem. This is the two-door story in two charts.</p>
+        <p style="margin-top:10px">Now watch the opposite: the front-door changes barely move the admitted wait. Adding beds is the dominant lever, and faster placement is a partial substitute that reaches most of the way. The admitted wait is a back-door problem. This is the two-door story in two charts.</p>
       </div>
     </div>
 
@@ -842,23 +844,23 @@
           <text x="60" y="102" text-anchor="end">200</text>
           <text x="60" y="44"  text-anchor="end">250</text>
         </g>
-        <rect x="145" y="188.5" width="110" height="141.5" fill="#b3c5ba"/>
-        <rect x="145" y="158.3" width="110" height="30.2" fill="#c8843c"/>
-        <rect x="145" y="142.0" width="110" height="16.3" fill="#e6e2d7"/>
+        <rect x="145" y="186.16" width="110" height="143.84" fill="#b3c5ba"/>
+        <rect x="145" y="159.48" width="110" height="26.68" fill="#c8843c"/>
+        <rect x="145" y="142.08" width="110" height="17.40" fill="#e6e2d7"/>
         <g style="font-size:11.5px;font-weight:700;fill:#1f2a24" text-anchor="middle">
-          <text x="200" y="263">122</text><text x="200" y="178" fill="#fff">26</text><text x="200" y="154">14</text>
+          <text x="200" y="262">124</text><text x="200" y="176" fill="#fff">23</text><text x="200" y="153">15</text>
         </g>
-        <rect x="325" y="186.2" width="110" height="143.8" fill="#b3c5ba"/>
-        <rect x="325" y="156.0" width="110" height="30.2" fill="#c8843c"/>
-        <rect x="325" y="58.6"  width="110" height="97.4" fill="#e6e2d7"/>
+        <rect x="325" y="182.68" width="110" height="147.32" fill="#b3c5ba"/>
+        <rect x="325" y="154.84" width="110" height="27.84" fill="#c8843c"/>
+        <rect x="325" y="58.56"  width="110" height="96.28" fill="#e6e2d7"/>
         <g style="font-size:11.5px;font-weight:700;fill:#1f2a24" text-anchor="middle">
-          <text x="380" y="262">124</text><text x="380" y="176" fill="#fff">26</text><text x="380" y="110">84</text>
+          <text x="380" y="262">127</text><text x="380" y="173" fill="#fff">24</text><text x="380" y="110">83</text>
         </g>
-        <rect x="505" y="186.2" width="110" height="143.8" fill="#b3c5ba"/>
-        <rect x="505" y="164.1" width="110" height="22.1" fill="#c8843c"/>
-        <rect x="505" y="58.6"  width="110" height="105.5" fill="#e6e2d7"/>
+        <rect x="505" y="182.68" width="110" height="147.32" fill="#b3c5ba"/>
+        <rect x="505" y="164.12" width="110" height="18.56" fill="#c8843c"/>
+        <rect x="505" y="58.56"  width="110" height="105.56" fill="#e6e2d7"/>
         <g style="font-size:11.5px;font-weight:700;fill:#1f2a24" text-anchor="middle">
-          <text x="560" y="262">124</text><text x="560" y="179" fill="#fff">19</text><text x="560" y="115">91</text>
+          <text x="560" y="262">127</text><text x="560" y="176" fill="#fff">16</text><text x="560" y="115">91</text>
         </g>
         <g style="font-size:12px;fill:var(--ink)" text-anchor="middle">
           <text x="200" y="352">162 beds</text>
@@ -871,7 +873,7 @@
           <rect x="445" y="388" width="13" height="13" fill="#e6e2d7"/><text x="463" y="399">Empty</text>
         </g>
       </svg>
-      <p class="figcap"><b>New beds do not fill with long-stay patients.</b> The long-stay block holds at 26 beds when capacity jumps from 162 to 234; the extra beds sit empty (14 rises to 84). The long-stay block falls to 19 only when placement is sped up. Beds and faster placement relieve the back door in different ways; they do not stack. Counts derived from ward-occupancy percentages.</p>
+      <p class="figcap"><b>New beds do not fill with long-stay patients.</b> The long-stay block stays near 23 to 24 beds when capacity jumps from 162 to 234; the extra beds sit empty (15 rises to 83). The long-stay block falls to 16 only when placement is sped up. Beds and faster placement relieve the back door in different ways; they do not stack. Counts derived from ward-occupancy percentages.</p>
     </div>
 
     <div class="figure">
@@ -881,9 +883,9 @@
         <text class="axis" x="62" y="334" text-anchor="end">0</text><text class="axis" x="62" y="261.5" text-anchor="end">25</text><text class="axis" x="62" y="189" text-anchor="end">50</text><text class="axis" x="62" y="116.5" text-anchor="end">75</text><text class="axis" x="62" y="44" text-anchor="end">100%</text>
         <line class="baseaxis" x1="70" y1="330" x2="70" y2="36"/>
         <line class="ref" x1="70" y1="83.5" x2="600" y2="83.5"/><text class="reflab" x="596" y="78" text-anchor="end">85% safe line</text>
-        <rect x="140" y="43.8" width="70" height="286.2" rx="4" fill="#3E6B8C"/><rect x="220" y="64.9" width="70" height="265.1" rx="4" fill="#3DA468"/>
-        <rect x="400" y="49.6" width="70" height="280.4" rx="4" fill="#3E6B8C"/><rect x="480" y="152.1" width="70" height="177.9" rx="4" fill="#3DA468"/>
-        <g class="val" style="font-size:14px" text-anchor="middle"><text x="175" y="36">98.68</text><text x="255" y="57">91.41</text><text x="435" y="42">96.69</text><text x="515" y="145">61.33</text></g>
+        <rect x="140" y="44.26" width="70" height="285.74" rx="4" fill="#3E6B8C"/><rect x="220" y="66.88" width="70" height="263.12" rx="4" fill="#3DA468"/>
+        <rect x="400" y="49.95" width="70" height="280.05" rx="4" fill="#3E6B8C"/><rect x="480" y="152.84" width="70" height="177.16" rx="4" fill="#3DA468"/>
+        <g class="val" style="font-size:14px" text-anchor="middle"><text x="175" y="36">98.53</text><text x="255" y="59">90.73</text><text x="435" y="42">96.57</text><text x="515" y="145">61.09</text></g>
         <g class="axisbold" text-anchor="middle"><text x="215" y="352">Baseline</text><text x="475" y="352">Combined</text></g>
       </svg>
       <div class="legend"><span><i class="swatch" style="background:#3E6B8C"></i>ED bed utilization</span><span><i class="swatch" style="background:#3DA468"></i>Ward occupancy</span></div>
@@ -962,7 +964,7 @@
       <div><dt>Collaborative care clinic, 12 percent</dt><dd>Team-based primary care, a family physician working with nurses and other providers, for non-specific abdominal pain and other lower-acuity complaints that need an assessment but not emergency resources. It is the channel for patients who really need a primary-care visit they could not get, which is often why they came to the emergency department in the first place.</dd></div>
       <div><dt>Referral, at risk, 5 percent</dt><dd>The honest channel. These are patients who would reach a closed or fully booked service and could bounce back to the emergency department. The model counts how many are at that risk; it does not claim whether they return, because it does not produce a return rate.</dd></div>
     </dl>
-    <p class="tnote">The split itself is a Tier C assumption derived from the community resource docket's complaint categories and is swept, because the exact Cape Breton triage-4-and-5 complaint mix is not published.</p>
+    <p class="tnote">In the combined scenario the model routes about 1,836 diverted patients a year: urgent treatment centre 606, pharmacy 662, virtual care 252, collaborative care 225, and referral at risk 91. The split itself is a Tier C assumption derived from the community resource docket's complaint categories and is swept, because the exact Cape Breton triage-4-and-5 complaint mix is not published.</p>
   </div>
 </section>
 
@@ -984,7 +986,7 @@
   <div class="wrap">
     <p class="kicker">The honest tail</p>
     <h2>Averages hide the worst cases.</h2>
-    <p class="plain">Even with every change in place, the worst-served tenth of patients still wait about 13.5 hours to see a provider, and the longest boarding waits stay near two days.</p>
+    <p class="plain">Even with every change in place, the worst-served tenth of patients still wait about 13.4 hours to see a provider, and the longest boarding waits stay near two days.</p>
     <p>The fast-track lane is the only change that shortens the very longest waits to be seen. Extra beds are the only thing that shortens the very longest boarding waits.</p>
 
     <div class="callout"><span class="lab">The honest residual</span><p>Even with everything switched on, the emergency department's own 22 treatment beds stay about 97 percent full, above the 85 percent level considered safe. The next thing to fix, after this package, is emergency-department bed and staff capacity itself. This study does not solve that.</p></div>
@@ -1010,17 +1012,17 @@
         <line x1="70" y1="125" x2="660" y2="125" stroke="#c0392b" stroke-dasharray="6 4" stroke-width="1.5"/>
         <text x="655" y="119" text-anchor="end" style="font-size:11px;fill:#c0392b;font-weight:600">85% ward safety line</text>
         <g style="font-size:12px;font-weight:600">
-          <circle cx="624.6" cy="76.9" r="7" fill="#8a8f88"/><text x="614" y="71" text-anchor="end" fill="#1f2a24">Today</text>
-          <circle cx="498.1" cy="83.8" r="7" fill="#8a8f88"/><text x="488" y="79" text-anchor="end" fill="#1f2a24">Divert</text>
-          <circle cx="181.4" cy="80.9" r="7" fill="#8a8f88"/><text x="192" y="76" fill="#1f2a24">Fast-track</text>
-          <circle cx="511.1" cy="281.2" r="7" fill="#8a8f88"/><text x="500" y="285" text-anchor="end" fill="#1f2a24">More beds</text>
-          <circle cx="130.4" cy="302.5" r="9" fill="var(--forest-deep,#1f5132)" stroke="#fff" stroke-width="2"/><text x="144" y="306" fill="var(--forest-deep,#1f5132)" font-weight="700">Everything</text>
+          <circle cx="596.8" cy="86.0" r="7" fill="#8a8f88"/><text x="586.8" y="80" text-anchor="end" fill="#1f2a24">Today</text>
+          <circle cx="505.2" cy="86.7" r="7" fill="#8a8f88"/><text x="495.2" y="82" text-anchor="end" fill="#1f2a24">Divert</text>
+          <circle cx="170.5" cy="87.8" r="7" fill="#8a8f88"/><text x="181" y="84" fill="#1f2a24">Fast-track</text>
+          <circle cx="512.7" cy="284.6" r="7" fill="#8a8f88"/><text x="502" y="288" text-anchor="end" fill="#1f2a24">More beds</text>
+          <circle cx="125.7" cy="308.3" r="9" fill="var(--forest-deep,#1f5132)" stroke="#fff" stroke-width="2"/><text x="140" y="312" fill="var(--forest-deep,#1f5132)" font-weight="700">Everything</text>
         </g>
-        <text x="144" y="324" style="font-size:11px;fill:var(--ink-soft)">both targets met</text>
+        <text x="140" y="330" style="font-size:11px;fill:var(--ink-soft)">both targets met</text>
         <text x="365" y="396" text-anchor="middle" style="font-size:12.5px;fill:var(--ink)">Walkouts, percent leaving without being seen</text>
         <text x="22" y="200" text-anchor="middle" transform="rotate(-90 22 200)" style="font-size:12.5px;fill:var(--ink)">Ward occupancy (%)</text>
       </svg>
-      <p class="figcap"><b>The two doors are separable, and only the package closes both.</b> Front-door changes (divert, fast-track) slide a point left, toward fewer walkouts, without lowering the ward. The bed change drops a point down, toward a safe ward, without cutting walkouts. Only Everything reaches the bottom-left corner where the ward is below the safety line and walkouts are low. No cost axis: both measures are whole-population outcomes.</p>
+      <p class="figcap"><b>The two doors are separable, and only the package closes both.</b> Front-door changes (divert, fast-track) slide a point left, toward fewer walkouts, with little effect on the ward. The bed change mainly drops a point down toward a safe ward, and also trims walkouts about 3.6 points. Only Everything reaches the bottom-left corner where the ward is below the safety line and walkouts are low. The separation is dominant, not absolute. No cost axis: both measures are whole-population outcomes.</p>
     </div>
 
     <h2 class="sub" style="margin-top:36px">Objective and constraints.</h2>
@@ -1028,9 +1030,9 @@
     <table>
       <thead><tr><th>Constraint</th><th>Limit</th><th>Baseline</th><th>Combined</th><th>Status</th></tr></thead>
       <tbody>
-        <tr><td>Ward occupancy</td><td>at or below 85%</td><td>91.41%</td><td>61.33%</td><td><span class="pill met">Met</span></td></tr>
-        <tr><td>Walkouts</td><td>under target</td><td>23.50%</td><td>2.56%</td><td><span class="pill met">Met</span></td></tr>
-        <tr><td>ED treatment beds</td><td>at or below 85%</td><td>98.68%</td><td>96.69%</td><td><span class="pill no">Not yet</span></td></tr>
+        <tr><td>Ward occupancy</td><td>at or below 85%</td><td>90.73%</td><td>61.09%</td><td><span class="pill met">Met</span></td></tr>
+        <tr><td>Walkouts</td><td>under target</td><td>22.32%</td><td>2.36%</td><td><span class="pill met">Met</span></td></tr>
+        <tr><td>ED treatment beds</td><td>at or below 85%</td><td>98.53%</td><td>96.57%</td><td><span class="pill no">Not yet</span></td></tr>
       </tbody>
     </table>
     <p class="tnote">Combined satisfies the ward-occupancy and walkout limits and still falls short on the ED-bed limit. That last gap is the honest residual above.</p>
@@ -1056,13 +1058,71 @@
   </div>
 </section>
 
+<!-- COST -->
+<section>
+  <div class="wrap">
+    <p class="kicker">The cost picture</p>
+    <h2>What each lever costs, and what it avoids.</h2>
+    <p class="plain">Dollars belong beside outcomes, never instead of them. Each figure below is paired with the care result it buys, so cost is read as value, not as a reason to ration. Tier A is primary-sourced, B is derived, C is a swept assumption.</p>
+    <table>
+      <thead><tr><th>Lever</th><th>Dollars (indexed, illustrative)</th><th>Paired care outcome</th><th>Tier</th></tr></thead>
+      <tbody>
+        <tr><td>Ward bed expansion (+72)</td><td>About $26M a year to operate 234 beds; roughly 84 of the 234 sit empty in the model; capital cost is not bed-isolable</td><td>Admitted wait 29.8 to 28.0 h; ward 90.7 to 64 percent</td><td>B/C</td></tr>
+        <tr><td>Faster placement (115 to 75 days)</td><td>Frees about 7 acute beds, roughly 2,500 bed-days a year; about $1.3 to 2.4M a year avoided</td><td>ALC bed-day share 15.4 to 11.5 percent</td><td>B</td></tr>
+        <tr><td>Community diversion (20 percent)</td><td>About 1,836 visits a year removed at roughly $158 each, about $0.29M a year avoided</td><td>Walkouts down, the front door cleared</td><td>C</td></tr>
+        <tr><td>Reference daily bed costs</td><td>Acute about $730 to 1,200 a day, long-term care about $225 to 253, home care about $55</td><td>Moving long-stay patients to the right setting is cheaper care, not only cheaper</td><td>A/B</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><span class="lab">The hidden cost of waiting</span><p>The cohort of patients who deteriorate while waiting carries a far higher downstream cost, a cohort median near $22,459 against $5,003 for those who do not. This is a cohort comparison reported beside the harm it represents, never a per-patient score.</p></div>
+    <p class="tnote">Dollar figures are indexed and illustrative, order-of-magnitude planning ranges at the population or cohort level, never a per-patient cost, and there is deliberately no cost axis on any chart.</p>
+  </div>
+</section>
+
+<!-- EQUITY -->
+<section>
+  <div class="wrap">
+    <p class="kicker">Equity and non-discrimination</p>
+    <h2>Cost never ranks a patient.</h2>
+    <p class="plain">Adding money to the analysis is safe here for a specific, checkable reason: nothing in the model ranks people, and nothing routes them by anything but clinical need.</p>
+    <div class="callout ext"><span class="lab">The guarantee, as checkable claims</span>
+      <ul style="margin:0;padding-left:18px;line-height:1.6">
+        <li>The model never scores or ranks an individual. Routing is by the Canadian Triage and Acuity Scale, clinical need itself, never a cost proxy.</li>
+        <li>Every dollar figure is population or cohort avoided-cost paired with a care-quality figure. None is per-patient, and none is used to ration an individual.</li>
+        <li>Diversion and fast-track are equity interventions: they correct the structural deferral of the lower-urgency CTAS 4 and 5 group the system currently loses.</li>
+        <li>No metric on this page can rank one patient above another on anything but clinical urgency, which is why adding cost does not reintroduce the failure Obermeyer and colleagues documented in 2019, where a cost proxy quietly stood in for need.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECT 2 FAILURE-MODE REGISTER -->
+<section>
+  <div class="wrap">
+    <p class="kicker">Registered failure modes, Project 2</p>
+    <h2>What we predicted could go wrong, and what happened.</h2>
+    <p class="plain">Project 1 logged 17 predicted failure modes. Project 2 adds 7 more, registered in advance rather than noticed after the fact. The register now carries 24, and the headline finding sits at row 19: the new beds do not refill.</p>
+    <table>
+      <thead><tr><th>#</th><th>Predicted failure mode</th><th>Status</th><th>What happened</th></tr></thead>
+      <tbody>
+        <tr><td>18</td><td>A single aggregate ward stay would hide the acute-versus-long-stay split and overstate how much a bed sweep relieves the emergency department.</td><td>Guarded, confirmed</td><td>The ward stay was split into acute care plus the long-stay placement wait, the wait made endogenous and anchored to the Cape Breton 115-day median; both levers are swept; long-stay is reported as a bed-day share with a paired harm figure.</td></tr>
+        <tr><td>19</td><td>Additional ward beds would refill with long-stay patients (the prior hypothesis).</td><td>Registered finding, not supported</td><td>At 234 beds the long-stay share holds at 15.7 percent against 15.4 at baseline; faster placement drops it to 11.5 with no change to the emergency metrics. The beds do not refill at the Cape Breton-anchored rate. This is the headline Project 2 finding and reverses the prior hypothesis.</td></tr>
+        <tr><td>20</td><td>A starting long-stay fraction of 0.10 to 0.20 of admissions.</td><td>Resolved, calibration corrected</td><td>That range is infeasible by Little's Law given the 115-day dwell and the 17 to 28 percent band; the correct start is about 0.02, swept 0.014 to 0.026.</td></tr>
+        <tr><td>21</td><td>Community diversion under-scoped to a single exit.</td><td>Resolved, retained as design</td><td>Diversion was extended to five real community channels; about 1,836 patients a year diverted; the routing effect only, the coordination layer is descriptive.</td></tr>
+        <tr><td>22</td><td>Port-orientation and volatile-condition errors on the new ward-split routing, a recurrence of Project 1 lessons.</td><td>Resolved</td><td>The new split honored the documented routing lessons; a default-off behavioral test confirmed inert routing before the lever was enabled.</td></tr>
+        <tr><td>23</td><td>An in-progress counter inflated by a background population.</td><td>Resolved</td><td>The counter was inflated by a non-emergency background population; it was removed and is not reported; throughput was corrected to emergency-completed, 4.11 per hour.</td></tr>
+        <tr><td>24</td><td>Arrivals ceiling exceeded under the new mechanisms.</td><td>Resolved, disclosed</td><td>Two of twenty combined runs were marginally above the 39,300 ceiling, under 0.1 percent; the mean of 38,954 is in band; disclosed rather than suppressed.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
 <!-- RECOMMENDATION + ALC NOTE -->
 <section>
   <div class="wrap">
     <div class="rec">
       <p class="kicker" style="color:#9DBBA6">Project 2 recommendation</p>
       <h2>Fund the package as coordinated moves.</h2>
-      <p class="plain">To shorten the admitted-patient wait, add ward beds. To cut walkouts and waiting-room time, run the fast-track lane and community diversion together. To recover beds tied up by patients awaiting placement, speed up nursing-home placement.</p>
+      <p class="plain">Fund the levers in priority order. First, speed up long-term-care placement: this is the structural fix, freeing the ward beds long-stay patients block at a fraction of the cost of building new ones. Second, expand ward beds as a capacity buffer: it is the dominant lever on the admitted wait and the expensive one, holding the ward below the safety line once placement alone cannot. Third, run the fast-track lane and community diversion together at the front door, which is what drives walkouts from 22.3 percent to 2.4.</p>
       <p>Together they clear the ward-crowding and walkout problems and leave emergency-department bed capacity as the next target.</p>
     </div>
     <p class="integrity"><b>Honesty note on placement.</b> The nursing-home placement rate used here is a Cape Breton-informed assumption tested across a range, not a published CBRH figure. All Project 2 values are means of twenty runs with 95% confidence intervals.</p>
@@ -1070,7 +1130,7 @@
 </section>
 <!-- =================== END PROJECT 2 =================== -->
 
-<footer
+<footer>
   <div class="wrap">
     <div class="name">Gavin Shklanka</div>
     Master of Business Analytics, Sobey School of Business, Saint Mary's University.<br>
