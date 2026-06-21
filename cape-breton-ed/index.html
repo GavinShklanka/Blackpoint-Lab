@@ -5,15 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cape Breton ED capacity, the two-door analysis · Black Point Analytics</title>
 <meta name="description" content="A discrete-event simulation of the Cape Breton Regional Hospital emergency department. Project 1 maps the front door and a nurse-practitioner fast-track lane; Project 2 models the whole system, the ward, long-stay placement, and community diversion, across seven scenarios validated over twenty runs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ground:#F6F3EC; --panel:#FFFFFF; --ink:#23271F; --ink-soft:#5C6157;
-    --line:#E4E0D6; --forest:#1E4D34; --forest-deep:#143524; --slate:#9AA09A;
-    --blue:#3E6B8C; --green:#3DA468; --amber:#D69A3C; --danger:#C0463A;
-    --serif:Georgia,"Hoefler Text","Times New Roman",serif;
-    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    /* VCM design system */
+    --bg-fog:#F7F9FC; --bg-surface:#FFFFFF; --text-main:#2D3748; --text-heading:#1E3A5F;
+    --text-muted:#64748B; --accent:#1E5132; --accent-teal:#38A89D; --accent-red:#C53030;
+    --accent-amber:#B7791F; --accent-green:#2F855A; --border-light:#E2E8F0;
+    --shadow-subtle:0 4px 6px -1px rgba(0,0,0,.05),0 2px 4px -1px rgba(0,0,0,.03);
+    --shadow-hover:0 10px 15px -3px rgba(0,0,0,.08); --radius:8px; --radius-lg:12px;
+    --serif:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
     --wrap:980px;
+    /* legacy token remap: existing rules and inline styles adopt the new system */
+    --ground:var(--bg-fog); --panel:var(--bg-surface); --ink:var(--text-main);
+    --ink-soft:var(--text-muted); --line:var(--border-light); --forest:var(--accent);
+    --forest-deep:#16321F; --slate:#94A3B8; --blue:#2B6CB0;
+    --green:var(--accent-green); --amber:var(--accent-amber); --danger:var(--accent-red);
   }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:18px;line-height:1.62;-webkit-font-smoothing:antialiased}
@@ -32,18 +45,20 @@
 
   .hero{padding:60px 0 34px}
   .eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--green);font-weight:700;margin:0 0 18px}
-  h1{font-family:var(--serif);font-weight:700;font-size:clamp(30px,5vw,50px);line-height:1.08;margin:0 0 20px;color:var(--forest-deep)}
+  h1{font-family:var(--serif);font-weight:700;font-size:clamp(30px,5vw,50px);line-height:1.08;margin:0 0 20px;color:var(--forest-deep);letter-spacing:-0.02em}
   .lede{font-size:clamp(18px,2.3vw,22px);max-width:50ch;margin:0}
   .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:42px 0 8px}
   .stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 18px}
-  .stat .num{font-family:var(--serif);font-weight:700;font-size:clamp(24px,3vw,30px);color:var(--forest);line-height:1.05}
+  .stat{transition:transform .2s ease,box-shadow .2s ease}
+  .stat:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+  .stat .num{font-family:var(--mono);font-weight:700;font-size:clamp(24px,3vw,30px);color:var(--forest);line-height:1.05}
   .stat .lab{font-size:13.5px;color:var(--ink-soft);margin-top:8px;line-height:1.35}
   .stat.alarm .num{color:var(--danger)}
 
-  section{padding:52px 0;border-top:1px solid var(--line)}
+  section{padding:52px 0;border-top:1px solid var(--line);animation:fadeIn .5s ease both}
   .sec-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
   .kicker{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);font-weight:700;margin:0 0 10px}
-  h2{font-family:var(--serif);font-weight:700;font-size:clamp(24px,3.4vw,34px);margin:0 0 18px;color:var(--forest-deep);line-height:1.14}
+  h2{font-family:var(--serif);font-weight:700;font-size:clamp(24px,3.4vw,34px);margin:0 0 18px;color:var(--forest-deep);line-height:1.14;letter-spacing:-0.02em}
   h2.sub{font-size:clamp(20px,2.6vw,26px)}
   .plain{font-size:clamp(18px,2.2vw,21px);max-width:62ch;margin:0 0 20px}
   p{max-width:66ch}
@@ -62,7 +77,8 @@
   .notes li{margin:3px 0}
 
   .duo{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);padding:26px;box-shadow:var(--shadow-subtle);transition:transform .2s ease,box-shadow .2s ease}
+  .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
   .card h3{font-family:var(--serif);font-size:21px;margin:0 0 6px;color:var(--forest-deep)}
   .card .tag{display:inline-block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:4px 10px;border-radius:999px;margin-bottom:12px}
   .tag.a{background:rgba(62,107,140,.12);color:var(--blue)}
@@ -87,14 +103,14 @@
   .dosegrid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 
   .chart text{font-family:var(--sans);fill:var(--ink)}
-  .chart .axis{font-size:13px;fill:#73776E}
-  .chart .axisbold{font-size:13.5px;fill:#44483F;font-weight:600}
-  .chart .val{font-size:16px;font-weight:700}
-  .chart .grid{stroke:#ECE8DE;stroke-width:1}
-  .chart .baseaxis{stroke:#C7C3B7;stroke-width:1.4}
-  .chart .err{stroke:#2B2F27;stroke-width:2;fill:none}
-  .chart .ref{stroke:#9AA09A;stroke-width:1.6;stroke-dasharray:6 5}
-  .chart .reflab{font-size:12.5px;fill:#9AA09A}
+  .chart .axis{font-size:13px;fill:#64748B}
+  .chart .axisbold{font-size:13.5px;fill:#475569;font-weight:600}
+  .chart .val{font-size:16px;font-weight:700;font-family:var(--mono)}
+  .chart .grid{stroke:#E2E8F0;stroke-width:1}
+  .chart .baseaxis{stroke:#CBD5E0;stroke-width:1.4}
+  .chart .err{stroke:#2D3748;stroke-width:2;fill:none}
+  .chart .ref{stroke:#94A3B8;stroke-width:1.6;stroke-dasharray:6 5}
+  .chart .reflab{font-size:12.5px;fill:#94A3B8}
   .chart .fit{stroke:var(--forest);stroke-width:2.4;fill:none}
   .chart .fitcurve{stroke:var(--green);stroke-width:2.4;fill:none}
 
@@ -113,8 +129,9 @@
   .scn-table.show{display:block}
   table{width:100%;border-collapse:collapse;font-size:15px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
   th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
-  thead th{background:#EFEBE1;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft)}
+  thead th{background:#EDF2F7;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft)}
   td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.num{font-family:var(--mono);font-size:13.5px}
   tbody tr:last-child td{border-bottom:none}
   td .pl{color:var(--ink-soft);font-size:13.5px}
   .tnote{font-size:14px;color:var(--ink-soft);margin-top:12px;max-width:70ch}
@@ -159,7 +176,7 @@
   .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:8px;border-radius:12px}
   .tablewrap table{min-width:820px}
   .matrix td:first-child,.matrix th:first-child{position:sticky;left:0;background:var(--panel);font-weight:600}
-  .matrix thead th:first-child{background:#EFEBE1}
+  .matrix thead th:first-child{background:#EDF2F7}
   .matrix td.hi{color:var(--forest);font-weight:700}
   .split{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;margin-top:24px}
   .pill{display:inline-block;font-size:12.5px;font-weight:700;padding:3px 11px;border-radius:999px;letter-spacing:.02em}
@@ -174,6 +191,35 @@
   .matrix.show-mm .mm{display:block}
   .matrix td:first-child,.matrix th:first-child{min-width:220px}
   @media (max-width:820px){ .p2stats{grid-template-columns:1fr} .split{grid-template-columns:1fr} }
+  /* Scenario Explorer */
+  .explorer{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px;align-items:start}
+  .xpanel{background:var(--bg-surface);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-subtle)}
+  .ctrlg{margin-bottom:18px}
+  .ctrlg > span{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600;margin-bottom:8px}
+  .seg{display:inline-flex;gap:8px;flex-wrap:wrap}
+  .seg button{font-family:var(--sans);font-size:14px;font-weight:600;border:1px solid var(--border-light);background:var(--bg-fog);color:var(--text-main);border-radius:20px;padding:8px 16px;cursor:pointer;transition:all .15s ease}
+  .seg button:hover{border-color:var(--accent)}
+  .seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .xresult .bignum{font-family:var(--mono);font-size:3.5rem;font-weight:700;line-height:1;letter-spacing:-0.01em}
+  .xresult .biglab{font-size:13px;color:var(--text-muted);margin-top:2px}
+  .xrow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-light)}
+  .xrow:last-child{border-bottom:none}
+  .xrow .k{font-size:14px;color:var(--text-main)}
+  .xrow .v{font-family:var(--mono);font-weight:600;font-size:15px;color:var(--text-heading)}
+  .d{font-family:var(--mono);font-size:12px;margin-left:8px}
+  .d.up{color:var(--accent-green)} .d.down{color:var(--accent-red)} .d.flat{color:var(--text-muted)}
+  .badge{display:inline-block;font-size:11px;font-weight:700;border-radius:20px;padding:2px 10px;margin-left:8px}
+  .badge.met{background:rgba(47,133,90,.14);color:var(--accent-green)}
+  .badge.over{background:rgba(197,48,48,.12);color:var(--accent-red)}
+  .xnote{background:rgba(183,121,31,.10);border:1px solid rgba(183,121,31,.35);border-radius:var(--radius);padding:18px 20px;color:#8a5a12;font-weight:600;line-height:1.5}
+  .step{display:grid;grid-template-columns:auto 1fr;gap:9px 14px;margin-top:8px;font-size:14.5px}
+  .step b{color:var(--accent);text-transform:uppercase;font-size:11px;letter-spacing:.06em;padding-top:3px;white-space:nowrap}
+  @media (max-width:820px){ .explorer{grid-template-columns:1fr} }
+  @media (max-width:600px){
+    table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;font-size:13px}
+    td.num,th.num{white-space:normal}
+    .xresult .bignum{font-size:3rem}
+  }
 </style>
 </head>
 <body>
@@ -238,7 +284,7 @@
         <text class="axis" x="60" y="334" text-anchor="end">0</text><text class="axis" x="60" y="273.6" text-anchor="end">10</text><text class="axis" x="60" y="213.2" text-anchor="end">20</text><text class="axis" x="60" y="152.7" text-anchor="end">30</text><text class="axis" x="60" y="92.3" text-anchor="end">40%</text>
         <line class="baseaxis" x1="70" y1="330" x2="70" y2="40"/>
         <text class="axis" x="232" y="56" text-anchor="middle" style="fill:#B0463A;font-weight:600">High-urgency: 76% of arrivals</text>
-        <rect x="92" y="324.0" width="64" height="6.0" rx="3" fill="#8B2E26"/><rect x="200" y="136.7" width="64" height="193.3" rx="3" fill="#C0463A"/><rect x="308" y="64.2" width="64" height="265.8" rx="3" fill="#D69A3C"/><rect x="416" y="203.1" width="64" height="126.9" rx="3" fill="#3DA468"/><rect x="524" y="317.9" width="64" height="12.1" rx="3" fill="#3E6B8C"/>
+        <rect x="92" y="324.0" width="64" height="6.0" rx="3" fill="#9B2C2C"/><rect x="200" y="136.7" width="64" height="193.3" rx="3" fill="#C53030"/><rect x="308" y="64.2" width="64" height="265.8" rx="3" fill="#B7791F"/><rect x="416" y="203.1" width="64" height="126.9" rx="3" fill="#2F855A"/><rect x="524" y="317.9" width="64" height="12.1" rx="3" fill="#2B6CB0"/>
         <text class="val" x="124" y="314" text-anchor="middle">1%</text><text class="val" x="232" y="126" text-anchor="middle">32%</text><text class="val" x="340" y="54" text-anchor="middle">44%</text><text class="val" x="448" y="193" text-anchor="middle">21%</text><text class="val" x="556" y="308" text-anchor="middle">2%</text>
         <g class="axisbold" text-anchor="middle">
           <text x="124" y="352">CTAS 1</text><text class="axis" x="124" y="370">Resuscitation</text>
@@ -373,7 +419,7 @@
           <line x1="405" y1="282.7" x2="405" y2="293.8"/><line x1="397" y1="282.7" x2="413" y2="282.7"/><line x1="397" y1="293.8" x2="413" y2="293.8"/>
           <line x1="535" y1="287.5" x2="535" y2="291.9"/><line x1="527" y1="287.5" x2="543" y2="287.5"/><line x1="527" y1="291.9" x2="543" y2="291.9"/>
         </g>
-        <circle cx="145" cy="78.1" r="6" fill="#9AA09A"/><circle cx="275" cy="120.3" r="6" fill="#3E6B8C"/><circle cx="405" cy="288.3" r="6" fill="#3DA468"/><circle cx="535" cy="289.7" r="6" fill="#1E4D34"/>
+        <circle cx="145" cy="78.1" r="6" fill="#94A3B8"/><circle cx="275" cy="120.3" r="6" fill="#2B6CB0"/><circle cx="405" cy="288.3" r="6" fill="#2F855A"/><circle cx="535" cy="289.7" r="6" fill="#1E4D34"/>
         <g class="val" text-anchor="middle"><text x="145" y="52">19.0%</text><text x="275" y="100">15.7%</text><text x="405" y="272">2.5%</text><text x="535" y="272">2.4%</text></g>
         <g class="axisbold" text-anchor="middle"><text x="145" y="344">Base</text><text x="275" y="344">A</text><text x="405" y="344">B</text><text x="535" y="344">A+B</text></g>
       </svg>
@@ -387,7 +433,7 @@
           <line x1="405" y1="154.2" x2="405" y2="170.5"/><line x1="397" y1="154.2" x2="413" y2="154.2"/><line x1="397" y1="170.5" x2="413" y2="170.5"/>
           <line x1="535" y1="149.8" x2="535" y2="163.6"/><line x1="527" y1="149.8" x2="543" y2="149.8"/><line x1="527" y1="163.6" x2="543" y2="163.6"/>
         </g>
-        <circle cx="145" cy="82.6" r="6" fill="#9AA09A"/><circle cx="275" cy="86.1" r="6" fill="#3E6B8C"/><circle cx="405" cy="162.3" r="6" fill="#3DA468"/><circle cx="535" cy="156.7" r="6" fill="#1E4D34"/>
+        <circle cx="145" cy="82.6" r="6" fill="#94A3B8"/><circle cx="275" cy="86.1" r="6" fill="#2B6CB0"/><circle cx="405" cy="162.3" r="6" fill="#2F855A"/><circle cx="535" cy="156.7" r="6" fill="#1E4D34"/>
         <g class="val" text-anchor="middle"><text x="145" y="66">5.5 h</text><text x="275" y="70">5.4 h</text><text x="405" y="146">3.7 h</text><text x="535" y="140">3.8 h</text></g>
         <g class="axisbold" text-anchor="middle"><text x="145" y="344">Base</text><text x="275" y="344">A</text><text x="405" y="344">B</text><text x="535" y="344">A+B</text></g>
       </svg>
@@ -401,18 +447,18 @@
         <line class="grid" x1="80" y1="360" x2="660" y2="360"/><line class="grid" x1="80" y1="282.5" x2="660" y2="282.5"/><line class="grid" x1="80" y1="205.0" x2="660" y2="205.0"/><line class="grid" x1="80" y1="127.5" x2="660" y2="127.5"/><line class="grid" x1="80" y1="50.0" x2="660" y2="50.0"/>
         <text class="axis" x="70" y="364" text-anchor="end">0</text><text class="axis" x="70" y="286.5" text-anchor="end">10,000</text><text class="axis" x="70" y="209" text-anchor="end">20,000</text><text class="axis" x="70" y="131.5" text-anchor="end">30,000</text><text class="axis" x="70" y="54" text-anchor="end">40,000</text>
         <line class="baseaxis" x1="80" y1="360" x2="80" y2="46"/>
-        <rect x="112.5" y="115.9" width="80" height="244.1" rx="3" fill="#3E6B8C"/><rect x="112.5" y="58.6" width="80" height="57.3" rx="3" fill="#C0463A"/>
-        <rect x="257.5" y="120.5" width="80" height="239.5" rx="3" fill="#3E6B8C"/><rect x="257.5" y="105.9" width="80" height="14.6" rx="3" fill="#D69A3C"/><rect x="257.5" y="58.5" width="80" height="47.4" rx="3" fill="#C0463A"/>
-        <rect x="402.5" y="138.1" width="80" height="221.9" rx="3" fill="#3E6B8C"/><rect x="402.5" y="66.0" width="80" height="72.1" rx="3" fill="#3DA468"/><rect x="402.5" y="58.5" width="80" height="7.5" rx="3" fill="#C0463A"/>
-        <rect x="547.5" y="137.2" width="80" height="222.8" rx="3" fill="#3E6B8C"/><rect x="547.5" y="79.8" width="80" height="57.4" rx="3" fill="#3DA468"/><rect x="547.5" y="65.7" width="80" height="14.1" rx="3" fill="#D69A3C"/><rect x="547.5" y="58.4" width="80" height="7.3" rx="3" fill="#C0463A"/>
+        <rect x="112.5" y="115.9" width="80" height="244.1" rx="3" fill="#2B6CB0"/><rect x="112.5" y="58.6" width="80" height="57.3" rx="3" fill="#C53030"/>
+        <rect x="257.5" y="120.5" width="80" height="239.5" rx="3" fill="#2B6CB0"/><rect x="257.5" y="105.9" width="80" height="14.6" rx="3" fill="#B7791F"/><rect x="257.5" y="58.5" width="80" height="47.4" rx="3" fill="#C53030"/>
+        <rect x="402.5" y="138.1" width="80" height="221.9" rx="3" fill="#2B6CB0"/><rect x="402.5" y="66.0" width="80" height="72.1" rx="3" fill="#2F855A"/><rect x="402.5" y="58.5" width="80" height="7.5" rx="3" fill="#C53030"/>
+        <rect x="547.5" y="137.2" width="80" height="222.8" rx="3" fill="#2B6CB0"/><rect x="547.5" y="79.8" width="80" height="57.4" rx="3" fill="#2F855A"/><rect x="547.5" y="65.7" width="80" height="14.1" rx="3" fill="#B7791F"/><rect x="547.5" y="58.4" width="80" height="7.3" rx="3" fill="#C53030"/>
         <g class="val" text-anchor="middle" style="fill:#B0463A"><text x="152.5" y="50">7,397 walk out</text><text x="297.5" y="50">6,110 walk out</text><text x="442.5" y="50">971 walk out</text><text x="587.5" y="50">936 walk out</text></g>
         <g class="axisbold" text-anchor="middle"><text x="152.5" y="382">Baseline</text><text x="297.5" y="382">A: Diversion</text><text x="442.5" y="382">B: Fast-track</text><text x="587.5" y="382">A+B: Combined</text></g>
       </svg>
       <div class="legend">
-        <span><i class="swatch" style="background:#3E6B8C"></i>Seen by ED physician</span>
-        <span><i class="swatch" style="background:#3DA468"></i>Seen by NP fast-track</span>
-        <span><i class="swatch" style="background:#D69A3C"></i>Redirected to community care</span>
-        <span><i class="swatch" style="background:#C0463A"></i>Left without being seen</span>
+        <span><i class="swatch" style="background:#2B6CB0"></i>Seen by ED physician</span>
+        <span><i class="swatch" style="background:#2F855A"></i>Seen by NP fast-track</span>
+        <span><i class="swatch" style="background:#B7791F"></i>Redirected to community care</span>
+        <span><i class="swatch" style="background:#C53030"></i>Left without being seen</span>
       </div>
       <p class="figcap"><b>Where the patients end up.</b> The red band at the top is the walkout crisis. The fast-track lane converts it into care.</p>
     </div>
@@ -426,7 +472,7 @@
       <svg class="chart" viewBox="0 0 640 230" role="img" aria-label="Arrivals rise through the morning, peak in the late afternoon and early evening, and fall overnight.">
         <line class="grid" x1="40" y1="180" x2="610" y2="180"/>
         <path d="M40,180 L40,153 L86.7,162 L133.3,165 L180,156 L226.7,112.5 L273.3,78 L320,63 L366.7,52.5 L413.3,42 L460,30 L483.3,34.5 L506.7,60 L553.3,105 L600,142.5 L600,180 Z" fill="rgba(62,107,140,.16)" stroke="none"/>
-        <polyline points="40,153 86.7,162 133.3,165 180,156 226.7,112.5 273.3,78 320,63 366.7,52.5 413.3,42 460,30 483.3,34.5 506.7,60 553.3,105 600,142.5" fill="none" stroke="#3E6B8C" stroke-width="2.6"/>
+        <polyline points="40,153 86.7,162 133.3,165 180,156 226.7,112.5 273.3,78 320,63 366.7,52.5 413.3,42 460,30 483.3,34.5 506.7,60 553.3,105 600,142.5" fill="none" stroke="#2B6CB0" stroke-width="2.6"/>
         <line class="baseaxis" x1="40" y1="180" x2="600" y2="180"/>
         <g class="axis" text-anchor="middle"><text x="40" y="200">12a</text><text x="180" y="200">6a</text><text x="320" y="200">12p</text><text x="460" y="200">6p</text><text x="600" y="200">12a</text></g>
         <text class="axisbold" x="320" y="222" text-anchor="middle">Hour of day</text>
@@ -666,31 +712,31 @@
     <table>
       <thead><tr><th>Name (on the model)</th><th>What it sets</th><th>Configured as</th><th>Tier</th></tr></thead>
       <tbody>
-        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">Front door and arrivals</td></tr>
+        <tr><td colspan="4" style="background:#EDF2F7;font-weight:700">Front door and arrivals</td></tr>
         <tr><td>arrivalsByHour</td><td>Patient arrivals shaped across the day</td><td>Hourly rate curve, totals the real annual volume (38,500 to 39,300 band)</td><td>A</td></tr>
         <tr><td>divertFrac</td><td>Share of low-urgency patients sent to community</td><td>0.2</td><td>A</td></tr>
         <tr><td>useFastTrack, nNPPA</td><td>The nurse-practitioner fast-track lane and its staffing</td><td>true, 1 NP</td><td>A</td></tr>
         <tr><td>admitFracHighAcuity</td><td>Share of arrivals that are high-acuity</td><td>0.16</td><td>A</td></tr>
         <tr><td>patienceByCtas, renegeWaitStat</td><td>How long patients wait before leaving, by triage level; drives walkouts</td><td>Patience falls with lower urgency</td><td>B</td></tr>
-        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">Treatment</td></tr>
+        <tr><td colspan="4" style="background:#EDF2F7;font-weight:700">Treatment</td></tr>
         <tr><td>nPhysicians, nNurses</td><td>Clinicians on shift</td><td>5, 3 *</td><td>C *</td></tr>
         <tr><td>nBeds</td><td>Staffed ED treatment beds (not the 36 physical)</td><td>22</td><td>A</td></tr>
         <tr><td>phMode, plMode</td><td>Physician service time, high and low acuity (minutes)</td><td>45, 20 *</td><td>C *</td></tr>
         <tr><td>diagMeanMin</td><td>Mean diagnostic test time (minutes)</td><td>120 *</td><td>C *</td></tr>
-        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">Admission and boarding</td></tr>
+        <tr><td colspan="4" style="background:#EDF2F7;font-weight:700">Admission and boarding</td></tr>
         <tr><td>selectAdmit, admit fraction</td><td>The fork from ED visit to inpatient admission</td><td>About one in nine arrivals (~11.7%)</td><td>A</td></tr>
         <tr><td>boardMeanMin</td><td>The wait for a ward bed (boarding), as a spread, not a constant</td><td>triangular(0.6x, 1x, 1.8x) on 1050 min, true mean ~1190 min (~19.8 h)</td><td>A (form)</td></tr>
-        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">The ward</td></tr>
+        <tr><td colspan="4" style="background:#EDF2F7;font-weight:700">The ward</td></tr>
         <tr><td>nWardBeds</td><td>Inpatient ward beds</td><td>162 baseline, 234 expanded (+72, the real CBRH expansion)</td><td>A</td></tr>
         <tr><td>wardLOSmedianMin, wardLOSsigma</td><td>How long a ward stay lasts (lognormal)</td><td>median ~6,624 min (~4.6 d) *, sigma 0.98</td><td>C *</td></tr>
         <tr><td>acuteLOSmedianMin</td><td>The acute part of the ward stay, before any placement wait</td><td>~6,624 min *</td><td>C *</td></tr>
         <tr><td>transferInRate</td><td>Background inter-facility ward admissions per day, keeps the ward realistically loaded</td><td>~4.5 per day</td><td>C</td></tr>
-        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">Long-stay placement (ALC)</td></tr>
+        <tr><td colspan="4" style="background:#EDF2F7;font-weight:700">Long-stay placement (ALC)</td></tr>
         <tr><td>pALC</td><td>Share of admits who become long-stay (ALC)</td><td>0.02, seated to the 17 to 28% bed-day band</td><td>C</td></tr>
         <tr><td>alcPlacementMeanMin</td><td>The placement wait an ALC patient holds a bed for</td><td>triangular(55, 102, 188) days, mean 115 d; 75 d in the speed scenario</td><td>A/B</td></tr>
         <tr><td>dischargeDestCapacity</td><td>Community placement slots; a non-binding guard, not a real-world count</td><td>250 (always above the largest ward)</td><td>design</td></tr>
         <tr><td>communityPlacementDemand, commResidenceMedianMin</td><td>An older background loop, now inert</td><td>0 (off); on the cleanup list</td><td>n/a</td></tr>
-        <tr><td colspan="4" style="background:#EFEBE1;font-weight:700">Community channels (Docket B)</td></tr>
+        <tr><td colspan="4" style="background:#EDF2F7;font-weight:700">Community channels (Docket B)</td></tr>
         <tr><td>channel shares</td><td>How diverted patients split across the five services</td><td>UTC 0.33, pharmacy 0.36, virtual 0.14, collab 0.12, referral 0.05</td><td>C</td></tr>
         <tr><td>pNoService</td><td>Share of diverted patients who hit a closed or full service (loopback risk)</td><td>~0.05, swept 0 to 0.10</td><td>C</td></tr>
       </tbody>
@@ -785,7 +831,7 @@
           <line x1="565" y1="116.1" x2="565" y2="125.4"/><line x1="558" y1="116.1" x2="572" y2="116.1"/><line x1="558" y1="125.4" x2="572" y2="125.4"/>
           <line x1="655" y1="301.3" x2="655" y2="306.0"/><line x1="648" y1="301.3" x2="662" y2="301.3"/><line x1="648" y1="306.0" x2="662" y2="306.0"/>
         </g>
-        <circle cx="115" cy="81.0" r="6" fill="#9AA09A"/><circle cx="205" cy="124.3" r="6" fill="#3E6B8C"/><circle cx="295" cy="282.5" r="6" fill="#3DA468"/><circle cx="385" cy="104.9" r="6" fill="#D69A3C"/><circle cx="475" cy="120.8" r="6" fill="#D69A3C"/><circle cx="565" cy="120.8" r="6" fill="#D69A3C"/><circle cx="655" cy="303.7" r="6" fill="#143524"/>
+        <circle cx="115" cy="81.0" r="6" fill="#94A3B8"/><circle cx="205" cy="124.3" r="6" fill="#2B6CB0"/><circle cx="295" cy="282.5" r="6" fill="#2F855A"/><circle cx="385" cy="104.9" r="6" fill="#B7791F"/><circle cx="475" cy="120.8" r="6" fill="#B7791F"/><circle cx="565" cy="120.8" r="6" fill="#B7791F"/><circle cx="655" cy="303.7" r="6" fill="#1E5132"/>
         <g class="val" style="font-size:13px" text-anchor="middle"><text x="115" y="62">22.32</text><text x="205" y="108">18.44</text><text x="295" y="269">4.26</text><text x="385" y="88">20.18</text><text x="475" y="108">18.76</text><text x="565" y="108">18.76</text><text x="655" y="294">2.36</text></g>
         <g class="axis" style="font-size:11.5px" text-anchor="middle"><text x="115" y="352">Baseline</text><text x="205" y="352">Diversion</text><text x="295" y="352">Fast-track</text><text x="385" y="352">Speed-162</text><text x="475" y="352">Beds-234</text><text x="565" y="352">Beds+Speed</text><text x="655" y="352">Combined</text></g>
       </svg>
@@ -814,7 +860,7 @@
           <line x1="565" y1="248.1" x2="565" y2="262.6"/><line x1="558" y1="248.1" x2="572" y2="248.1"/><line x1="558" y1="262.6" x2="572" y2="262.6"/>
           <line x1="655" y1="258.2" x2="655" y2="280.0"/><line x1="648" y1="258.2" x2="662" y2="258.2"/><line x1="648" y1="280.0" x2="662" y2="280.0"/>
         </g>
-        <circle cx="115" cy="125.6" r="6" fill="#9AA09A"/><circle cx="205" cy="119.8" r="6" fill="#3E6B8C"/><circle cx="295" cy="143.0" r="6" fill="#3DA468"/><circle cx="385" cy="206.0" r="6" fill="#D69A3C"/><circle cx="475" cy="255.3" r="6" fill="#D69A3C"/><circle cx="565" cy="255.3" r="6" fill="#D69A3C"/><circle cx="655" cy="269.1" r="6" fill="#143524"/>
+        <circle cx="115" cy="125.6" r="6" fill="#94A3B8"/><circle cx="205" cy="119.8" r="6" fill="#2B6CB0"/><circle cx="295" cy="143.0" r="6" fill="#2F855A"/><circle cx="385" cy="206.0" r="6" fill="#B7791F"/><circle cx="475" cy="255.3" r="6" fill="#B7791F"/><circle cx="565" cy="255.3" r="6" fill="#B7791F"/><circle cx="655" cy="269.1" r="6" fill="#1E5132"/>
         <g class="val" style="font-size:13px" text-anchor="middle"><text x="115" y="88">29.82</text><text x="205" y="85">29.90</text><text x="295" y="102">29.58</text><text x="385" y="178">28.71</text><text x="475" y="240">28.03</text><text x="565" y="240">28.03</text><text x="655" y="251">27.84</text></g>
         <g class="axis" style="font-size:11.5px" text-anchor="middle"><text x="115" y="352">Baseline</text><text x="205" y="352">Diversion</text><text x="295" y="352">Fast-track</text><text x="385" y="352">Speed-162</text><text x="475" y="352">Beds-234</text><text x="565" y="352">Beds+Speed</text><text x="655" y="352">Combined</text></g>
       </svg>
@@ -844,22 +890,22 @@
           <text x="60" y="102" text-anchor="end">200</text>
           <text x="60" y="44"  text-anchor="end">250</text>
         </g>
-        <rect x="145" y="186.16" width="110" height="143.84" fill="#b3c5ba"/>
-        <rect x="145" y="159.48" width="110" height="26.68" fill="#c8843c"/>
-        <rect x="145" y="142.08" width="110" height="17.40" fill="#e6e2d7"/>
-        <g style="font-size:11.5px;font-weight:700;fill:#1f2a24" text-anchor="middle">
+        <rect x="145" y="186.16" width="110" height="143.84" fill="#A8C7B5"/>
+        <rect x="145" y="159.48" width="110" height="26.68" fill="#B7791F"/>
+        <rect x="145" y="142.08" width="110" height="17.40" fill="#EDF2F7"/>
+        <g style="font-size:11.5px;font-weight:700;fill:#2D3748" text-anchor="middle">
           <text x="200" y="262">124</text><text x="200" y="176" fill="#fff">23</text><text x="200" y="153">15</text>
         </g>
-        <rect x="325" y="182.68" width="110" height="147.32" fill="#b3c5ba"/>
-        <rect x="325" y="154.84" width="110" height="27.84" fill="#c8843c"/>
-        <rect x="325" y="58.56"  width="110" height="96.28" fill="#e6e2d7"/>
-        <g style="font-size:11.5px;font-weight:700;fill:#1f2a24" text-anchor="middle">
+        <rect x="325" y="182.68" width="110" height="147.32" fill="#A8C7B5"/>
+        <rect x="325" y="154.84" width="110" height="27.84" fill="#B7791F"/>
+        <rect x="325" y="58.56"  width="110" height="96.28" fill="#EDF2F7"/>
+        <g style="font-size:11.5px;font-weight:700;fill:#2D3748" text-anchor="middle">
           <text x="380" y="262">127</text><text x="380" y="173" fill="#fff">24</text><text x="380" y="110">83</text>
         </g>
-        <rect x="505" y="182.68" width="110" height="147.32" fill="#b3c5ba"/>
-        <rect x="505" y="164.12" width="110" height="18.56" fill="#c8843c"/>
-        <rect x="505" y="58.56"  width="110" height="105.56" fill="#e6e2d7"/>
-        <g style="font-size:11.5px;font-weight:700;fill:#1f2a24" text-anchor="middle">
+        <rect x="505" y="182.68" width="110" height="147.32" fill="#A8C7B5"/>
+        <rect x="505" y="164.12" width="110" height="18.56" fill="#B7791F"/>
+        <rect x="505" y="58.56"  width="110" height="105.56" fill="#EDF2F7"/>
+        <g style="font-size:11.5px;font-weight:700;fill:#2D3748" text-anchor="middle">
           <text x="560" y="262">127</text><text x="560" y="176" fill="#fff">16</text><text x="560" y="115">91</text>
         </g>
         <g style="font-size:12px;fill:var(--ink)" text-anchor="middle">
@@ -868,9 +914,9 @@
           <text x="560" y="352">234 beds +</text><text x="560" y="367">faster placement</text>
         </g>
         <g style="font-size:12px;fill:var(--ink-soft)">
-          <rect x="190" y="388" width="13" height="13" fill="#b3c5ba"/><text x="208" y="399">Acute care</text>
-          <rect x="300" y="388" width="13" height="13" fill="#c8843c"/><text x="318" y="399">Long-stay (ALC)</text>
-          <rect x="445" y="388" width="13" height="13" fill="#e6e2d7"/><text x="463" y="399">Empty</text>
+          <rect x="190" y="388" width="13" height="13" fill="#A8C7B5"/><text x="208" y="399">Acute care</text>
+          <rect x="300" y="388" width="13" height="13" fill="#B7791F"/><text x="318" y="399">Long-stay (ALC)</text>
+          <rect x="445" y="388" width="13" height="13" fill="#EDF2F7"/><text x="463" y="399">Empty</text>
         </g>
       </svg>
       <p class="figcap"><b>New beds do not fill with long-stay patients.</b> The long-stay block stays near 23 to 24 beds when capacity jumps from 162 to 234; the extra beds sit empty (15 rises to 83). The long-stay block falls to 16 only when placement is sped up. Beds and faster placement relieve the back door in different ways; they do not stack. Counts derived from ward-occupancy percentages.</p>
@@ -883,12 +929,12 @@
         <text class="axis" x="62" y="334" text-anchor="end">0</text><text class="axis" x="62" y="261.5" text-anchor="end">25</text><text class="axis" x="62" y="189" text-anchor="end">50</text><text class="axis" x="62" y="116.5" text-anchor="end">75</text><text class="axis" x="62" y="44" text-anchor="end">100%</text>
         <line class="baseaxis" x1="70" y1="330" x2="70" y2="36"/>
         <line class="ref" x1="70" y1="83.5" x2="600" y2="83.5"/><text class="reflab" x="596" y="78" text-anchor="end">85% safe line</text>
-        <rect x="140" y="44.26" width="70" height="285.74" rx="4" fill="#3E6B8C"/><rect x="220" y="66.88" width="70" height="263.12" rx="4" fill="#3DA468"/>
-        <rect x="400" y="49.95" width="70" height="280.05" rx="4" fill="#3E6B8C"/><rect x="480" y="152.84" width="70" height="177.16" rx="4" fill="#3DA468"/>
+        <rect x="140" y="44.26" width="70" height="285.74" rx="4" fill="#2B6CB0"/><rect x="220" y="66.88" width="70" height="263.12" rx="4" fill="#2F855A"/>
+        <rect x="400" y="49.95" width="70" height="280.05" rx="4" fill="#2B6CB0"/><rect x="480" y="152.84" width="70" height="177.16" rx="4" fill="#2F855A"/>
         <g class="val" style="font-size:14px" text-anchor="middle"><text x="175" y="36">98.53</text><text x="255" y="59">90.73</text><text x="435" y="42">96.57</text><text x="515" y="145">61.09</text></g>
         <g class="axisbold" text-anchor="middle"><text x="215" y="352">Baseline</text><text x="475" y="352">Combined</text></g>
       </svg>
-      <div class="legend"><span><i class="swatch" style="background:#3E6B8C"></i>ED bed utilization</span><span><i class="swatch" style="background:#3DA468"></i>Ward occupancy</span></div>
+      <div class="legend"><span><i class="swatch" style="background:#2B6CB0"></i>ED bed utilization</span><span><i class="swatch" style="background:#2F855A"></i>Ward occupancy</span></div>
       <p class="figcap"><b>The ward clears, the ED beds do not.</b> Combined brings the ward below the 85% safe line, but the 22 ED treatment beds stay near 97% full, which is the next constraint.</p>
     </div>
   </div>
@@ -914,12 +960,12 @@
           <text x="62" y="184" text-anchor="end">10,000</text><text x="62" y="114" text-anchor="end">15,000</text>
           <text x="62" y="44"  text-anchor="end">20,000</text>
         </g>
-        <rect x="100" y="316.6" width="58" height="3.4"   fill="#7a9b86"/>
-        <rect x="218" y="149.1" width="58" height="170.9" fill="#7a9b86"/>
-        <rect x="336" y="78.6"  width="58" height="241.4" fill="#7a9b86"/>
-        <rect x="454" y="204.7" width="58" height="115.3" fill="#c8843c"/>
-        <rect x="572" y="306.5" width="58" height="13.5"  fill="#c8843c"/>
-        <g style="font-size:11.5px;font-weight:700;fill:#1f2a24" text-anchor="middle">
+        <rect x="100" y="316.6" width="58" height="3.4"   fill="#5F8D74"/>
+        <rect x="218" y="149.1" width="58" height="170.9" fill="#5F8D74"/>
+        <rect x="336" y="78.6"  width="58" height="241.4" fill="#5F8D74"/>
+        <rect x="454" y="204.7" width="58" height="115.3" fill="#B7791F"/>
+        <rect x="572" y="306.5" width="58" height="13.5"  fill="#B7791F"/>
+        <g style="font-size:11.5px;font-weight:700;fill:#2D3748" text-anchor="middle">
           <text x="129" y="310">245</text><text x="247" y="141">12,210</text><text x="365" y="70">17,244</text>
           <text x="483" y="197">8,235</text><text x="601" y="298">965</text>
         </g>
@@ -927,7 +973,7 @@
           <text x="129" y="338">CTAS 1</text><text x="247" y="338">CTAS 2</text><text x="365" y="338">CTAS 3</text>
           <text x="483" y="338">CTAS 4</text><text x="601" y="338">CTAS 5</text>
         </g>
-        <line x1="454" y1="356" x2="630" y2="356" stroke="#c8843c" stroke-width="1.5"/>
+        <line x1="454" y1="356" x2="630" y2="356" stroke="#B7791F" stroke-width="1.5"/>
         <text x="542" y="372" text-anchor="middle" style="font-size:12px;fill:#9a6a1e;font-weight:600">~9,200 a year, the diversion targets</text>
       </svg>
       <p class="figcap"><b>The diversion targets the least urgent arrivals.</b> Triage levels 4 and 5, the less-urgent and non-urgent cases, are about 9,200 patients a year. These are the patients the five community channels are built to handle, which is what the next chart shows.</p>
@@ -940,7 +986,7 @@
           <line class="grid" x1="60" y1="310" x2="610" y2="310"/><line class="grid" x1="60" y1="242.5" x2="610" y2="242.5"/><line class="grid" x1="60" y1="175" x2="610" y2="175"/><line class="grid" x1="60" y1="107.5" x2="610" y2="107.5"/><line class="grid" x1="60" y1="40" x2="610" y2="40"/>
           <text class="axis" x="52" y="314" text-anchor="end">0</text><text class="axis" x="52" y="246.5" text-anchor="end">10</text><text class="axis" x="52" y="179" text-anchor="end">20</text><text class="axis" x="52" y="111.5" text-anchor="end">30</text><text class="axis" x="52" y="44" text-anchor="end">40%</text>
           <line class="baseaxis" x1="60" y1="310" x2="60" y2="36"/>
-          <rect x="83" y="87.3" width="64" height="222.7" rx="3" fill="#3E6B8C"/><rect x="193" y="67.0" width="64" height="243.0" rx="3" fill="#3DA468"/><rect x="303" y="215.5" width="64" height="94.5" rx="3" fill="#D69A3C"/><rect x="413" y="229.0" width="64" height="81.0" rx="3" fill="#9AA09A"/><rect x="523" y="276.3" width="64" height="33.7" rx="3" fill="#C0463A"/>
+          <rect x="83" y="87.3" width="64" height="222.7" rx="3" fill="#2B6CB0"/><rect x="193" y="67.0" width="64" height="243.0" rx="3" fill="#2F855A"/><rect x="303" y="215.5" width="64" height="94.5" rx="3" fill="#B7791F"/><rect x="413" y="229.0" width="64" height="81.0" rx="3" fill="#94A3B8"/><rect x="523" y="276.3" width="64" height="33.7" rx="3" fill="#C53030"/>
           <g class="val" text-anchor="middle"><text x="115" y="77">33%</text><text x="225" y="57">36%</text><text x="335" y="205">14%</text><text x="445" y="219">12%</text><text x="555" y="266">5%</text></g>
           <g class="axis" style="font-size:11.5px" text-anchor="middle">
             <text x="115" y="330">Urgent</text><text x="115" y="344">treatment</text>
@@ -1009,13 +1055,13 @@
           <text x="64" y="204" text-anchor="end">75</text><text x="64" y="279" text-anchor="end">65</text>
           <text x="64" y="354" text-anchor="end">55</text>
         </g>
-        <line x1="70" y1="125" x2="660" y2="125" stroke="#c0392b" stroke-dasharray="6 4" stroke-width="1.5"/>
-        <text x="655" y="119" text-anchor="end" style="font-size:11px;fill:#c0392b;font-weight:600">85% ward safety line</text>
+        <line x1="70" y1="125" x2="660" y2="125" stroke="#C53030" stroke-dasharray="6 4" stroke-width="1.5"/>
+        <text x="655" y="119" text-anchor="end" style="font-size:11px;fill:#C53030;font-weight:600">85% ward safety line</text>
         <g style="font-size:12px;font-weight:600">
-          <circle cx="596.8" cy="86.0" r="7" fill="#8a8f88"/><text x="586.8" y="80" text-anchor="end" fill="#1f2a24">Today</text>
-          <circle cx="505.2" cy="86.7" r="7" fill="#8a8f88"/><text x="495.2" y="82" text-anchor="end" fill="#1f2a24">Divert</text>
-          <circle cx="170.5" cy="87.8" r="7" fill="#8a8f88"/><text x="181" y="84" fill="#1f2a24">Fast-track</text>
-          <circle cx="512.7" cy="284.6" r="7" fill="#8a8f88"/><text x="502" y="288" text-anchor="end" fill="#1f2a24">More beds</text>
+          <circle cx="596.8" cy="86.0" r="7" fill="#94A3B8"/><text x="586.8" y="80" text-anchor="end" fill="#2D3748">Today</text>
+          <circle cx="505.2" cy="86.7" r="7" fill="#94A3B8"/><text x="495.2" y="82" text-anchor="end" fill="#2D3748">Divert</text>
+          <circle cx="170.5" cy="87.8" r="7" fill="#94A3B8"/><text x="181" y="84" fill="#2D3748">Fast-track</text>
+          <circle cx="512.7" cy="284.6" r="7" fill="#94A3B8"/><text x="502" y="288" text-anchor="end" fill="#2D3748">More beds</text>
           <circle cx="125.7" cy="308.3" r="9" fill="var(--forest-deep,#1f5132)" stroke="#fff" stroke-width="2"/><text x="140" y="312" fill="var(--forest-deep,#1f5132)" font-weight="700">Everything</text>
         </g>
         <text x="140" y="330" style="font-size:11px;fill:var(--ink-soft)">both targets met</text>
@@ -1055,6 +1101,53 @@
       <div><dt>Throughput</dt><dd>Every patient who completes care, counted at dischargeSink, admitSink, and ftSink, divided by time. The fast-track term is zero when the lane is off, so the same measure is correct in every scenario.</dd></div>
     </dl>
     <div class="callout"><span class="lab">Why it is reproducible</span><p>Every scenario runs twenty times with a fixed per-replication seed, so the same scenario gives the same result and the differences between scenarios are tested with confidence intervals, not eyeballed. The baseline reproduces identically across the two builds, which is the check that the model was not quietly changed between runs.</p></div>
+  </div>
+</section>
+
+<!-- SCENARIO EXPLORER -->
+<section id="scenario-explorer">
+  <div class="wrap">
+    <p class="kicker">Scenario Explorer</p>
+    <h2>Try the levers yourself.</h2>
+    <p class="plain">Set the back door, ward beds and placement speed, and read the banked result. Every number here is a stored twenty-run value, looked up, never computed. Combinations the study did not run say so plainly.</p>
+    <div class="explorer">
+      <div class="xpanel">
+        <div class="ctrlg"><span>Ward beds (back door)</span><div class="seg" id="seg-beds">
+          <button data-v="162" class="on">162 beds</button><button data-v="234">234 beds</button></div></div>
+        <div class="ctrlg"><span>Placement speed (back door)</span><div class="seg" id="seg-plac">
+          <button data-v="115" class="on">115-day wait</button><button data-v="75">75-day wait</button></div></div>
+        <div class="ctrlg"><span>Front-door levers</span><div class="seg" id="seg-front">
+          <button data-k="div">Community diversion</button><button data-k="ft">NP fast-track</button></div></div>
+        <p style="font-size:13px;color:var(--text-muted);margin:6px 0 0">The four back-door cells are all banked. Front-door levers are banked on their own at 162 beds and a 115-day wait, or all four together as the full package; other mixes were not simulated.</p>
+      </div>
+      <div class="xpanel xresult" id="xresult"></div>
+    </div>
+
+    <h2 class="sub" style="margin-top:38px">Each lever, in four steps.</h2>
+    <div class="duo">
+      <div class="card"><span class="fignum">Front door</span><h3>Community diversion</h3>
+        <div class="step"><b>Finding</b><span>Routing one in five low-urgency patients to community care lowers walkouts.</span>
+          <b>Evidence</b><span>Walkouts 22.32 to 18.44 percent, n=20; routing shares Tier C.</span>
+          <b>Action</b><span>Stand up the five community channels at triage.</span>
+          <b>Outcome</b><span>About 1,836 patients a year redirected; the admitted wait does not move.</span></div></div>
+      <div class="card"><span class="fignum">Front door</span><h3>Nurse-practitioner fast-track</h3>
+        <div class="step"><b>Finding</b><span>One fast-track nurse practitioner is the dominant front-door lever.</span>
+          <b>Evidence</b><span>Walkouts 22.32 to 4.26 percent; physician queue 44 to 19, n=20, Tier A.</span>
+          <b>Action</b><span>Staff one NP fast-track lane for low-acuity patients.</span>
+          <b>Outcome</b><span>Walkouts collapse; the admitted wait is unchanged.</span></div></div>
+    </div>
+    <div class="duo">
+      <div class="card"><span class="fignum">Back door</span><h3>Ward beds and placement speed</h3>
+        <div class="step"><b>Finding</b><span>Beds are the dominant back-door lever; faster placement is a partial substitute.</span>
+          <b>Evidence</b><span>Admit wait 29.82 to 28.03 h with beds, to 28.71 h with speed; ward 90.73 to 64.26 percent, n=20, Tier A/B.</span>
+          <b>Action</b><span>Speed placement first as the structural fix, then add beds as the buffer.</span>
+          <b>Outcome</b><span>The ward clears below 85 percent and the new beds do not refill with long-stay patients.</span></div></div>
+      <div class="card"><span class="fignum">All four together</span><h3>The combined package</h3>
+        <div class="step"><b>Finding</b><span>The four levers compose cleanly, with no interaction anomaly.</span>
+          <b>Evidence</b><span>Walkouts 2.36 percent, admit 27.84 h, ward 61.09 percent, n=20, Tier A.</span>
+          <b>Action</b><span>Fund the package as coordinated moves.</span>
+          <b>Outcome</b><span>Crisis to near target at the front and back doors at once.</span></div></div>
+    </div>
   </div>
 </section>
 
@@ -1187,6 +1280,59 @@
     mt.classList.toggle('active',on);
     mt.textContent=on?'Hide plain meanings':'Show plain meanings';
   });}
+  (function(){
+    var CELLS={
+      baseline:  {lwbs:22.32, admit:29.82, ward:90.73, alc:15.44, edu:98.53},
+      diversion: {lwbs:18.44, admit:29.90, ward:90.64, alc:15.24, edu:98.35},
+      fasttrack: {lwbs:4.26,  admit:29.58, ward:90.49, alc:14.98, edu:97.29},
+      speed162:  {lwbs:20.18, admit:28.71, ward:87.95, alc:11.38, edu:98.45},
+      beds234:   {lwbs:18.76, admit:28.03, ward:64.26, alc:15.65, edu:98.27},
+      bedsSpeed: {lwbs:18.76, admit:28.03, ward:61.24, alc:11.49, edu:98.27},
+      combined:  {lwbs:2.36,  admit:27.84, ward:61.09, alc:11.62, edu:96.57}
+    };
+    var names={baseline:'Today (baseline)',diversion:'Community diversion',fasttrack:'NP fast-track',speed162:'Faster placement',beds234:'More ward beds',bedsSpeed:'Beds and faster placement',combined:'All four (combined)'};
+    var B=CELLS.baseline, state={beds:'162',plac:'115',div:false,ft:false};
+    function keyFor(s){
+      if(!s.div&&!s.ft){
+        if(s.beds==='162'&&s.plac==='115')return'baseline';
+        if(s.beds==='162'&&s.plac==='75')return'speed162';
+        if(s.beds==='234'&&s.plac==='115')return'beds234';
+        if(s.beds==='234'&&s.plac==='75')return'bedsSpeed';
+      }
+      if(s.beds==='162'&&s.plac==='115'){
+        if(s.div&&!s.ft)return'diversion';
+        if(!s.div&&s.ft)return'fasttrack';
+      }
+      if(s.beds==='234'&&s.plac==='75'&&s.div&&s.ft)return'combined';
+      return null;
+    }
+    function delta(v,base){
+      var d=v-base; if(Math.abs(d)<0.005)return'<span class="d flat">no change</span>';
+      return '<span class="d '+(d<0?'up':'down')+'">'+(d<0?'↓':'↑')+' '+Math.abs(d).toFixed(2)+' vs baseline</span>';
+    }
+    function render(){
+      var el=document.getElementById('xresult'); if(!el)return;
+      var k=keyFor(state);
+      if(!k){ el.innerHTML='<div class="xnote">This combination was not simulated. The study banks seven configurations at twenty runs each. Reset a lever to return to a banked scenario.</div>'; return; }
+      var c=CELLS[k];
+      var col=c.lwbs<5?'var(--accent-green)':(c.lwbs<15?'var(--accent-amber)':'var(--accent-red)');
+      var ward=c.ward<=85?'<span class="badge met">MET, at or below 85%</span>':'<span class="badge over">OVER 85%</span>';
+      el.innerHTML=
+        '<div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:600">'+names[k]+'</div>'+
+        '<div class="bignum" style="color:'+col+'">'+c.lwbs.toFixed(2)+'%</div>'+
+        '<div class="biglab">walkouts, left without being seen '+delta(c.lwbs,B.lwbs)+'</div>'+
+        '<div style="margin-top:16px">'+
+        '<div class="xrow"><span class="k">Admitted wait</span><span><span class="v">'+c.admit.toFixed(2)+' h</span>'+delta(c.admit,B.admit)+'</span></div>'+
+        '<div class="xrow"><span class="k">Ward occupancy</span><span><span class="v">'+c.ward.toFixed(2)+'%</span>'+ward+'</span></div>'+
+        '<div class="xrow"><span class="k">ALC bed-day share</span><span><span class="v">'+c.alc.toFixed(2)+'%</span>'+delta(c.alc,B.alc)+'</span></div>'+
+        '<div class="xrow"><span class="k">ED bed utilization</span><span class="v">'+c.edu.toFixed(2)+'%</span></div>'+
+        '</div>';
+    }
+    function single(id,prop){document.querySelectorAll('#'+id+' button').forEach(function(b){b.addEventListener('click',function(){state[prop]=b.dataset.v;document.querySelectorAll('#'+id+' button').forEach(function(x){x.classList.toggle('on',x===b);});render();});});}
+    single('seg-beds','beds'); single('seg-plac','plac');
+    document.querySelectorAll('#seg-front button').forEach(function(b){b.addEventListener('click',function(){var k=b.dataset.k;state[k]=!state[k];b.classList.toggle('on',state[k]);render();});});
+    render();
+  })();
 </script>
 </body>
 </html>
