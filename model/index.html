@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CBRH ALC Placement, the region, with depth</title>
+<style>
+  :root{--ink:#eef2f5;--muted:#9fb0bd;--panel:#10161dE6;--line:#2b3742;
+    --amber:#e8a13a;--amber-bright:#f4b942;--teal:#4fb0a5;--red:#c0473a;--blue:#5b8fc7;}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:#0c1116;
+    font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink)}
+  #app{position:fixed;inset:0}canvas{display:block}
+  .hud{position:fixed;pointer-events:none;z-index:10}
+  .panel{pointer-events:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    backdrop-filter:blur(6px);box-shadow:0 10px 40px #0008}
+  .eyebrow{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+  .title{font-weight:800;letter-spacing:-.01em;line-height:1.02}
+  .lab{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:10px 0 6px}
+  .seg{display:flex;gap:4px;background:#0a0f14;border:1px solid var(--line);border-radius:9px;padding:4px}
+  .seg button{flex:1;border:0;border-radius:6px;padding:7px 5px;font-size:11px;font-weight:700;color:var(--muted);background:transparent;cursor:pointer;transition:.15s}
+  .seg button.on{color:#0c1116;background:var(--amber-bright)}.seg.win button.on{background:var(--teal)}
+  .seg button:not(.on):hover{color:var(--ink)}
+  #topleft{top:14px;left:14px;max-width:320px}#topleft .panel{padding:13px 15px}
+  #topleft .title{font-size:20px;margin:3px 0 4px}#topleft .sub{font-size:11.5px;color:var(--muted);line-height:1.35}
+  #derived{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.4}#derived b{color:var(--ink)}
+  #metrics{top:14px;right:14px;width:268px}#metrics .panel{padding:13px 15px}
+  .mhead{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:2px 0 9px}
+  .dot{width:7px;height:7px;border-radius:50%}
+  .row{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-top:1px solid #1c2730}
+  .row:first-of-type{border-top:0}.k{font-size:12px;color:var(--muted)}
+  .v{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}.v .u{font-size:10px;color:var(--muted);font-weight:600;margin-left:2px}
+  .v.amber{color:var(--amber)}.v.teal{color:var(--teal)}.v.red{color:var(--red)}
+  #cost{position:fixed;right:14px;top:300px;width:268px;z-index:10}#cost .panel{padding:13px 15px}
+  .big{font-size:24px;font-weight:800;color:var(--teal);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .pair{display:flex;gap:8px;margin-top:8px;padding:8px 10px;border-radius:8px;background:#1a120a;border:1px solid #3a2a14}
+  .pair .ci{color:var(--amber);font-size:13px}.pair .ct{font-size:10.5px;color:#e7cfa6;line-height:1.35}
+  .ns{font-size:10.5px;color:var(--muted);margin-top:9px;line-height:1.4;border-top:1px solid #1c2730;padding-top:8px}.ns b{color:var(--ink)}
+  #bl{bottom:14px;left:14px;width:330px}#bl .panel{padding:11px 14px;margin-top:9px}#live .row{padding:4px 0}
+  .legkey{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:2px 0 6px;font-weight:700}
+  .legend{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px}
+  .lg{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--ink)}
+  .sw{width:15px;height:15px;border-radius:4px;flex:none;border:1px solid #0006}
+  .diamond{width:14px;height:14px;background:var(--amber-bright);transform:rotate(45deg);flex:none;border:1px solid #0006}
+  .ctas{display:flex;gap:9px;margin-top:6px;align-items:center;font-size:13px;font-weight:700;color:var(--ink);flex-wrap:wrap}
+  .cchip{display:flex;align-items:center;gap:5px}.cdot{width:14px;height:14px;border-radius:3px;border:1px solid #0006}
+  #foot{bottom:12px;left:50%;transform:translateX(-50%);width:min(560px,calc(100% - 340px));text-align:center}
+  #foot .panel{padding:7px 13px}#foot p{margin:0;font-size:10px;color:var(--muted);line-height:1.4}
+  #ctrl{bottom:14px;right:14px;display:flex;gap:7px;flex-direction:column;align-items:flex-end}
+  .btn{pointer-events:auto;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;backdrop-filter:blur(6px)}
+  .btn:hover{border-color:var(--amber)}
+  .btnrow{display:flex;gap:7px}
+  .hint{font-size:10px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:5px 9px;backdrop-filter:blur(6px);max-width:230px;text-align:right;line-height:1.4}
+  body.record .hud:not(#cap){opacity:0;transition:.4s}
+  #cap{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:20;opacity:0;text-align:center;pointer-events:none;transition:.4s}
+  body.record #cap{opacity:1}#cap .t{font-size:15px;font-weight:800;color:#fff;text-shadow:0 2px 14px #000}
+  #cap .s{font-size:11px;color:#d8e2ea;text-shadow:0 2px 10px #000;margin-top:3px}
+  #infoBtn{margin-left:auto;cursor:pointer;color:var(--muted);font-size:15px;font-weight:700}
+  #infoBtn:hover{color:var(--amber)}
+  #explain{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:50;width:min(450px,92vw);max-height:84vh;overflow:auto;padding:16px 18px;display:none}
+  #explain h3{margin:0 0 3px;font-size:16px}
+  #explain .sub{color:var(--muted);font-size:11px;margin-bottom:11px;line-height:1.4}
+  #explain .em{margin:10px 0;font-size:12px;line-height:1.46}
+  #explain .em b{color:var(--amber)}
+  #explain .src{color:var(--muted)}
+  #explain .cl{position:absolute;top:8px;right:13px;cursor:pointer;color:var(--muted);font-size:19px;line-height:1}
+  #npccard{position:fixed;z-index:40;width:218px;padding:11px 13px 12px;display:none}
+  #npccard .nm{font-weight:800;font-size:15px;line-height:1.1}
+  #npccard .rl{color:var(--amber);font-size:10px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;margin-top:3px}
+  #npccard .st{margin-top:8px;font-size:12px;color:var(--ink);line-height:1.4}
+  #npccard .ct{font-size:11.5px;color:var(--muted);margin-top:6px}
+  #npccard .cl{position:absolute;top:5px;right:10px;cursor:pointer;color:var(--muted);font-size:15px;line-height:1}
+  @media (max-width:900px){#cost{position:static}#metrics,#cost{width:228px}#bl,#topleft{width:228px}#foot{display:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="hud" id="topleft"><div class="panel">
+  <div class="eyebrow">Cape Breton Regional Hospital · model, dramatized</div>
+  <div class="title">The region, with depth</div>
+  <div class="sub">Patients are triaged by CTAS, ALC patients hold ward beds, then ride out on the roads to a real home or to home care, and walk in. Drag to look, W A S D to move, click a home to fly there.</div>
+  <div class="lab">Placement speed lever</div>
+  <div class="seg" id="seg"><button data-s="baseline" class="on">Baseline</button><button data-s="fasterPlacement">Faster</button></div>
+  <div class="lab">Time of day · illustrative pacing</div>
+  <div class="seg win" id="periodSeg"><button data-p="morning">Morning Lull</button><button data-p="afternoon" class="on">Afternoon Peak</button><button data-p="evening">Evening Rush</button></div>
+  <button class="btn" id="outlierBtn" style="margin-top:8px;width:100%;font-size:11px">Outlier / atypical day</button>
+  <span id="outlierTag" style="display:none;margin-top:7px;font-size:10px;font-weight:800;color:#0c1116;background:var(--amber-bright);padding:3px 8px;border-radius:6px">atypical day</span>
+  <div id="derived"></div>
+</div></div>
+<div class="hud" id="metrics"><div class="panel">
+  <div class="mhead"><span class="dot" style="background:var(--teal)"></span>Locked model output<span id="infoBtn" title="What do these mean?">&#9432;</span></div>
+  <div class="row"><span class="k">LWBS (walkouts)</span><span class="v" id="m_lwbs"></span></div>
+  <div class="row"><span class="k">Ward occupancy</span><span class="v" id="m_occ"></span></div>
+  <div class="row"><span class="k">ALC bed-day share</span><span class="v amber" id="m_alc"></span></div>
+  <div class="row"><span class="k">LTC placement wait</span><span class="v amber" id="m_ltc"></span></div>
+  <div class="row"><span class="k">Home-care wait</span><span class="v" id="m_home"></span></div>
+</div></div>
+<div class="hud" id="cost"><div class="panel">
+  <div class="mhead"><span class="dot" style="background:var(--teal)"></span>Avoided cost + care · Obermeyer-paired</div>
+  <div class="big" id="c_save">n/a</div>
+  <div class="k" style="margin-top:2px">system avoided acute cost · CBRH cohort, model</div>
+  <div class="pair"><div class="ci">&#9829;</div><div class="ct" id="c_care"></div></div>
+  <div class="ns" id="c_ns"></div>
+</div></div>
+<div class="hud" id="bl">
+  <div class="panel" id="live">
+    <div class="mhead"><span class="dot" style="background:var(--amber)"></span>Live scene · illustrative, sampled</div>
+    <div class="row"><span class="k">Ward beds filled</span><span class="v" id="l_ward"></span></div>
+    <div class="row"><span class="k">ALC held now</span><span class="v amber" id="l_alc"></span></div>
+    <div class="row"><span class="k">Boarding in ED (no bed)</span><span class="v red" id="l_board"></span></div>
+    <div class="row"><span class="k">On the roads</span><span class="v" id="l_transit"></span></div>
+    <div class="row"><span class="k">Placed this run</span><span class="v teal" id="l_placed"></span></div>
+  </div>
+  <div class="panel" id="little">
+    <div class="mhead"><span class="dot" style="background:var(--blue)"></span>Little's Law · structural finding</div>
+    <div style="font-size:11.5px;line-height:1.45" id="little_eq"></div>
+    <div class="ns" id="little_note"></div>
+  </div>
+  <div class="panel">
+    <div class="legkey">People &amp; places</div>
+    <div class="legend">
+    <div class="lg"><span class="sw" style="background:#e6e3da"></span>Acute admit</div>
+    <div class="lg"><span class="diamond"></span>ALC, stuck</div>
+    <div class="lg"><span class="sw" style="background:#3f7d5a"></span>LTC home</div>
+    <div class="lg"><span class="sw" style="background:#c9a36a"></span>Home care</div>
+    <div class="lg"><span class="sw" style="background:#fff"></span>Doctor</div>
+    <div class="lg"><span class="sw" style="background:var(--teal)"></span>Nurse</div>
+  </div>
+  <div class="legkey" style="margin-top:11px">CTAS acuity (1 sickest &rarr; 5 least)</div>
+  <div class="ctas"><span class="cchip"><span class="cdot" style="background:#3b6fd4"></span>1</span><span class="cchip"><span class="cdot" style="background:#d23b3b"></span>2</span><span class="cchip"><span class="cdot" style="background:#e8b53a"></span>3</span><span class="cchip"><span class="cdot" style="background:#4fae5a"></span>4</span><span class="cchip"><span class="cdot" style="background:#e8e3da"></span>5</span></div>
+  </div>
+</div>
+<div class="hud" id="foot"><div class="panel"><p>Visualizes the locked AnyLogic model. Changes no number. Bed counts are Tier A (DHW Jun 2026), summing to the model's 1,137-bed NH pool. Occupancy, per-facility routing, CTAS mix, vehicles, roads, and screen-time are model or illustrative, tagged on screen. No Cape Breton ALC percentage shown as measured.</p></div></div>
+<div class="hud" id="ctrl">
+  <div class="hint">drag look · W A S D move · scroll zoom · click a home to fly there</div>
+  <div class="btnrow">
+    <button class="btn" id="cutawayBtn">See patients</button>
+    <button class="btn" id="aerialBtn">Aerial</button>
+    <button class="btn" id="shadowBtn">Shadows</button>
+  </div>
+  <div class="btnrow">
+    <button class="btn" id="recBtn">Record mode</button>
+    <button class="btn" id="resetBtn">Reset run</button>
+  </div>
+</div>
+<div id="cap"><div class="t" id="capT"></div><div class="s">CBRH ALC-to-community placement · model dramatization · changes no number</div></div>
+<div id="npccard" class="panel"></div>
+<div id="explain" class="panel">
+  <span class="cl" onclick="toggleExplain(false)">&times;</span>
+  <h3>What the locked numbers mean</h3>
+  <div class="sub">Plain-English read of the LOCKED MODEL OUTPUT. These are full-year model values and do not change with the visual controls below. Sources tagged by evidence tier.</div>
+  <div class="em"><b>LWBS, walkouts: 20.40%</b><br>Share of ED arrivals who leave without being seen. It rises when the ward stays full and admitted patients board in the ED, so the front door backs up behind the back door. <span class="src">Model output.</span></div>
+  <div class="em"><b>Ward occupancy: 88.02%</b><br>Average share of staffed ward beds in use. The higher it runs, the less slack there is to admit the next patient. <span class="src">Model output.</span></div>
+  <div class="em"><b>ALC bed-day share: 11.62%</b><br>Share of ward bed-days held by Alternate Level of Care patients, who are medically ready to leave but waiting for a place to go. The model's pALC is calibrated to the provincial 21.3% ALC day-share, not measured at CBRH. <span class="src">Calibrated, Tier B. No Cape Breton ALC percentage is presented as measured.</span></div>
+  <div class="em"><b>LTC placement wait: 111 days</b><br>Median time from ALC designation to a long-term care bed. This dwell is what fills the ward, and halving it is what drains it. <span class="src">Cape Breton County median, Tier A (DHW).</span></div>
+  <div class="em"><b>Home-care wait: 8 days</b><br>Median wait to start home care for those routed to the community rather than to long-term care. <span class="src">National median, Tier B (CIHI).</span></div>
+  <div class="em src">Avoided cost is reported as a system or cohort figure and is always paired with the harm it represents (Obermeyer pairing). No per-patient dollar values.</div>
+</div>
+
+<!-- Three.js r128 vendored locally so the scene runs with no internet (room wifi cannot break it). -->
+<script src="three.min.js"></script>
+<script>
+  // If the local copy is ever missing, fall back to the CDN so the scene still renders.
+  if (typeof THREE === "undefined") {
+    document.write('<scr' + 'ipt src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/scr' + 'ipt>');
+  }
+</script>
+<script>
+/* ===== DATA (inlined; canonical in data/*.json) ===== */
+const FROZEN={baseline:{label:"Baseline",speed:1.0,lwbs:20.40,occ:88.02,alc:11.62,ltc:111,home:8,careExposure:0},
+  fasterPlacement:{label:"Faster",speed:0.5,lwbs:19.04,occ:83.54,alc:6.65,ltc:56,home:8,careExposure:43}};
+const NS={mid:143,lo:92,hi:182},ANNUAL=38900,WINDOWS={week:7,month:30,biannual:182,year:365};
+// ===== CITY GRID + HOSPITAL RING (T2) =====
+const GX=[-120,-80,-40,40,80,120], GZ=[-120,-80,-40,40,80,120];  // avenues (x) and streets (z); none at 0 (hospital sits there)
+const RING={x0:-34,x1:36,z0:-27,z1:29};                          // hospital loop road; widened apron gives the block room (T8)
+const SET=12;                                                     // building setback from its frontage road
+const ROOFPAD={x:0,y:6.6,z:-1};                                  // rooftop helipad (on the main block roof) for the medevac
+// each district fronts one grid road. axis 'h' = horizontal street at z=line; 'v' = vertical avenue at x=line.
+// side = which way off-centre the row sits; a..b = span along the road.
+const DISTRICTS={
+  "North Sydney": {axis:'h', line:-40, side:-1, a:-34, b:34,  label:[0,-66]},
+  "Sydney":       {axis:'h', line: 40, side: 1, a:-34, b:34,  label:[0,66]},
+  "Glace Bay":    {axis:'v', line: 40, side: 1, a:-30, b:30,  label:[66,0]},
+  "New Waterford":{axis:'v', line:-40, side:-1, a:-30, b:30,  label:[-66,0]},
+  "Sydney Mines": {axis:'h', line:-40, side:-1, a:-74, b:-46, label:[-60,-66]},
+  "Eskasoni":     {axis:'h', line:-40, side:-1, a:46,  b:74,  label:[60,-66]},
+  "Dominion":     {axis:'h', line: 40, side: 1, a:46,  b:74,  label:[60,66]}
+};
+const FAC=[["Harbourstone Enhanced Care","Sydney","NH",270,"Shannex"],["The Cove Guest Home","Sydney","NH",110],
+  ["R.C. MacGillivray Guest Home","Sydney","NH",106],["Celtic Court","Sydney","NH",36,"Shannex"],
+  ["My CB Home (Sydney)","Sydney","RCF",16],["Seaview Manor","Glace Bay","NH",113],["Taigh Na Mara","Glace Bay","NH",67],
+  ["Victoria Haven","Glace Bay","NH",53],["Glace Bay HCF (TCU)","Glace Bay","NH",18],
+  ["Northside Community Guest Home","North Sydney","NH",144],["Taigh Solas","North Sydney","NH",22],
+  ["Northside General 4 East","North Sydney","NH",11],["My CB Home (North Sydney)","North Sydney","RCF",16],
+  ["Miners' Memorial Manor","Sydney Mines","NH",37],["Harbour View Facility","Sydney Mines","NH",28],
+  ["Maple Hill Manor","New Waterford","NH",50],["Waterford Heights","New Waterford","NH",24],
+  ["Kiknu","Eskasoni","NH",48,"Shannex"],["Carefield Manor","Dominion","RCF",12]];
+const TUNE={pAdmit:0.34,pALCofAdmit:0.30,pHome:0.27,pDecline:0.12,pAmbulance:0.6,
+  spawnEveryMs:480,ambulanceEveryMs:3000,maxAgents:90,maxVehicles:14,maxUnits:26,
+  walkSpeed:6.0,driveSpeed:13.0,loopSeconds:50,nDoctors:4,nNurses:6,dwellScale:6};
+const CTAS_COL={1:0x3b6fd4,2:0xd23b3b,3:0xe8b53a,4:0x4fae5a,5:0xe8e3da};
+
+/* ===== KEY POINTS + ROAD NETWORK ===== */
+const C={ED:v3(0,0,6),TRIAGE:v3(0,0,2),EDBAY:v3(-7,0,1),WARD_IN:v3(8,0,-2),EXIT:v3(0,0,11),
+  BOARD:v3(-3,0,8),GATE:v3(0,0,14),AMB:v3(-10,0,7),LOT:v3(4,0,15),HWY:v3(0,0,90)};
+function v3(x,y,z){return new THREE.Vector3(x,y,z);}
+// nearest grid-line snappers, for Manhattan routing onto the district grid
+function snapAve(x){let b=GX[0];for(const a of GX)if(Math.abs(a-x)<Math.abs(b-x))b=a;return b;}
+function snapSt(z){let b=GZ[0];for(const a of GZ)if(Math.abs(a-z)<Math.abs(b-z))b=a;return b;}
+let signals={}; // junction key -> {green:bool}
+
+let scene,camera,renderer,clock;
+let beds=[],facilities=[],homeZone=[],agents=[],vehicles=[],units=[],staff=[],clickTargets=[],clickNPCs=[];
+let ambient=[];
+let hospitalShell=[],cutaway=false;          // walls we can fade to reveal the patient flow
+let heli=null,heliTimer=14;                   // periodic medevac helicopter
+let scenario="baseline",windowKey="year",placedCount=0;
+let period="afternoon",outlier=false;   // time-of-day pacing + atypical-day toggle (visual only)
+const root=document.getElementById('app');
+
+/* ===== MATERIAL CACHE + INSTANCING CORE (Task 4 + Task 7) ===== */
+const _matCache={};
+function smat(c,rough,metal){const r=(rough===undefined?0.85:rough),m=(metal===undefined?0.0:metal);
+  const k=c+'_'+r+'_'+m;return _matCache[k]||(_matCache[k]=new THREE.MeshStandardMaterial({color:c,roughness:r,metalness:m}));}
+const _one=new THREE.Vector3(1,1,1),_white=new THREE.Color(0xffffff);
+function vec(x,y,z){return new THREE.Vector3(x,y,z);}
+function yQuat(a){return new THREE.Quaternion().setFromEuler(new THREE.Euler(0,a,0));}
+function compose(p,q,s){return new THREE.Matrix4().compose(p,q||yQuat(0),s||_one.clone());}
+// instancing collector: one InstancedMesh per key keeps draw calls down
+const _inst={};
+function addInst(key,geo,mat,matrix,color){(_inst[key]=_inst[key]||{geo:geo,mat:mat,items:[]}).items.push({matrix:matrix,color:color||null});}
+function buildInstances(){
+  const castKeys={car:1,leaf:1,trunk:1,pole:1},recvKeys={grass:1};
+  for(const k in _inst){const g=_inst[k];const im=new THREE.InstancedMesh(g.geo,g.mat,g.items.length);
+    im.castShadow=!!castKeys[k];im.receiveShadow=!!recvKeys[k];
+    const hasColor=g.items.some(it=>it.color);
+    g.items.forEach((it,i)=>{im.setMatrixAt(i,it.matrix);if(hasColor)im.setColorAt(i,it.color||_white);});
+    im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;scene.add(im);}
+}
+// shared geometries / materials for instanced repeats
+const ASPHALT=0x32302d,EDGE=0xd9d4c4,CENTRE=0xd8c46a,CURB=0x9a958c,WALK=0xb8b4ab;
+const _dashGeo=new THREE.BoxGeometry(0.16,0.05,1.2),_dashMat=smat(CENTRE,0.85);
+const _zebraGeo=new THREE.BoxGeometry(1,0.04,0.42),_zebraMat=smat(0xe8e3d2,0.8);
+const _stallGeo=new THREE.BoxGeometry(0.08,0.04,3.6),_stallMat=smat(0xcfcabd,0.9);
+const _carGeo=new THREE.BoxGeometry(1.1,0.6,2.0),_carMat=smat(0xffffff,0.5,0.05);
+const _trunkGeo=new THREE.BoxGeometry(0.4,1.1,0.4),_trunkMat=smat(0x6b4a2f,0.95);
+const _leafGeo=new THREE.ConeGeometry(0.95,1.9,6),_leafMat=smat(0xffffff,0.95);
+const _grassGeo=new THREE.BoxGeometry(20,0.4,20),_grassMat=smat(0xffffff,1.0);
+const _poleGeo=new THREE.CylinderGeometry(0.08,0.1,4,6),_poleMat=smat(0x3a3f44,0.6,0.3);
+const _lampGeo=new THREE.SphereGeometry(0.22,8,8),_lampMat=new THREE.MeshStandardMaterial({color:0xfff1c0,emissive:0xffe9a0,emissiveIntensity:0.6,roughness:0.4});
+const carPalette=[0x9c4a3a,0x3a5f7a,0xcabf9f,0x4f6b4a,0x6a6f76,0xb0823a,0x8a8f96,0x3a4a52];
+
+function init(){
+  scene=new THREE.Scene();scene.fog=new THREE.Fog(0xaecbd6,120,300);
+  camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,0.1,800);
+  renderer=new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setSize(innerWidth,innerHeight);
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.outputEncoding=THREE.sRGBEncoding;
+  root.appendChild(renderer.domElement);
+  buildSky();
+  scene.add(new THREE.HemisphereLight(0xdfeefc,0x6f7d5a,0.6));
+  // lower, warmer sun for longer soft shadows (Task 4)
+  const sun=new THREE.DirectionalLight(0xfff1d8,1.0);sun.position.set(72,64,52);sun.castShadow=true;
+  sun.shadow.mapSize.set(2048,2048);const sc=sun.shadow.camera;
+  sc.left=-95;sc.right=95;sc.top=95;sc.bottom=-95;sc.near=1;sc.far=320;sun.shadow.bias=-0.0004;sun.shadow.normalBias=0.03;
+  scene.add(sun);scene.add(new THREE.DirectionalLight(0xbfe0ff,0.16).translateX(-40));
+  buildGround();buildRoads();buildHospital();buildFacilities();buildHomeCare();buildStaff();buildAmbient();
+  buildInstances();
+  clock=new THREE.Clock();setScenario("baseline");setPeriod("afternoon");bindUI();
+  // cutaway ON by default so the patient flow always reads (Task 3)
+  setCutaway(true);const _cb=document.getElementById('cutawayBtn');
+  if(_cb){_cb.textContent='Show walls';_cb.style.borderColor='var(--amber)';_cb.style.color='var(--amber)';}
+  startRenderLoop();
+}
+function buildSky(){
+  const cv=document.createElement('canvas');cv.width=8;cv.height=256;const g=cv.getContext('2d');
+  const gr=g.createLinearGradient(0,0,0,256);gr.addColorStop(0,'#4f86c6');gr.addColorStop(0.5,'#9cc2da');gr.addColorStop(1,'#dfeef2');
+  g.fillStyle=gr;g.fillRect(0,0,8,256);
+  const tx=new THREE.CanvasTexture(cv);
+  const sky=new THREE.Mesh(new THREE.SphereGeometry(400,16,16),new THREE.MeshBasicMaterial({map:tx,side:THREE.BackSide}));
+  scene.add(sky);
+  const sun=new THREE.Mesh(new THREE.SphereGeometry(9,16,16),new THREE.MeshBasicMaterial({color:0xfff3c8}));
+  sun.position.set(120,150,80);scene.add(sun);
+  const glowC=document.createElement('canvas');glowC.width=glowC.height=128;const gg=glowC.getContext('2d');
+  const rg=gg.createRadialGradient(64,64,4,64,64,64);rg.addColorStop(0,'rgba(255,244,200,.9)');rg.addColorStop(1,'rgba(255,244,200,0)');
+  gg.fillStyle=rg;gg.fillRect(0,0,128,128);
+  const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(glowC),transparent:true,depthWrite:false}));
+  glow.position.copy(sun.position);glow.scale.setScalar(60);scene.add(glow);
+}
+function lmat(c){return new THREE.MeshStandardMaterial({color:c,roughness:0.85,metalness:0.0});}
+function box(w,h,d,c){return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),lmat(c));}
+function tile(w,d,x,z,color,y){y=y||0;const m=box(w,0.4,d,color);m.position.set(x,y-0.2,z);m.receiveShadow=true;scene.add(m);return m;}
+function buildGround(){
+  // patchwork grass, instanced with per-tile color jitter (Task 4/7)
+  const shades=[0x6f8f6a,0x73946d,0x6a8a64,0x77976f];
+  for(let gx=-8;gx<=8;gx++)for(let gz=-8;gz<=8;gz++){
+    const base=shades[(gx+gz+16)%4];
+    const col=new THREE.Color(base).multiplyScalar(0.94+Math.random()*0.12);
+    addInst('grass',_grassGeo,_grassMat,compose(vec(gx*20,-0.24,gz*20),yQuat(0),_one.clone()),col);
+  }
+  // coastal water on the far edge only (no road crosses it)
+  const w=new THREE.Mesh(new THREE.BoxGeometry(70,0.42,360),smat(0x3f6f8a,0.35,0.1));
+  w.position.set(-135,-0.18,-10);w.receiveShadow=true;scene.add(w);
+  const beach=box(16,0.42,360,0xcdb98a);beach.position.set(-92,-0.2,-10);beach.receiveShadow=true;scene.add(beach);
+  for(let i=0;i<70;i++){const x=(Math.random()-0.5)*320,z=(Math.random()-0.5)*320;
+    if(Math.hypot(x,z)<34||x<-82)continue;tree(x,z);}
+}
+function tree(x,z){const s=0.7+Math.random()*0.8;
+  addInst('trunk',_trunkGeo,_trunkMat,compose(vec(x,0.55*s,z),yQuat(0),vec(s,s,s)));
+  const lc=new THREE.Color(0x4f7d4a).multiplyScalar(0.82+Math.random()*0.32);
+  addInst('leaf',_leafGeo,_leafMat,compose(vec(x,1.85*s,z),yQuat(Math.random()*6.28),vec(s,s,s)),lc);
+}
+
+/* ===== ROAD SYSTEM (Task 1) ===== */
+function unit(a,b){const dx=b.x-a.x,dz=b.z-a.z,l=Math.hypot(dx,dz)||1;return{x:dx/l,z:dz/l};}
+// one road segment: asphalt, edge lines, dashed centre, raised curbs, sidewalks
+function buildRoad(a,b,opts){
+  opts=opts||{};
+  const width=opts.width||4,sidewalk=opts.sidewalk!==false,centre=opts.centre!==false;
+  const trimA=opts.trimA||0,trimB=opts.trimB||0;
+  let dx=b.x-a.x,dz=b.z-a.z,full=Math.hypot(dx,dz);if(full<0.01)return;
+  const ux=dx/full,uz=dz/full;
+  const ax=a.x+ux*trimA,az=a.z+uz*trimA,bx=b.x-ux*trimB,bz=b.z-uz*trimB;
+  const len=Math.hypot(bx-ax,bz-az);if(len<0.4)return;
+  const mx=(ax+bx)/2,mz=(az+bz)/2,ang=Math.atan2(ux,uz);   // local +Z aligns to travel
+  const px=-uz,pz=ux;                                       // unit perpendicular
+  const strip=(w,h,d,col,off,y,rough)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),smat(col,rough));
+    m.position.set(mx+px*off,y,mz+pz*off);m.rotation.y=ang;m.receiveShadow=true;scene.add(m);return m;};
+  const half=width/2;
+  strip(width,0.10,len,ASPHALT,0,0.05,0.96);               // asphalt
+  strip(0.14,0.04,len,EDGE,half-0.18,0.115,0.7);           // edge line R
+  strip(0.14,0.04,len,EDGE,-(half-0.18),0.115,0.7);        // edge line L
+  if(centre){const gap=3.2,n=Math.max(1,Math.floor(len/gap));
+    for(let i=0;i<n;i++){const t=(i+0.5)/n,cx=ax+(bx-ax)*t,cz=az+(bz-az)*t;
+      addInst('dash',_dashGeo,_dashMat,compose(vec(cx,0.118,cz),yQuat(ang),_one.clone()));}}
+  if(sidewalk){
+    strip(0.30,0.30,len,CURB,half+0.12,0.15,0.9);          // curb R
+    strip(0.30,0.30,len,CURB,-(half+0.12),0.15,0.9);       // curb L
+    strip(1.1,0.16,len,WALK,half+0.85,0.08,0.95);          // sidewalk R
+    strip(1.1,0.16,len,WALK,-(half+0.85),0.08,0.95);       // sidewalk L
+  }
+}
+// flat intersection pad so segments butt in, no overlap / z-fight
+function hubPad(p,half){const m=new THREE.Mesh(new THREE.BoxGeometry(half*2,0.10,half*2),smat(0x302e2b,0.96));
+  m.position.set(p.x,0.055,p.z);m.receiveShadow=true;scene.add(m);}
+// zebra crosswalk band perpendicular to travel at a hub approach
+function crosswalk(hub,dir,width){const ang=Math.atan2(dir.x,dir.z),ux=dir.x,uz=dir.z;
+  const bars=4,startD=4.3,step=0.85,span=Math.max(1,width-0.6);
+  for(let i=0;i<bars;i++){const along=startD+i*step,cx=hub.x+ux*along,cz=hub.z+uz*along;
+    addInst('zebra',_zebraGeo,_zebraMat,compose(vec(cx,0.13,cz),yQuat(ang),vec(span,1,1)));}}
+// lamp posts along a segment, alternating sides, on the sidewalk
+function placeLamps(a,b,width){const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz);if(len<10)return;
+  const ux=dx/len,uz=dz/len,px=-uz,pz=ux,spacing=15,n=Math.floor(len/spacing);
+  for(let i=1;i<=n;i++){const t=i*spacing/len,side=(i%2)?1:-1,off=width/2+1.3;
+    const x=a.x+dx*t+px*off*side,z=a.z+dz*t+pz*off*side;
+    addInst('pole',_poleGeo,_poleMat,compose(vec(x,2,z),yQuat(0),_one.clone()));
+    addInst('lamp',_lampGeo,_lampMat,compose(vec(x,4.0,z),yQuat(0),_one.clone()));}}
+function bench(x,z,ang){const g=new THREE.Group();
+  const seat=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.12,0.5),smat(0x7a5a3a,0.8));seat.position.y=0.5;g.add(seat);
+  const back=new THREE.Mesh(new THREE.BoxGeometry(1.4,0.5,0.12),smat(0x7a5a3a,0.8));back.position.set(0,0.75,-0.2);g.add(back);
+  for(const sx of[-0.6,0.6]){const lg=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.5,0.5),smat(0x4a4a4a,0.7));lg.position.set(sx,0.25,0);g.add(lg);}
+  g.position.set(x,0,z);g.rotation.y=ang;g.traverse(o=>o.castShadow=true);scene.add(g);}
+function busStop(x,z){const g=new THREE.Group();
+  const pole=new THREE.Mesh(new THREE.CylinderGeometry(0.06,0.06,2.6,6),smat(0x3a3f44,0.6,0.3));pole.position.y=1.3;g.add(pole);
+  const sign=new THREE.Mesh(new THREE.BoxGeometry(0.7,0.5,0.06),smat(0x2f6ad0,0.5));sign.position.y=2.5;g.add(sign);
+  g.position.set(x,0,z);g.traverse(o=>o.castShadow=true);scene.add(g);}
+function buildRoads(){
+  const aveW=4, stW=4, ringW=5, stubW=4;
+  // district grid: full avenues + streets, crossing at single clean junctions
+  for(const x of GX) buildRoad({x,z:GZ[0]},{x,z:GZ[GZ.length-1]},{width:aveW});
+  for(const z of GZ) buildRoad({x:GX[0],z},{x:GX[GX.length-1],z},{width:stW});
+  // raise an intersection pad at every crossing so perpendicular roads do not z-fight
+  for(const x of GX)for(const z of GZ)hubPad({x,z},2.7);
+  // hospital ring road: a closed loop around the central block (image-2 outline)
+  const R=[[RING.x0,RING.z0],[RING.x1,RING.z0],[RING.x1,RING.z1],[RING.x0,RING.z1]];
+  for(let i=0;i<4;i++){const a=R[i],b=R[(i+1)%4];
+    buildRoad({x:a[0],z:a[1]},{x:b[0],z:b[1]},{width:ringW,centre:false});
+    placeLamps({x:a[0],z:a[1]},{x:b[0],z:b[1]},ringW);}
+  R.forEach(c=>hubPad({x:c[0],z:c[1]},3.0));
+  // four clean stubs link the ring to the surrounding grid (no radial pile-up)
+  buildRoad({x:0,z:RING.z1},{x:0,z:40},{width:stubW});
+  buildRoad({x:0,z:RING.z0},{x:0,z:-40},{width:stubW});
+  buildRoad({x:RING.x1,z:0},{x:40,z:0},{width:stubW});
+  buildRoad({x:RING.x0,z:0},{x:-40,z:0},{width:stubW});
+  // signals at the central junctions + stub landings
+  const SIG=[[40,40],[-40,40],[40,-40],[-40,-40],[0,40],[0,-40],[40,0],[-40,0]];
+  SIG.forEach((s,i)=>{const k='s'+i;signals[k]={green:Math.random()<0.5,t:Math.random()*4};signalPost(k,{x:s[0],z:s[1]});});
+  // a little street furniture by the south stub
+  busStop(4,42);bench(-5,42,0.6);
+}
+function signalPost(key,p){const g=new THREE.Group();
+  const pole=box(0.18,3,0.18,0x2b2b2b);pole.position.y=1.5;g.add(pole);
+  const head=box(0.5,1.3,0.4,0x1a1a1a);head.position.y=3.1;g.add(head);
+  const r=new THREE.Mesh(new THREE.SphereGeometry(0.16,8,8),new THREE.MeshBasicMaterial({color:0x551111}));r.position.set(0,3.45,0.22);g.add(r);
+  const gr=new THREE.Mesh(new THREE.SphereGeometry(0.16,8,8),new THREE.MeshBasicMaterial({color:0x115522}));gr.position.set(0,2.8,0.22);g.add(gr);
+  g.position.set(p.x+1.8,0,p.z+1.8);g.traverse(o=>{if(o.geometry)o.castShadow=true;});scene.add(g);
+  signals[key].r=r.material; signals[key].g=gr.material;
+}
+function roundRect(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+function label(text,sub,scale){scale=scale||1;const cv=document.createElement('canvas');cv.width=512;cv.height=140;const g=cv.getContext('2d');
+  g.fillStyle='rgba(12,17,22,.82)';roundRect(g,0,0,512,140,18);g.fill();
+  g.fillStyle='#eef2f5';g.font='bold 34px ui-sans-serif,Segoe UI,Arial';g.textAlign='center';g.fillText(text,256,sub?58:84);
+  if(sub){g.fillStyle='#e8a13a';g.font='600 30px ui-sans-serif,Segoe UI,Arial';g.fillText(sub,256,100);}
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true}));
+  sp.scale.set(7*scale,1.92*scale,1);return sp;}
+
+/* ===== PARKING (Task 2) ===== */
+// structured lot: asphalt pad, two stall rows + drive aisle, divider lines, parked cars (instanced)
+function parkingLot(x,z,rows,cols,angle){
+  rows=rows||2;cols=cols||6;angle=angle||0;
+  const stallW=2.0,stallD=4.2,aisle=5.0;
+  const w=cols*stallW+1.0,d=(rows*stallD)+(rows>1?aisle:1.4);
+  const pad=new THREE.Mesh(new THREE.BoxGeometry(w,0.10,d),smat(ASPHALT,0.95));
+  pad.position.set(x,0.045,z);pad.rotation.y=angle;pad.receiveShadow=true;scene.add(pad);
+  const cosA=Math.cos(angle),sinA=Math.sin(angle);
+  const place=(lx,lz)=>({x:x+lx*cosA+lz*sinA,z:z-lx*sinA+lz*cosA});
+  for(let r=0;r<rows;r++){
+    const lz=(rows>1)?((r<rows/2)?(-d/2+stallD/2+r*stallD):(d/2-stallD/2-(rows-1-r)*stallD)):0;
+    for(let c=0;c<cols;c++){
+      const lx=-w/2+stallW/2+0.5+c*stallW;
+      const lp=place(lx-stallW/2,lz);                       // stall divider line
+      addInst('stall',_stallGeo,_stallMat,compose(vec(lp.x,0.095,lp.z),yQuat(angle),_one.clone()));
+      if(Math.random()<0.5){const cp=place(lx,lz);
+        const col=new THREE.Color(carPalette[(r*cols+c)%carPalette.length]).multiplyScalar(0.82+Math.random()*0.32);
+        addInst('car',_carGeo,_carMat,compose(vec(cp.x,0.35,cp.z),yQuat(angle),_one.clone()),col);}
+    }
+  }
+  // trailing divider line on the last stall
+  const lpEnd=place(-w/2+0.5+cols*stallW,0);
+  addInst('stall',_stallGeo,_stallMat,compose(vec(lpEnd.x,0.095,lpEnd.z),yQuat(angle),_one.clone()));
+}
+
+function addShell(m){if(m.material){m.material=m.material.clone();m.userData.op0=(m.material.opacity===undefined?1:m.material.opacity);}hospitalShell.push(m);return m;}
+function buildHospital(){
+  const g=new THREE.Group();
+  // main block: brick tone wall, flat institutional roof
+  const main=new THREE.Mesh(new THREE.BoxGeometry(11,5.2,8),smat(0xa9745c,0.85));main.position.set(0,2.6,-1);main.castShadow=true;main.receiveShadow=true;g.add(main);addShell(main);
+  main.userData.fly={pos:v3(0,0,-1),dist:30};clickTargets.push(main);
+  const roof=new THREE.Mesh(new THREE.BoxGeometry(11.4,0.6,8.4),smat(0x8a8276,0.8));roof.position.set(0,5.5,-1);roof.castShadow=true;g.add(roof);addShell(roof);
+  // rooftop plant boxes for institutional read
+  for(const rx of[-3,3]){const hv=new THREE.Mesh(new THREE.BoxGeometry(2,0.7,2.4),smat(0x9a958c,0.8));hv.position.set(rx,6.1,-1);hv.castShadow=true;g.add(hv);addShell(hv);}
+  // ED wing (left) + ward wing (right)
+  const ed=new THREE.Mesh(new THREE.BoxGeometry(6,3.6,6),smat(0xc7a48c,0.85));ed.position.set(-7,1.8,2);ed.castShadow=true;ed.receiveShadow=true;g.add(ed);addShell(ed);
+  const edRoof=new THREE.Mesh(new THREE.BoxGeometry(6.3,0.5,6.3),smat(0x8a8276,0.8));edRoof.position.set(-7,3.75,2);g.add(edRoof);addShell(edRoof);
+  const wing=new THREE.Mesh(new THREE.BoxGeometry(13,3.4,9),smat(0xc7a48c,0.85));wing.position.set(10,1.7,-6);wing.castShadow=true;wing.receiveShadow=true;g.add(wing);addShell(wing);
+  const wingRoof=new THREE.Mesh(new THREE.BoxGeometry(13.3,0.5,9.3),smat(0x8a8276,0.8));wingRoof.position.set(10,3.65,-6);g.add(wingRoof);addShell(wingRoof);
+  // glass entrance
+  const glass=new THREE.Mesh(new THREE.BoxGeometry(4,2.6,0.2),smat(0x86c5e0,0.2,0.1));glass.position.set(0,1.5,3.1);g.add(glass);
+  // porte-cochere: flat canopy on four posts over the main door
+  const canopy=new THREE.Mesh(new THREE.BoxGeometry(6,0.3,3.6),smat(0x6b7280,0.7));canopy.position.set(0,3.0,4.6);canopy.castShadow=true;g.add(canopy);addShell(canopy);
+  for(const cx of[-2.6,2.6])for(const cz of[3.1,6.0]){const post=new THREE.Mesh(new THREE.CylinderGeometry(0.16,0.16,3.0,8),smat(0x9a958c,0.7));post.position.set(cx,1.5,cz);post.castShadow=true;g.add(post);}
+  // red cross on the wing
+  const cm=new THREE.MeshBasicMaterial({color:0xc6473a});
+  const cv2=new THREE.Mesh(new THREE.BoxGeometry(0.6,2.4,0.2),cm);cv2.position.set(4.2,3.4,4.05);g.add(cv2);
+  const ch=new THREE.Mesh(new THREE.BoxGeometry(2.4,0.6,0.2),cm);ch.position.set(4.2,3.4,4.05);g.add(ch);
+  // landscaped beds along the frontage
+  for(const bx of[-5.2,5.2]){const bed=new THREE.Mesh(new THREE.BoxGeometry(3.4,0.3,1.2),smat(0x4f7d4a,0.95));bed.position.set(bx,0.15,5.4);bed.receiveShadow=true;g.add(bed);
+    for(let s=-1;s<=1;s++){const sh=new THREE.Mesh(new THREE.SphereGeometry(0.45,8,7),smat(0x5a8a52,0.95));sh.position.set(bx+s*1.0,0.5,5.4);sh.castShadow=true;g.add(sh);}}
+  // rooftop helipad on the main block (T7): the medevac lands here, never on the ground
+  const pad=new THREE.Mesh(new THREE.CircleGeometry(3,24),smat(0x2b2f33,0.9));pad.rotation.x=-Math.PI/2;pad.position.set(ROOFPAD.x,5.86,ROOFPAD.z);pad.receiveShadow=true;scene.add(pad);
+  const ringMk=new THREE.Mesh(new THREE.RingGeometry(2.5,2.9,28),new THREE.MeshBasicMaterial({color:0xf0e68c,side:THREE.DoubleSide}));ringMk.rotation.x=-Math.PI/2;ringMk.position.set(ROOFPAD.x,5.88,ROOFPAD.z);scene.add(ringMk);
+  const H1=box(0.35,0.05,1.8,0xf0e68c);H1.position.set(ROOFPAD.x-0.7,5.9,ROOFPAD.z);scene.add(H1);
+  const H2=box(0.35,0.05,1.8,0xf0e68c);H2.position.set(ROOFPAD.x+0.7,5.9,ROOFPAD.z);scene.add(H2);
+  const H3=box(1.4,0.05,0.35,0xf0e68c);H3.position.set(ROOFPAD.x,5.9,ROOFPAD.z);scene.add(H3);
+  const hl=label("CBRH","ED + Ward");hl.position.set(0,8,-1);g.add(hl);
+  scene.add(g);
+  // ring / access road around the front of the campus, linked to the gate
+  buildRoad({x:-9,z:5.5},{x:9,z:5.5},{width:3,centre:false,sidewalk:false});
+  buildRoad({x:9,z:5.5},{x:9,z:-3},{width:3,centre:false,sidewalk:false});
+  buildRoad({x:-9,z:5.5},{x:-9,z:-3},{width:3,centre:false,sidewalk:false});
+  buildRoad({x:0,z:5.5},{x:C.GATE.x,z:C.GATE.z},{width:3,centre:false,sidewalk:false});
+  // adjacent parking (larger lot by the hospital)
+  parkingLot(C.LOT.x+4,C.LOT.z,2,7,0);
+  parkingLot(-13,9,2,4,Math.PI/2);
+  // ambulance bay
+  const ambPad=new THREE.Mesh(new THREE.BoxGeometry(5,0.1,3.4),smat(0x6b2f2f,0.9));ambPad.position.set(C.AMB.x,0.05,C.AMB.z);ambPad.receiveShadow=true;scene.add(ambPad);
+  const ab=new THREE.Mesh(new THREE.BoxGeometry(5.4,0.3,3.6),smat(0x555a60,0.7));ab.position.set(C.AMB.x,2.6,C.AMB.z);ab.castShadow=true;scene.add(ab);
+  // interior floor plan: two tinted zones read as ED + ward once the shell is cut away (Task 3)
+  const fED=new THREE.Mesh(new THREE.BoxGeometry(11,0.08,8),smat(0x32414f,0.95));fED.position.set(-3.5,0.06,2);fED.receiveShadow=true;scene.add(fED);
+  const fWard=new THREE.Mesh(new THREE.BoxGeometry(13,0.08,9),smat(0x3a5547,0.95));fWard.position.set(10,0.06,-6);fWard.receiveShadow=true;scene.add(fWard);
+  // ward bed grid
+  const cols=6,rows=6,gap=1.9,ox=10-(cols-1)*gap/2,oz=-6-(rows-1)*gap/2;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const bx=ox+c*gap,bz=oz+r*gap;
+    const fr=box(1.3,0.25,1.5,0xcfc8b8);fr.position.set(bx,0.72,bz);scene.add(fr);beds.push({x:bx,z:bz,occupant:null});}
+}
+
+function shadeFor(f){const op=f[4],beds=f[3],isNH=f[2]==="NH";
+  if(op==="Shannex")return{wall:0xede6d6,roof:0x3f7d5a,sign:0x2f6a48};
+  if(!isNH)return{wall:0xe7d6b6,roof:0x4f8a82,sign:0x3a6f68};
+  if(beds>=100)return{wall:0xe9ddcf,roof:0x9c4a3a,sign:0x7a382b};
+  if(beds>=40)return{wall:0xe6e0d2,roof:0x4a6b8a,sign:0x35506b};
+  return{wall:0xe4ddcc,roof:0x6a5a7a,sign:0x4a3d5a};}
+function jit(hex){return new THREE.Color(hex).multiplyScalar(0.93+Math.random()*0.14).getHex();}
+function buildFacilities(){
+  const byTown={};FAC.forEach(f=>{(byTown[f[1]]=byTown[f[1]]||[]).push(f)});
+  for(const town in byTown){
+    const D=DISTRICTS[town]; if(!D)continue;
+    const list=byTown[town].slice().sort((p,q)=>q[3]-p[3]);
+    const n=list.length, span=D.b-D.a;
+    list.forEach((f,i)=>{
+      const t=D.a+span*(n===1?0.5:(i+0.5)/n);          // position along the frontage road
+      let x,z,park,dir;
+      if(D.axis==='h'){ x=t; z=D.line+D.side*SET; dir=new THREE.Vector3(0,0,-D.side); park=v3(x,0,D.line); }
+      else { z=t; x=D.line+D.side*SET; dir=new THREE.Vector3(-D.side,0,0); park=v3(D.line,0,z); }
+      const beds=f[3],isNH=f[2]==="NH",col=shadeFor(f);
+      const w=Math.min(6,2.6+beds/70),h=2+beds/26;
+      const grp=new THREE.Group();
+      const b=box(w,h,w,jit(col.wall));b.position.y=h/2;b.castShadow=true;b.receiveShadow=true;grp.add(b);
+      const rf=new THREE.Mesh(new THREE.ConeGeometry(w*0.82,1.4,4),smat(jit(col.roof),0.8));rf.position.y=h+0.7;rf.rotation.y=Math.PI/4;rf.castShadow=true;grp.add(rf);
+      const perp=new THREE.Vector3(-dir.z,0,dir.x);
+      const canopy=box(1.6,0.2,1,col.sign);canopy.position.copy(dir.clone().multiplyScalar(w/2+0.5)).setY(1.1);grp.add(canopy);
+      const sign=box(Math.min(w*0.7,3),0.5,0.12,col.sign);sign.position.copy(dir.clone().multiplyScalar(w/2+0.06)).setY(h*0.62);grp.add(sign);
+      const wins=[];for(let wy=0;wy<2;wy++)for(let wx=-1;wx<=1;wx++){
+        const win=new THREE.Mesh(new THREE.BoxGeometry(0.45,0.4,0.06),smat(0x86c5e0,0.25,0.1));
+        win.position.copy(dir.clone().multiplyScalar(w/2+0.04)).setY(0.8+wy*0.9).add(perp.clone().multiplyScalar(wx*w*0.28));grp.add(win);wins.push(win);}
+      for(const s of [-1,1]){const sh=new THREE.Mesh(new THREE.SphereGeometry(0.4,7,6),smat(0x4f7d4a,0.95));
+        sh.position.copy(dir.clone().multiplyScalar(w/2+1)).add(perp.clone().multiplyScalar(s*1.1)).setY(0.4);sh.castShadow=true;grp.add(sh);}
+      grp.position.set(x,0,z);scene.add(grp);
+      const door=v3(x,0,z).add(dir.clone().multiplyScalar(w/2+0.9));
+      buildRoad({x:door.x,z:door.z},{x:park.x,z:park.z},{width:1.6,centre:false,sidewalk:false});  // driveway to the curb
+      const fl=label(f[0],beds+(isNH?" NH beds":" RCF beds"),0.6);fl.position.set(x,h+2.6,z);scene.add(fl);
+      b.userData.fly={pos:v3(x,0,z),dist:16};clickTargets.push(b);
+      facilities.push({name:f[0],town,beds,isNH,pos:v3(x,0,z),door,park,front:{axis:D.axis,line:D.line},wins,occ:0,interior:v3(x,0,z)});
+    });
+    // a tidy lot set back behind the row, off the frontage road
+    if(D.axis==='h') parkingLot((D.a+D.b)/2,D.line+D.side*(SET+8),2,Math.min(8,Math.max(4,n)),0);
+    else parkingLot(D.line+D.side*(SET+8),(D.a+D.b)/2,2,Math.min(8,Math.max(4,n)),Math.PI/2);
+    const tl=label(town,"",0.95);tl.position.set(D.label[0],11,D.label[1]);scene.add(tl);
+  }
+  facilities.sort((p,q)=>q.beds-p.beds);
+}
+function buildHomeCare(){
+  const palette=[0xc9a36a,0xb98a6a,0xc4a86a,0xa9896a,0xcaa07a];
+  const a=-74,b=-46,per=7,span=b-a;
+  const rows=[{z:52,line:40,dir:-1},{z:68,line:80,dir:1}];  // two aligned rows fronting their streets
+  let i=0;
+  for(const row of rows){
+    for(let k=0;k<per;k++){
+      const x=a+span*(k+0.5)/per, z=row.z, h=1+(k%3)*0.25;
+      const grp=new THREE.Group();
+      const bm=box(2.2,h,2.6,jit(palette[i%palette.length]));bm.position.y=h/2;bm.castShadow=true;bm.receiveShadow=true;grp.add(bm);
+      const rf=new THREE.Mesh(new THREE.ConeGeometry(1.75,1.0,4),smat(jit(0x8a6b3f),0.85));rf.position.y=h+0.5;rf.rotation.y=Math.PI/4;rf.castShadow=true;grp.add(rf);
+      const door=box(0.06,0.7,0.5,0x6b4a2f);door.position.set(0,0.35,row.dir*1.32);grp.add(door);     // door faces the street
+      const sh=new THREE.Mesh(new THREE.SphereGeometry(0.4,7,6),smat(0x5a8a52,0.95));sh.position.set(1.2,0.4,-row.dir*1.0);sh.castShadow=true;grp.add(sh);
+      grp.position.set(x,0,z);scene.add(grp);
+      buildRoad({x,z:z+row.dir*1.4},{x,z:row.line},{width:1.2,centre:false,sidewalk:false});          // driveway to the street
+      homeZone.push({pos:v3(x,0,z),door:v3(x,0,z+row.dir*1.4),park:v3(x,0,row.line)});
+      i++;
+    }
+  }
+  const hl=label("Home care","community");hl.position.set((a+b)/2,7,54);scene.add(hl);
+}
+
+/* ===== FIGURES ===== */
+const COL={walkin:0x5b8fc7,acute:0xe6e3da,alc:0xe8a13a,worker:0x4fb0a5,doctor:0xf4f4ef,nurse:0x3fae9e};
+function mk(geo,c,y){const m=new THREE.Mesh(geo,lmat(c));m.position.y=y;return m;}
+function person(color){const g=new THREE.Group();
+  g.add(mk(new THREE.BoxGeometry(0.34,0.42,0.26),0x37414b,0.21));
+  const body=mk(new THREE.BoxGeometry(0.42,0.5,0.3),color,0.7);g.add(body);
+  g.add(mk(new THREE.BoxGeometry(0.3,0.3,0.3),0xe7c9a3,1.12));g.userData.body=body;return g;}
+function plumbob(){return mk(new THREE.OctahedronGeometry(0.34),0xf4b942,1.7);}
+function wheelchair(c){const g=new THREE.Group();
+  g.add(mk(new THREE.BoxGeometry(0.5,0.12,0.5),0x2b333b,0.34));
+  g.add(mk(new THREE.BoxGeometry(0.42,0.5,0.3),c,0.66));g.add(mk(new THREE.BoxGeometry(0.3,0.3,0.3),0xe7c9a3,1.02));
+  for(const sx of [-0.32,0.32]){const wl=mk(new THREE.CylinderGeometry(0.28,0.28,0.08,12),0x10151a,0.28);wl.rotation.z=Math.PI/2;wl.position.x=sx;g.add(wl);}return g;}
+function vehicle(type){const g=new THREE.Group();let col=type==="ambulance"?0xe8e8ea:(type==="car"?0x4f7d9a:0xd8d2c4);
+  const base=mk(new THREE.BoxGeometry(1.6,0.7,3),col,0.55);base.castShadow=true;g.add(base);
+  const cab=mk(new THREE.BoxGeometry(1.5,0.7,1.4),col,1.15);cab.position.z=-0.4;cab.castShadow=true;g.add(cab);
+  if(type==="ambulance"){g.add(mk(new THREE.BoxGeometry(1.62,0.18,2),0xc0473a,0.7));
+    const lt=mk(new THREE.BoxGeometry(0.5,0.2,0.3),0xff5544,1.6);g.add(lt);g.userData.light=lt;}
+  if(type==="van"){const cr=mk(new THREE.BoxGeometry(0.4,0.4,0.12),0xc0473a,1.15);cr.position.z=0.71;g.add(cr);}
+  for(const sx of [-0.7,0.7])for(const sz of [-1,1]){const wh=mk(new THREE.CylinderGeometry(0.3,0.3,0.2,10),0x10151a,0.3);wh.rotation.z=Math.PI/2;wh.position.set(sx,0,sz);g.add(wh);}
+  return g;}
+
+/* ===== NAMED NPCs (fictional flavour, tagged illustrative) (T4/T5) ===== */
+const NAMES={
+  doctor:["Dr. Sue","Dr. Okafor","Dr. Reyes","Dr. Bhatt","Dr. Lin","Dr. House","Dr. Tran","Dr. Mara","Dr. Cole","Dr. Webb"],
+  nurse:["RN Ortiz","RN Bell","RN Singh","RN Diaz","RN Foley","RN Ng","RN Pat","RN Hahn","RN Lowe","RN Vega"],
+  worker:["PCW Adams","PCW Roy","PCW Khan","PCW Doyle","PCW Best","PCW Ivey"],
+  patient:["Sam","Pat","Jo","Lee","Mae","Ann","Ed","Ravi","Nina","Gus","Iris","Theo","Rosa","Hank","Otis","Vi","Cleo","Bram"],
+  passer:["Local","Visitor","Resident","Passerby"]};
+let _nameSeq=0;
+function pickName(role){const a=NAMES[role]||NAMES.patient;return a[(_nameSeq++)%a.length];}
+function nameTag(text,color){const cv=document.createElement('canvas');cv.width=256;cv.height=64;const g=cv.getContext('2d');
+  g.fillStyle='rgba(12,17,22,.80)';roundRect(g,6,10,244,42,11);g.fill();
+  g.fillStyle=color||'#eef2f5';g.font='bold 27px ui-sans-serif,Segoe UI,Arial';g.textAlign='center';g.textBaseline='middle';
+  g.fillText(text,128,33);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true}));
+  sp.scale.set(2.7,0.68,1);sp.position.y=1.78;return sp;}
+// attach a floating header + store identity on the group's userData for click cards
+function tagNPC(g,role,opts){opts=opts||{};
+  const name=opts.name||pickName(role);
+  const tc=role==='doctor'?'#ffffff':(role==='nurse'?'#5fd3c4':(role==='patient'?'#f4d59a':'#cdd6dd'));
+  g.add(nameTag(name,tc));
+  g.userData.npc={role,name,ctas:opts.ctas||null,agent:opts.agent||null};
+  clickNPCs.push(g);return g;}
+/* ===== MEDEVAC HELICOPTER (visual, lands on the helipad now and then) ===== */
+function helicopter(){const g=new THREE.Group();
+  const body=mk(new THREE.BoxGeometry(1.4,1.1,3.2),0xe7edf0,0.0);body.castShadow=true;g.add(body);
+  const nose=mk(new THREE.SphereGeometry(0.62,12,10),0x2b3b46,0.05);nose.scale.set(1,0.85,1.15);nose.position.z=1.7;g.add(nose);
+  const boom=mk(new THREE.BoxGeometry(0.34,0.34,2.6),0xe7edf0,0.2);boom.position.z=-2.6;g.add(boom);
+  const fin=mk(new THREE.BoxGeometry(0.12,0.85,0.6),0xc23b3b,0.55);fin.position.set(0,0.55,-3.7);g.add(fin);
+  const stripe=mk(new THREE.BoxGeometry(1.43,0.32,3.22),0xc23b3b,-0.2);g.add(stripe);
+  for(const sx of[-0.62,0.62]){const sk=mk(new THREE.BoxGeometry(0.1,0.1,2.4),0x232a30,-0.78);sk.position.x=sx;g.add(sk);
+    for(const sz of[-0.8,0.8]){const st=mk(new THREE.BoxGeometry(0.08,0.55,0.08),0x232a30,-0.5);st.position.set(sx,-0.5,sz);g.add(st);}}
+  const hub=mk(new THREE.CylinderGeometry(0.16,0.16,0.3,8),0x333a40,0.92);g.add(hub);
+  const rotor=new THREE.Group();
+  for(let r=0;r<2;r++){const bl=mk(new THREE.BoxGeometry(6.6,0.05,0.32),0x262c33,0);bl.rotation.y=r*Math.PI/2;rotor.add(bl);}
+  rotor.position.y=1.05;g.add(rotor);g.userData.rotor=rotor;
+  const trotor=new THREE.Group();
+  for(let r=0;r<2;r++){const bl=mk(new THREE.BoxGeometry(0.05,1.2,0.16),0x262c33,0);bl.rotation.z=r*Math.PI/2;trotor.add(bl);}
+  trotor.position.set(0.2,0.2,-3.85);g.add(trotor);g.userData.trotor=trotor;
+  g.traverse(o=>{if(o.isMesh)o.castShadow=true;});return g;}
+function spawnHeli(){const m=helicopter();m.position.set(72,48,48);scene.add(m);heli={mesh:m,state:"approach",t:0};}
+// offload one admitted patient into the ED flow (T7)
+function heliOffload(){if(agents.length>=TUNE.maxAgents)return;
+  const ctas=pickCTAS(true);const m=person(CTAS_COL[ctas]);m.position.copy(C.ED);scene.add(m);
+  const aa={mesh:m,state:"toWard",path:[C.WARD_IN.clone()],pi:0,speed:TUNE.walkSpeed,ctas,
+    outcome:(Math.random()<TUNE.pALCofAdmit?"alc":"acute")};
+  agents.push(aa);tagNPC(m,'patient',{ctas,agent:aa});}
+function updateHeli(dt){
+  if(!heli){heliTimer-=dt;if(heliTimer<=0){spawnHeli();heliTimer=1e9;}return;}
+  const m=heli.mesh,p=m.position,padY=ROOFPAD.y,hover=26,pad={x:ROOFPAD.x,z:ROOFPAD.z};
+  if(m.userData.rotor)m.userData.rotor.rotation.y+=dt*(heli.state==="wait"?7:26);   // rotor slows when landed
+  if(m.userData.trotor)m.userData.trotor.rotation.x+=dt*(heli.state==="wait"?9:30);
+  const moveTo=(tx,ty,tz,sp)=>{const dx=tx-p.x,dy=ty-p.y,dz=tz-p.z,d=Math.hypot(dx,dy,dz)||1;
+    if(d<0.6)return true;const s=Math.min(sp*dt,d);p.x+=dx/d*s;p.y+=dy/d*s;p.z+=dz/d*s;
+    if(Math.hypot(dx,dz)>0.5)m.rotation.y=Math.atan2(dx,dz);return false;};
+  switch(heli.state){
+    case "approach": if(moveTo(pad.x,hover,pad.z,16))heli.state="descend"; break;           // descend from above, never clips
+    case "descend": if(moveTo(pad.x,padY,pad.z,5)){p.set(pad.x,padY,pad.z);heli.state="wait";heli.t=4.5;heliOffload();} break;
+    case "wait": heli.t-=dt; if(heli.t<=0)heli.state="ascend"; break;
+    case "ascend": if(moveTo(pad.x,hover,pad.z,7))heli.state="depart"; break;
+    case "depart": if(moveTo(-85,42,-62,18)){scene.remove(m);heli=null;heliTimer=24+Math.random()*28;} break;
+  }
+}
+
+/* ===== STAFF (doctors + nurses in the ED) + sidewalk pedestrians ===== */
+function buildStaff(){const bnd={x0:-9,x1:2,z0:-2,z1:6};
+  for(let i=0;i<TUNE.nDoctors;i++)staff.push(spawnStaff(COL.doctor,bnd,'doctor'));
+  for(let i=0;i<TUNE.nNurses;i++)staff.push(spawnStaff(COL.nurse,bnd,'nurse'));
+  // a few pedestrians on the sidewalks in front of the hospital (illustrative)
+  const pb={x0:-7,x1:8,z0:6.5,z1:13};
+  const pc=[0x5b8fc7,0xc9a36a,0x9c6a4a,0x6a6f76,0x7a8a6a];
+  for(let i=0;i<5;i++)staff.push(spawnStaff(pc[i%pc.length],pb,'passer'));}
+function spawnStaff(c,b,role){const m=person(c);m.position.set(rand(b.x0,b.x1),0,rand(b.z0,b.z1));m.traverse(o=>{if(o.isMesh)o.castShadow=true;});scene.add(m);
+  if(role)tagNPC(m,role);
+  return {mesh:m,bnd:b,tx:rand(b.x0,b.x1),tz:rand(b.z0,b.z1)};}
+function updateStaff(dt){for(const s of staff){const p=s.mesh.position,dx=s.tx-p.x,dz=s.tz-p.z,d=Math.hypot(dx,dz);
+  if(d<0.3){s.tx=rand(s.bnd.x0,s.bnd.x1);s.tz=rand(s.bnd.z0,s.bnd.z1);}
+  else{const sp=2.2*dt;p.x+=dx/d*sp;p.z+=dz/d*sp;s.mesh.rotation.y=Math.atan2(dx,dz);p.y=Math.abs(Math.sin(performance.now()*0.01))*0.06;}}}
+
+/* ===== AMBIENT TRAFFIC (Task 6, purely visual, stays on the road graph) ===== */
+function gridNeighbors(n){const out=[],xi=GX.indexOf(n.x),zi=GZ.indexOf(n.z);
+  if(xi>0)out.push({x:GX[xi-1],z:n.z}); if(xi<GX.length-1)out.push({x:GX[xi+1],z:n.z});
+  if(zi>0)out.push({x:n.x,z:GZ[zi-1]}); if(zi<GZ.length-1)out.push({x:n.x,z:GZ[zi+1]});
+  return out;}
+function buildAmbient(){
+  const nodes=[];for(const x of GX)for(const z of GZ)nodes.push({x,z});
+  for(let i=0;i<8;i++){const m=vehicle("car");scene.add(m);
+    const s=nodes[(Math.random()*nodes.length)|0];m.position.set(s.x,0,s.z);
+    ambient.push({mesh:m,cur:s,target:s,pause:Math.random()*2});}
+}
+function updateAmbient(dt){for(const c of ambient){
+  if(c.pause>0){c.pause-=dt;continue;}
+  const t=c.target,p=c.mesh.position,dx=t.x-p.x,dz=t.z-p.z,d=Math.hypot(dx,dz);
+  if(d<0.6){c.cur=c.target;const ns=gridNeighbors(c.cur);c.target=ns[(Math.random()*ns.length)|0]||c.cur;
+    c.pause=Math.random()<0.3?0.4+Math.random()*0.8:0;continue;}
+  const s=TUNE.driveSpeed*0.6*dt;p.x+=dx/d*s;p.z+=dz/d*s;p.y=0;c.mesh.rotation.y=Math.atan2(dx,dz);}}
+
+/* ===== MOVEMENT ===== */
+function step(o,dt,bob){if(!o.path||o.pi>=o.path.length)return true;
+  const t=o.path[o.pi],p=o.mesh.position,dx=t.x-p.x,dz=t.z-p.z,d=Math.hypot(dx,dz);
+  if(d<0.2){o.pi++;return o.pi>=o.path.length;}
+  const s=(o.speed||TUNE.walkSpeed)*dt;p.x+=dx/d*s;p.z+=dz/d*s;o.mesh.rotation.y=Math.atan2(dx,dz);
+  if(bob)p.y=Math.abs(Math.sin(performance.now()*0.012))*0.08;return false;}
+function setPath(o,pts){o.path=pts.map(p=>{const c=(p.clone?p.clone():v3(p.x,0,p.z));if(p.hub)c.hub=true;return c;});o.pi=0;}
+
+/* ===== AGENTS ===== */
+function spawn(){if(agents.length>=TUNE.maxAgents)return;
+  const ctas=pickCTAS(false);const m=person(CTAS_COL[ctas]);m.position.copy(C.ED);scene.add(m);
+  const a={mesh:m,state:"toTriage",path:[C.TRIAGE.clone()],pi:0,speed:TUNE.walkSpeed,ctas};
+  const r=Math.random();
+  if(r<FROZEN[scenario].lwbs/100)a.outcome="lwbs";
+  else if(Math.random()<TUNE.pAdmit)a.outcome=(Math.random()<TUNE.pALCofAdmit)?"alc":"acute";
+  else a.outcome="ed";agents.push(a);tagNPC(m,'patient',{ctas,agent:a});}
+function pickCTAS(amb){if(amb)return Math.random()<0.6?1:2;const r=Math.random();return r<0.08?2:r<0.45?3:r<0.8?4:5;}
+function freeBed(){for(const b of beds)if(!b.occupant)return b;return null;}
+function setBody(a,c){a.mesh.userData.body.material.color.setHex(c);}
+function releaseBed(a){if(a.bed){a.bed.occupant=null;a.bed=null;}if(a.plumb){a.mesh.remove(a.plumb);a.plumb=null;}}
+function unclick(m){const j=clickNPCs.indexOf(m);if(j>=0)clickNPCs.splice(j,1);}
+function kill(a,i){scene.remove(a.mesh);unclick(a.mesh);agents.splice(i,1);}
+function weightedFacility(){const tot=facilities.reduce((s,f)=>s+f.beds,0);let r=Math.random()*tot;
+  for(const f of facilities){r-=f.beds;if(r<=0)return f;}return facilities[0];}
+function updateAgents(dt){
+  for(let i=agents.length-1;i>=0;i--){const a=agents[i];
+    switch(a.state){
+      case "toTriage": if(step(a,dt,true)){
+        if(a.outcome==="lwbs"){setBody(a,0xc0473a);setPath(a,[C.EXIT]);a.state="leaving";}
+        else if(a.outcome==="ed"){setPath(a,[C.EDBAY]);a.state="edCare";a.t=daysToSec(3);}
+        else{setPath(a,[C.WARD_IN]);a.state="toWard";}} break;
+      case "edCare": a.t-=dt;if(a.t<=0){setPath(a,[C.EXIT]);a.state="leaving";} break;
+      case "toWard": if(step(a,dt,true)){const b=freeBed();
+        if(b){b.occupant=a;a.bed=b;setPath(a,[v3(b.x,0,b.z)]);a.state="toBed";}
+        else{const qn=agents.filter(x=>x.state==="boarding").length;  // ward full: line up boarding in the ED corridor (T12)
+          setPath(a,[v3(C.BOARD.x-(qn%6)*1.3,0,C.BOARD.z+((qn/6)|0)*1.3)]);a.state="boarding";}} break;
+      case "boarding": if(step(a,dt,true)){const b=freeBed();if(b){b.occupant=a;a.bed=b;setPath(a,[v3(b.x,0,b.z)]);a.state="toBed";}} break;
+      case "toBed": if(step(a,dt,true)){
+        if(a.outcome==="acute"){setBody(a,COL.acute);a.t=daysToSec(4)*TUNE.dwellScale;a.state="bedAcute";}
+        else{setBody(a,COL.alc);a.plumb=plumbob();a.mesh.add(a.plumb);
+          a.t=daysToSec(FROZEN[scenario].ltc*(0.6+Math.random()*0.8))*TUNE.dwellScale;
+          a.dest=(Math.random()<TUNE.pHome)?"home":"ltc";a.willDecline=(a.dest==="ltc"&&Math.random()<TUNE.pDecline);a.state="bedALC";}} break;
+      case "bedAcute": a.t-=dt;if(a.t<=0){releaseBed(a);setPath(a,[C.EXIT]);a.state="leaving";} break;
+      case "bedALC": a.t-=dt;
+        if(a.plumb){a.plumb.rotation.y+=dt*2.2;a.plumb.position.y=1.7+Math.sin(performance.now()*0.004)*0.12;}
+        if(a.t<=0){releaseBed(a);
+          if(a.willDecline){setBody(a,0x6c5566);a.state="decline";a.t=1.6;}
+          else if(a.dest==="home")dispatchHome(a,i);else dispatchLTC(a,i);} break;
+      case "decline": a.t-=dt;a.mesh.position.y-=dt*0.25;if(a.t<=0){placedCount++;kill(a,i);} break;
+      case "placing": if(step(a,dt,true)){enterBuilding(a.fac);placedCount++;kill(a,i);} break;
+      case "leaving": if(step(a,dt,true)){kill(a,i);} break;
+    }}
+}
+// a visible patient seated in the transport so you can watch them ride (T1)
+function ridePassenger(parent,color){const p=person(color);p.scale.set(0.74,0.74,0.74);p.position.set(0,0.82,0.25);
+  p.traverse(o=>{if(o.isMesh)o.castShadow=false;});parent.add(p);return p;}
+function dispatchLTC(a,i){const fac=weightedFacility();const v=getVehicle("van");
+  if(v){kill(a,i);v.dest=fac;v.onArrive=()=>arriveLTC(fac);v.mesh.position.copy(C.LOT);
+    v.passenger=ridePassenger(v.mesh,COL.alc);
+    setPath(v,routeGrid(fac.park,fac.front));}
+  else{setBody(a,0x9fb0c0);a.fac=fac;a.state="placing";setPath(a,routeGrid(fac.park,fac.front));}}
+function dispatchHome(a,i){const v=getVehicle("car");const house=homeZone[(Math.random()*homeZone.length)|0];
+  const hfront={axis:'h',line:house.park.z};
+  if(v){kill(a,i);v.onArrive=()=>arriveHome(house);v.mesh.position.copy(C.LOT);
+    v.passenger=ridePassenger(v.mesh,0xc9a36a);
+    setPath(v,routeGrid(house.park,hfront));}
+  else{setBody(a,0xc9a36a);a.fac=null;a.state="placing";setPath(a,routeGrid(house.park,hfront));}}
+/* Manhattan route from the hospital onto the grid, then to the destination curb (hubs marked for a light pause) */
+function routeGrid(end,front){
+  const pts=[hp(C.GATE),hp({x:0,z:40},true)];           // south corridor onto the grid
+  if(front.axis==='h'){
+    if(front.line!==40){const ax=snapAve(end.x);
+      pts.push(hp({x:ax,z:40},true));pts.push(hp({x:ax,z:front.line},true));}
+    pts.push(hp({x:end.x,z:front.line}));
+  }else{
+    pts.push(hp({x:front.line,z:40},true));pts.push(hp({x:front.line,z:end.z}));
+  }
+  pts.push(hp(end));return pts;}
+function hp(p,hub){const o=v3(p.x,0,p.z);o.hub=!!hub;return o;}
+
+/* ===== VEHICLES (constrained to roads, stop at lights) ===== */
+function getVehicle(type){if(vehicles.length>=TUNE.maxVehicles)return null;
+  const m=vehicle(type);scene.add(m);
+  const v={mesh:m,type,path:[],pi:0,speed:TUNE.driveSpeed,onArrive:null,state:"out",pause:0,life:0};vehicles.push(v);return v;}
+function moveVehicle(v,dt){
+  if(v.pause>0){v.pause-=dt;return false;}
+  if(!v.path||v.pi>=v.path.length)return true;
+  const t=v.path[v.pi],p=v.mesh.position,dx=t.x-p.x,dz=t.z-p.z,d=Math.hypot(dx,dz);
+  if(d<0.4){if(t.hub)v.pause=0.5+Math.random()*1.0; v.pi++; return v.pi>=v.path.length;}
+  const s=v.speed*dt;p.x+=dx/d*s;p.z+=dz/d*s;v.mesh.rotation.y=Math.atan2(dx,dz);return false;}
+function updateVehicles(dt){
+  for(let i=vehicles.length-1;i>=0;i--){const v=vehicles[i];v.life+=dt;
+    if(v.type==="ambulance"){updateAmbulance(v,dt,i);continue;}
+    if(v.life>40){scene.remove(v.mesh);vehicles.splice(i,1);continue;} // failsafe
+    if(moveVehicle(v,dt)){
+      if(v.state==="out"){if(v.passenger){v.mesh.remove(v.passenger);v.passenger=null;}  // patient gets out at the curb
+        if(v.onArrive)v.onArrive();
+        setPath(v,[hp(v.mesh.position),hp({x:snapAve(v.mesh.position.x),z:snapSt(v.mesh.position.z)},true),hp({x:0,z:40},true),hp(C.LOT)]);v.state="back";}
+      else{scene.remove(v.mesh);vehicles.splice(i,1);}
+    }}
+}
+function updateAmbulance(v,dt,i){
+  if(v.mesh.userData.light)v.mesh.userData.light.material.color.setHex((performance.now()%500<250)?0xff5544:0x661a1a);
+  if(v.life>30){scene.remove(v.mesh);vehicles.splice(i,1);return;}
+  if(moveVehicle(v,dt)){
+    if(v.state==="in"){const ctas=pickCTAS(true);const m=person(CTAS_COL[ctas]);m.position.copy(C.AMB);scene.add(m);
+      const aa={mesh:m,state:"toWard",path:[C.WARD_IN.clone()],pi:0,speed:TUNE.walkSpeed,ctas,
+        outcome:(Math.random()<TUNE.pALCofAdmit?"alc":"acute")};
+      agents.push(aa);tagNPC(m,'patient',{ctas,agent:aa});
+      setPath(v,[hp(C.GATE),hp(C.HWY)]);v.state="leave";}
+    else{scene.remove(v.mesh);vehicles.splice(i,1);}}
+}
+function spawnAmbulance(){if(vehicles.length>=TUNE.maxVehicles)return;
+  const m=vehicle("ambulance");m.position.copy(C.HWY);scene.add(m);
+  const v={mesh:m,type:"ambulance",path:[],pi:0,speed:TUNE.driveSpeed*1.2,state:"in",pause:0,life:0};
+  setPath(v,[hp({x:0,z:40},true),hp(C.GATE),hp(C.AMB)]);vehicles.push(v);}
+
+/* ===== ARRIVAL UNITS (wheelchair + worker) + BUILDING POPULATION ===== */
+function arriveLTC(fac){if(units.length<TUNE.maxUnits){const g=new THREE.Group();
+  g.add(wheelchair(COL.alc));const w=person(COL.worker);w.position.set(-0.6,0,-0.4);g.add(w);
+  g.position.copy(fac.park);scene.add(g);tagNPC(g,'worker');units.push({mesh:g,path:[fac.door.clone()],pi:0,speed:2.4,fac});}
+  else{enterBuilding(fac);placedCount++;}}
+function arriveHome(house){if(units.length<TUNE.maxUnits){const g=new THREE.Group();
+  g.add(person(0xc9a36a));const w=person(COL.worker);w.position.set(0.6,0,-0.3);g.add(w);
+  g.position.copy(house.park.clone().add(v3(2.2,0,1.6)));scene.add(g);tagNPC(g,'worker');
+  units.push({mesh:g,path:[house.door.clone()],pi:0,speed:2.0,fac:null});}
+  else placedCount++;}
+function updateUnits(dt){for(let i=units.length-1;i>=0;i--){const u=units[i];
+  if(step(u,dt,true)){if(u.fac)enterBuilding(u.fac);scene.remove(u.mesh);unclick(u.mesh);units.splice(i,1);placedCount++;}}}
+function enterBuilding(fac){if(!fac)return;fac.occ++;
+  const lit=Math.min(fac.wins.length,fac.occ);for(let k=0;k<lit;k++)fac.wins[k].material.color.setHex(0xffd98a);}
+
+/* ===== helpers ===== */
+function rand(a,b){return a+Math.random()*(b-a);}
+function simDaysPerSec(){return WINDOWS[windowKey]/TUNE.loopSeconds;}
+function daysToSec(days){return days/simDaysPerSec();}
+
+/* ===== LOOP ===== */
+let spawnAcc=0,ambAcc=0,sigT=0;
+// One frame = sim step + render. Split out from rAF so it can also run while the tab is hidden.
+function frame(){
+  const dt=Math.min(clock.getDelta(),0.05);
+  const si=periodInterval();spawnAcc+=dt*1000;while(spawnAcc>si){spawnAcc-=si;spawn();}
+  ambAcc+=dt*1000;if(ambAcc>TUNE.ambulanceEveryMs){ambAcc=0;if(Math.random()<TUNE.pAmbulance)spawnAmbulance();}
+  updateSignals(dt);updateAgents(dt);updateVehicles(dt);updateUnits(dt);updateStaff(dt);updateAmbient(dt);updateHeli(dt);
+  camTick(dt);refreshLive();renderer.render(scene,camera);
+}
+function loop(){frame();requestAnimationFrame(loop);}
+function startRenderLoop(){
+  loop();                                                     // rAF path drives the loop while visible
+  setInterval(()=>{if(document.hidden)frame();},100);         // fallback advances the loop while backgrounded
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden){clock.getDelta();frame();}            // drop the accumulated delta, force a fresh paint
+  });
+  renderer.render(scene,camera);                              // guarantee one painted frame at startup
+}
+function updateSignals(dt){sigT+=dt;for(const h in signals){const s=signals[h];s.t-=dt;
+  if(s.t<=0){s.green=!s.green;s.t=3+Math.random()*3;
+    if(s.r)s.r.color.setHex(s.green?0x551111:0xff4444);if(s.g)s.g.color.setHex(s.green?0x33ff66:0x115522);}}}
+function refreshLive(){let filled=0,alc=0,transit=0,board=0;
+  for(const b of beds)if(b.occupant)filled++;for(const a of agents){if(a.state==="bedALC")alc++;if(a.state==="boarding")board++;}
+  for(const v of vehicles)if((v.type==="van"||v.type==="car")&&v.state==="out")transit++;
+  set("l_ward",filled+" / "+beds.length);set("l_alc",alc);set("l_board",board);set("l_transit",transit);set("l_placed",placedCount);}
+function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function setHTML(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
+function setScenario(s){scenario=s;const f=FROZEN[s];
+  document.querySelectorAll('#seg button').forEach(b=>b.classList.toggle('on',b.dataset.s===s));
+  setHTML("m_lwbs",f.lwbs.toFixed(1)+'<span class="u">%</span>');setHTML("m_occ",f.occ.toFixed(1)+'<span class="u">%</span>');
+  setHTML("m_alc",f.alc.toFixed(2)+'<span class="u">% bed-days</span>');setHTML("m_ltc",f.ltc+'<span class="u">days</span>');
+  setHTML("m_home",f.home+'<span class="u">days</span>');
+  if(s==="baseline"){set("c_save","n/a");
+    setHTML("c_care","Baseline. ALC patients hold ward beds about "+f.ltc+" days. Flip the lever to halve the wait.");
+    setHTML("c_ns","<b>Nova Scotia scale:</b> 192,000 ALC days a year. Faster placement is where the avoided cost and avoided harm live.");
+    set("capT","Baseline: the ward fills with ALC patients who cannot move");
+  }else{set("c_save","~$1.08M / yr");
+    setHTML("c_care","Care pairing: per-ALC-day harm exposure down about "+f.careExposure+"%. 18.4% die within 90 days of ALC designation; 4.2 adverse events per 100 ALC-days.");
+    setHTML("c_ns","<b>Nova Scotia scale, illustrative:</b> ~$"+NS.mid+"M/yr avoided ($"+NS.lo+"M to $"+NS.hi+"M); 192k ALC days x acute-minus-LTC spread. Not CBRH-specific.");
+    set("capT","Faster placement: the ward drains, the wait halves to "+f.ltc+" days");}
+  updateLittle();resetRun();}
+// Little's Law readout (T13): ALC bed-days = inflow rate x dwell; updates with the placement-speed lever
+function updateLittle(){const f=FROZEN[scenario];
+  setHTML("little_eq","<b>ALC bed-days = inflow rate x dwell</b><br>dwell (placement wait) = <b>"+f.ltc+" days</b> &nbsp;|&nbsp; ALC bed-day share = <b style=\"color:var(--amber)\">"+f.alc.toFixed(2)+"%</b>");
+  const harm = scenario==="baseline"
+    ? "Harm paired: at baseline exposure, 18.4% die within 90 days of ALC designation."
+    : "Harm paired: per-ALC-day harm exposure down about "+f.careExposure+"%.";
+  setHTML("little_note","Inflow does not change with placement speed, so adding ward beds does not change ALC bed-days (L = inflow x dwell); it only adds empty beds. Halving the wait (111 to 56 days) is what halves ALC occupancy. "+harm);}
+// Time-of-day arrival pacing (visual only). Locked panel keeps its full-year values.
+const PERIODS={
+  morning:{label:"Morning Lull",rate:0.5,note:"Morning lull: arrivals are light and the ED has slack."},
+  afternoon:{label:"Afternoon Peak",rate:1.7,note:"Afternoon peak: the daily high, reflecting the model's non-homogeneous afternoon arrival pattern."},
+  evening:{label:"Evening Rush",rate:1.15,note:"Evening rush: medium-high arrivals into the evening."}};
+// Atypical day (T11): the expected diurnal pattern is replaced by an atypical variant
+const OUTLIER={morning:1.7,afternoon:0.55,evening:0.75};
+const OUTLIER_NOTE={morning:"Atypical day: the morning rushes instead of staying quiet.",
+  afternoon:"Atypical day: the afternoon runs slow instead of peaking.",
+  evening:"Atypical day: an unusually quiet evening."};
+function periodInterval(){const r=outlier?OUTLIER[period]:PERIODS[period].rate;return TUNE.spawnEveryMs/Math.max(0.15,r);}
+function setPeriod(p){if(!PERIODS[p])return;period=p;
+  document.querySelectorAll('#periodSeg button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));
+  updatePeriodNote();}
+function updatePeriodNote(){const P=PERIODS[period];
+  setHTML("derived","<b>Showing: "+P.label+(outlier?" · atypical day":"")+"</b> · "+(outlier?OUTLIER_NOTE[period]:P.note)+" Visual arrival pacing only; the locked panel keeps its full-year values. Illustrative.");}
+function setOutlier(on){outlier=(on===undefined?!outlier:on);
+  const b=document.getElementById('outlierBtn');
+  if(b){b.style.borderColor=outlier?'var(--amber)':'';b.style.color=outlier?'var(--amber)':'';b.textContent=outlier?'Outlier: ON (atypical)':'Outlier / atypical day';}
+  const t=document.getElementById('outlierTag');if(t)t.style.display=outlier?'inline-block':'none';
+  updatePeriodNote();}
+function resetRun(){for(let i=agents.length-1;i>=0;i--)kill(agents[i],i);
+  for(let i=vehicles.length-1;i>=0;i--)scene.remove(vehicles[i].mesh);vehicles.length=0;
+  for(let i=units.length-1;i>=0;i--){scene.remove(units[i].mesh);unclick(units[i].mesh);}units.length=0;
+  for(const b of beds)b.occupant=null;for(const f of facilities){f.occ=0;f.wins.forEach(w=>w.material.color.setHex(0x86c5e0));}
+  placedCount=0;spawnAcc=0;ambAcc=0;}
+
+/* ===== FREE-ROAM + AERIAL CAMERA ===== */
+let focus=v3(4,0,6),camYaw=0.7,camPitch=0.95,camDist=120,flyTo=null,flyDist=null,keys={},drag=false,dragBtn=0,px=0,py=0,moved=0;
+let aerialOn=false,camSaved=null;
+// Aerial toggle: top-down view that fits the whole city; second press restores the prior view (T9)
+function setAerial(){
+  const btn=document.getElementById('aerialBtn');
+  if(!aerialOn){
+    camSaved={focus:focus.clone(),camDist,camPitch,camYaw,fogNear:scene.fog.near,fogFar:scene.fog.far};
+    aerialOn=true;
+    scene.fog.near=700;scene.fog.far=2200;            // push fog out so the city is not lost at height
+    flyTo=v3(0,0,0);flyDist=300;camYaw=0;camPitch=0.045;  // near top-down, framed to fit the grid
+    if(btn){btn.style.borderColor='var(--amber)';btn.style.color='var(--amber)';}
+  }else{
+    aerialOn=false;
+    if(camSaved){flyTo=camSaved.focus.clone();flyDist=camSaved.camDist;camYaw=camSaved.camYaw;camPitch=camSaved.camPitch;
+      scene.fog.near=camSaved.fogNear;scene.fog.far=camSaved.fogFar;}
+    if(btn){btn.style.borderColor='';btn.style.color='';}
+  }
+}
+function camTick(dt){
+  if(flyTo){focus.lerp(flyTo,0.08);camDist+=(flyDist-camDist)*0.08;if(focus.distanceTo(flyTo)<0.6)flyTo=null;}
+  const fx=-Math.sin(camYaw),fz=-Math.cos(camYaw),rx=fz,rz=-fx,sp=(camDist*0.55+8)*dt;
+  if(keys.w){focus.x+=fx*sp;focus.z+=fz*sp;}if(keys.s){focus.x-=fx*sp;focus.z-=fz*sp;}
+  if(keys.a){focus.x-=rx*sp;focus.z-=rz*sp;}if(keys.d){focus.x+=rx*sp;focus.z+=rz*sp;}
+  focus.x=Math.max(-160,Math.min(160,focus.x));focus.z=Math.max(-160,Math.min(160,focus.z));
+  const ox=camDist*Math.sin(camPitch)*Math.sin(camYaw),oz=camDist*Math.sin(camPitch)*Math.cos(camYaw),oy=camDist*Math.cos(camPitch);
+  camera.position.set(focus.x+ox,focus.y+oy,focus.z+oz);camera.lookAt(focus);}
+// fade the hospital shell so the patient flow inside the ED + ward is visible (FlexSim-style cutaway)
+function setCutaway(on){cutaway=on;
+  for(const m of hospitalShell){if(!m.material)continue;
+    m.material.transparent=on;m.material.opacity=on?0.1:(m.userData.op0===undefined?1:m.userData.op0);
+    m.material.depthWrite=!on;m.castShadow=!on;m.material.needsUpdate=true;}}
+// click cards for NPCs (T5)
+const STEP={toTriage:"Walking in to triage",edCare:"In ED treatment",toWard:"Heading to the ward",
+  boarding:"Boarding in ED, no ward bed",toBed:"Going to a ward bed",bedAcute:"In an acute ward bed",
+  bedALC:"ALC: holding a bed, waiting for placement",decline:"Placement declined",placing:"In transport to placement",leaving:"Discharged / leaving"};
+const ROLELBL={doctor:"Physician",nurse:"Registered nurse",worker:"Care worker (escort)",passer:"Community member",patient:"Patient"};
+function showNPCCard(npc,x,y){const el=document.getElementById('npccard');if(!el)return;
+  let html='<span class="cl" onclick="hideNPCCard()">&times;</span>';
+  html+='<div class="nm">'+npc.name+'</div><div class="rl">'+(ROLELBL[npc.role]||npc.role)+'</div>';
+  if(npc.role==='patient'){const a=npc.agent;
+    html+='<div class="st">'+((a&&STEP[a.state])?STEP[a.state]:'In the ED')+'</div>';
+    html+='<div class="ct">CTAS '+(npc.ctas||'-')+' · illustrative character</div>';
+  }else html+='<div class="ct">Fictional name · illustrative</div>';
+  el.innerHTML=html;el.style.display='block';
+  const w=224,h=el.offsetHeight||100;
+  el.style.left=Math.max(8,Math.min(innerWidth-w-8,x+12))+'px';
+  el.style.top=Math.max(8,Math.min(innerHeight-h-8,y+12))+'px';}
+function hideNPCCard(){const el=document.getElementById('npccard');if(el)el.style.display='none';}
+function toggleExplain(on){const el=document.getElementById('explain');if(!el)return;
+  if(on===undefined)on=el.style.display!=='block';el.style.display=on?'block':'none';}
+function bindUI(){const cv=renderer.domElement,ray=new THREE.Raycaster(),m2=new THREE.Vector2();
+  cv.addEventListener('pointerdown',e=>{drag=true;dragBtn=e.button;px=e.clientX;py=e.clientY;moved=0;});
+  addEventListener('pointerup',e=>{if(drag&&moved<5){m2.x=(e.clientX/innerWidth)*2-1;m2.y=-(e.clientY/innerHeight)*2+1;
+    ray.setFromCamera(m2,camera);
+    // NPCs first: clicking a character opens its identity card (T5)
+    const nh=ray.intersectObjects(clickNPCs,true)[0];
+    if(nh){let o=nh.object;while(o&&!o.userData.npc)o=o.parent;
+      if(o&&o.userData.npc){showNPCCard(o.userData.npc,e.clientX,e.clientY);drag=false;return;}}
+    hideNPCCard();
+    const hit=ray.intersectObjects(clickTargets,false)[0];
+    if(hit&&hit.object.userData.fly){flyTo=hit.object.userData.fly.pos.clone();flyDist=hit.object.userData.fly.dist;}}drag=false;});
+  addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-px,dy=e.clientY-py;moved+=Math.abs(dx)+Math.abs(dy);
+    if(dragBtn===0&&!e.shiftKey){camYaw-=dx*0.005;camPitch=Math.max(0.06,Math.min(1.45,camPitch-dy*0.004));}
+    else{const fx=-Math.sin(camYaw),fz=-Math.cos(camYaw),rx=fz,rz=-fx,s=camDist*0.0016;focus.x-=(rx*dx+fx*-dy)*s;focus.z-=(rz*dx+fz*-dy)*s;}
+    px=e.clientX;py=e.clientY;});
+  cv.addEventListener('wheel',e=>{e.preventDefault();camDist=Math.max(8,Math.min(380,camDist+e.deltaY*0.09));},{passive:false});
+  addEventListener('keydown',e=>{const k=e.key.toLowerCase();if("wasd".includes(k))keys[k]=true;});
+  addEventListener('keyup',e=>{const k=e.key.toLowerCase();if("wasd".includes(k))keys[k]=false;});
+  document.getElementById('seg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setScenario(b.dataset.s);});
+  document.getElementById('periodSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setPeriod(b.dataset.p);});
+  document.getElementById('outlierBtn').addEventListener('click',()=>setOutlier());
+  document.getElementById('resetBtn').addEventListener('click',resetRun);
+  document.getElementById('recBtn').addEventListener('click',()=>document.body.classList.toggle('record'));
+  const cb=document.getElementById('cutawayBtn');
+  cb.addEventListener('click',()=>{setCutaway(!cutaway);cb.textContent=cutaway?'Show walls':'See patients';cb.style.borderColor=cutaway?'var(--amber)':'';cb.style.color=cutaway?'var(--amber)':'';});
+  document.getElementById('aerialBtn').addEventListener('click',setAerial);
+  document.getElementById('infoBtn').addEventListener('click',()=>toggleExplain());
+  document.getElementById('shadowBtn').addEventListener('click',()=>{renderer.shadowMap.enabled=!renderer.shadowMap.enabled;
+    scene.traverse(o=>{if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.needsUpdate=true);else o.material.needsUpdate=true;}});});
+  addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});}
+// Guard: if three.min.js failed to load, say so instead of rendering a silent black screen.
+if(typeof THREE==="undefined"){
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:#0c1116;color:#eef2f5;font:15px/1.5 ui-sans-serif,Segoe UI,Arial';
+  d.innerHTML='3D library did not load. Make sure <b style="color:#f4b942">three.min.js</b> sits next to this HTML file, then reload.';
+  document.body.appendChild(d);
+}else{init();}
+</script>
+</body>
+</html>

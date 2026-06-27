@@ -137,6 +137,18 @@
   .integrity{font-size:13.5px;color:var(--ink-soft);line-height:1.55;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--green);border-radius:10px;padding:20px 22px;margin-top:20px}
   .integrity b{color:var(--ink)}
 
+  /* Project 3: prominent headline + 3D model launch card */
+  .headline{background:var(--forest-deep);color:#fff;border-radius:18px;padding:28px 34px;margin:30px 0;text-align:center}
+  .headline p{margin:0;max-width:none;font-family:var(--serif);font-weight:700;font-size:clamp(23px,3.6vw,36px);line-height:1.12}
+  .launchcard{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin:26px 0}
+  .model-still{border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#0c1116;aspect-ratio:16/10}
+  .model-still svg{display:block;width:100%;height:100%}
+  .launchcard .lc-body h3{font-family:var(--serif);font-size:22px;margin:0 0 8px;color:var(--forest-deep)}
+  .launchcard .lc-body p{font-size:16px;color:var(--ink-soft);margin:0 0 16px;max-width:none}
+  .launch-3d{display:inline-block;background:var(--forest);color:#fff;text-decoration:none;font-weight:700;font-size:16px;padding:13px 22px;border-radius:10px;transition:.15s}
+  .launch-3d:hover{background:var(--forest-deep)}
+  @media (max-width:820px){.launchcard{grid-template-columns:1fr}}
+
   footer{border-top:1px solid var(--line);padding:34px 0 56px;font-size:14.5px;color:var(--ink-soft)}
   footer .name{font-family:var(--serif);color:var(--forest-deep);font-size:16px}
 
@@ -591,11 +603,78 @@
   </div>
 </section>
 
+<!-- PROJECT 3 -->
+<section>
+  <div class="wrap">
+    <div class="sec-head"><div><p class="kicker">Project 3</p></div><button class="note-toggle" aria-label="Speaker notes" onclick="toggleNotes(this)">+</button></div>
+    <h2>Making the placement wait endogenous</h2>
+    <p class="plain">Project 3 extends the model to the back door of the hospital. In Projects 1 and 2 the wait for a community placement was typed in as a fixed number. Project 3 makes it come out of the model instead, by giving the community its real, limited capacity in two streams, long-term-care beds and home care. The placement wait then emerges because supply is tight, exactly as it does in Cape Breton, where the median wait for a long-term-care bed runs about 111 days.</p>
+    <p>The headline finding is that adding ward beds does not reduce the number of medically finished patients stuck waiting, because that count is set by how fast they arrive times how long they wait, not by how many beds exist. The structural lever is placement speed. Halving the wait roughly halves the share of ward bed-days held by waiting patients and frees the most expensive setting in the system, while reducing the harm of waiting. The Home First approach this points to was piloted at the Cape Breton Regional Hospital in 2012 before it became provincial policy.</p>
+
+    <span class="eqn">ALC bed-days = arrival rate &times; placement wait</span>
+
+    <div class="stats">
+      <div class="stat"><div class="num">11.6 &rarr; 6.7%</div><div class="lab">ALC bed-day share, baseline to faster placement (model output)</div></div>
+      <div class="stat"><div class="num">111 &rarr; 56 d</div><div class="lab">LTC placement wait, Cape Breton County median, Tier A (model output)</div></div>
+      <div class="stat"><div class="num">88 &rarr; 70%</div><div class="lab">ward occupancy, baseline to beds plus faster placement (model output)</div></div>
+      <div class="stat alarm"><div class="num">~20%</div><div class="lab">walkouts, LWBS (model output)</div></div>
+      <div class="stat"><div class="num">~$1.08M</div><div class="lab">per year system avoided acute cost, CBRH cohort (model), paired with 18.4% 90-day mortality among ALC patients (Tier A)</div></div>
+    </div>
+
+    <div class="headline"><p>Beds do not fix it. Placement speed does.</p></div>
+
+    <div class="launchcard">
+      <div class="model-still" aria-label="Still image of the 3D model of the Cape Breton hospital region">
+        <svg viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" role="img">
+          <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#4f86c6"/><stop offset="1" stop-color="#9cc2da"/></linearGradient></defs>
+          <rect width="320" height="64" fill="url(#sky)"/>
+          <rect y="60" width="320" height="140" fill="#6f8f6a"/>
+          <g stroke="#cfcabd" stroke-width="7" opacity="0.85">
+            <line x1="40" y1="60" x2="40" y2="200"/><line x1="120" y1="60" x2="120" y2="200"/>
+            <line x1="200" y1="60" x2="200" y2="200"/><line x1="280" y1="60" x2="280" y2="200"/>
+            <line x1="0" y1="96" x2="320" y2="96"/><line x1="0" y1="150" x2="320" y2="150"/>
+          </g>
+          <rect x="135" y="104" width="70" height="42" fill="none" stroke="#3a3f44" stroke-width="5"/>
+          <rect x="150" y="112" width="40" height="26" fill="#a9745c"/>
+          <rect x="183" y="108" width="13" height="9" fill="#c6473a"/>
+          <g>
+            <rect x="58" y="74" width="16" height="14" fill="#e9ddcf" stroke="#7a382b"/>
+            <rect x="86" y="76" width="13" height="12" fill="#e6e0d2" stroke="#35506b"/>
+            <rect x="232" y="74" width="15" height="13" fill="#ede6d6" stroke="#2f6a48"/>
+            <rect x="60" y="162" width="14" height="12" fill="#c9a36a"/>
+            <rect x="84" y="164" width="12" height="10" fill="#b98a6a"/>
+            <rect x="236" y="160" width="14" height="13" fill="#e4ddcc" stroke="#4a3d5a"/>
+          </g>
+          <g transform="translate(170,86)" fill="#d23b3b">
+            <rect x="-7" y="-4" width="14" height="8" rx="2"/><rect x="-2" y="-9" width="20" height="2"/>
+            <rect x="-12" y="-2" width="2" height="14" fill="#262c33"/><rect x="-18" y="-2" width="2" height="14" fill="#262c33"/>
+          </g>
+          <text x="12" y="186" font-family="system-ui,Arial" font-size="13" font-weight="700" fill="#0c1116" opacity="0.55">3D model</text>
+        </svg>
+      </div>
+      <div class="lc-body">
+        <h3>See the model move</h3>
+        <p>A 3D dramatization of the validated model; it changes no number.</p>
+        <a href="../model/" target="_blank" rel="noopener" class="launch-3d">Launch the interactive 3D model</a>
+      </div>
+    </div>
+
+    <div class="notes"><b>Say</b><ul>
+      <li>Projects 1 and 2 typed the placement wait in; Project 3 makes it emerge from real community capacity.</li>
+      <li>ALC bed-days equal arrival rate times placement wait, so adding beds does not change the count; placement speed does.</li>
+      <li>Halving the wait (111 to 56 days) roughly halves the ALC bed-day share (11.6 to 6.7 percent).</li>
+      <li>Avoided cost about $1.08M a year for the CBRH cohort, paired with 18.4 percent 90-day ALC mortality.</li>
+      <li>Home First was piloted at CBRH in 2012 before it became provincial policy.</li>
+    </ul></div>
+  </div>
+</section>
+
 <footer>
   <div class="wrap">
     <div class="name">Gavin Shklanka</div>
     Master of Business Analytics, Sobey School of Business, Saint Mary's University.<br>
-    Black Point Analytics &middot; Blackpoint Lab &middot; MBAN 5630 Project 1.
+    Black Point Analytics &middot; Blackpoint Lab &middot; MBAN 5630 Projects 1 to 3.
   </div>
 </footer>
 
