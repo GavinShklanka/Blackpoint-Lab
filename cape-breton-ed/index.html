@@ -471,6 +471,7 @@
     <p class="kicker">Full statistics</p>
     <h2>Every metric, every scenario.</h2>
     <p class="plain">Ten-replication results. Select a scenario to see its complete key-performance set with run-to-run spread and confidence intervals.</p>
+    <p class="tnote">These are the Project 1 and 2 scenarios (Base, A, B, A+B). The Project 3 endogenous-placement six-scenario sweep is its own table in the Project 3 section below, so this is not the complete scenario set.</p>
     <div class="tabs">
       <button class="scn-tab active" data-scn="scn-base">Base</button>
       <button class="scn-tab" data-scn="scn-a">Scenario A</button>
@@ -606,6 +607,7 @@
       <p class="plain">The recommendation is to adopt the combination: community diversion plus a one-nurse-practitioner fast-track. It gives the same underserved population two independent paths to care, one before the front door and one behind it.</p>
       <p>The analysis states plainly what the numbers say. Inside the department, the combination performs the same as the fast-track alone, so the second change earns its place at the system level, by resolving roughly 1,800 patients a year in their own community rather than by speeding the emergency department further.</p>
       <p>It also names what nothing fixed. Admitted patients still spend about 28 hours in the system because inpatient beds are scarce. Boarding is the real constraint on waits, and it is the clear next investigation.</p>
+      <p>Project 3 keeps the same honesty. Even with all four levers on, emergency-department bed utilization stays about 96.6 percent, above the 85 percent target, so the 22-bed emergency pool is the next constraint, and a tail of long waits remains, with the 90th-percentile door-to-doctor time near 13.4 hours.</p>
       <div class="notes"><b>Say</b><ul>
         <li>Recommend A+B.</li>
         <li>In-department performance equals B alone, stated openly.</li>
@@ -633,6 +635,21 @@
 
     <span class="eqn">ALC bed-days = arrival rate &times; placement wait</span>
 
+    <div class="figure">
+      <p class="fignum">Figure 6 &middot; Placement-speed effect</p>
+      <svg class="chart" viewBox="0 0 640 380" role="img" aria-label="ALC bed-day share by scenario. S1 baseline 11.62 percent, S3 faster placement 6.65 percent, S6 combined 6.71 percent.">
+        <line class="grid" x1="80" y1="320" x2="600" y2="320"/><line class="grid" x1="80" y1="250" x2="600" y2="250"/><line class="grid" x1="80" y1="180" x2="600" y2="180"/><line class="grid" x1="80" y1="110" x2="600" y2="110"/><line class="grid" x1="80" y1="40" x2="600" y2="40"/>
+        <text class="axis" x="72" y="324" text-anchor="end">0</text><text class="axis" x="72" y="254" text-anchor="end">3</text><text class="axis" x="72" y="184" text-anchor="end">6</text><text class="axis" x="72" y="114" text-anchor="end">9</text><text class="axis" x="72" y="44" text-anchor="end">12%</text>
+        <line class="baseaxis" x1="80" y1="320" x2="80" y2="34"/>
+        <rect x="118" y="48.9" width="90" height="271.1" rx="4" fill="#9AA09A"/>
+        <rect x="293" y="164.8" width="90" height="155.2" rx="4" fill="#3DA468"/>
+        <rect x="468" y="163.4" width="90" height="156.6" rx="4" fill="#1E4D34"/>
+        <g class="val" text-anchor="middle"><text x="163" y="40">11.62%</text><text x="338" y="156">6.65%</text><text x="513" y="155">6.71%</text></g>
+        <g class="axisbold" text-anchor="middle"><text x="163" y="344">S1 Baseline</text><text x="338" y="344">S3 Faster placement</text><text x="513" y="344">S6 Combined</text></g>
+      </svg>
+      <p class="figcap"><b>Faster placement roughly halves the ALC bed-day share; adding beds on top barely changes it.</b> ALC bed-day share by scenario, a model output. The full confidence intervals are in the report's Table 4.</p>
+    </div>
+
     <div class="stats">
       <div class="stat"><div class="num">11.6 &rarr; 6.7%</div><div class="lab">ALC bed-day share, baseline to faster placement (model output)</div></div>
       <div class="stat"><div class="num">111 &rarr; 56 d</div><div class="lab">LTC placement wait, Cape Breton County median, Tier A (model output)</div></div>
@@ -643,9 +660,12 @@
 
     <div class="headline"><p>Beds do not fix it. Placement speed does.</p></div>
 
+    <p class="plain" style="margin-top:22px">Read that headline with its nuance, not against it. Beds are still necessary, because only the added beds pull ward occupancy below the 85 percent safe line. But beds do not move the patients who are stuck. In the beds-only contrast the ward share held by waiting patients stays flat even as occupancy falls, and at a 234-bed ward the model runs at about 64 percent occupancy with roughly 84 of 234 beds empty on a time-average basis, so the extra beds sit largely unused<span class="tier a">Model output</span>. A bed that is not filled cannot be the constraint on flow. Placement speed is the structural fix for the backlog. Because the 72 beds in the CBRH Clinical Services Building are already being built, the decision that matters now is funding community placement to move in step with them.</p>
+
     <div class="subblock">
       <h3>The human cost of waiting</h3>
-      <p class="plain">After a patient is designated Alternate Level of Care, life does not pause. It declines. About 18.4 percent die within 90 days of that designation, with measured functional decline while they wait<span class="tier a">Tier A</span>. The evidence is a large ICES cohort (Jones et al., n=54,839, median age 80). In the model's harm story this pairs with about 4.2 adverse events per 100 ALC-days<span class="tier c">Tier C calibration</span>.</p>
+      <p class="plain">After a patient is designated Alternate Level of Care, life does not pause. It declines. About 18.4 percent die within 90 days of that designation, with measured functional decline while they wait<span class="tier a">Tier A</span>. The cohort's median age is 80, a Tier A figure. The deterioration behind it is documented in Canadian cohorts (Bai et al., 2019; Costa et al., 2012): ALC patients face elevated risk of hospital-acquired infection, functional decline, delirium, and mortality, and every day of delayed placement raises their eventual care needs. In the model's harm story this pairs with about 4.2 adverse events per 100 ALC-days<span class="tier c">Tier C calibration</span>.</p>
+      <p>The contrast in cost is stark, as a cohort statistic and not a per-patient score. A median ALC stay runs about 31 days at a median hospital cost near $22,000, against about 4 days and near $5,000 for a non-ALC patient<span class="tier a">Tier A</span> (Bai et al., 2019). And the waits concentrate: patients waiting for a nursing-home bed account for about 41.5 percent of ALC bed-days from only 8.8 percent of ALC patients, because their waits are the longest<span class="tier a">Tier A</span> (Costa et al., 2012). The bottleneck is community supply, not hospital beds.</p>
       <p>The strain reaches families. The system does not formally rely on a patient's family, but family caregiving is a shadow cost that carries real health strain for the caregiver. We name it as a recognized systemic strain and attach no dollar figure to it, in keeping with the rule against per-patient costs.</p>
       <p>The system context is provincial. About 2,000 Nova Scotians are waiting for a long-term-care placement (1,972 in the DHW open data for the week of 25 March 2026; the Minister of Seniors and Long-Term Care has stated the same figure), and about 300 of them are holding a hospital bed while they wait<span class="tier prov">Provincial &middot; Tier A</span>. Province-wide, ALC accounts for about 192,000 hospital bed-days a year, roughly 545 beds-equivalent<span class="tier prov">Provincial &middot; Tier A</span> (CIHI). ALC is broader than the in-hospital placement-waiters, so the two counts are not the same thing. These are Nova Scotia figures, not a Cape Breton headcount; no Cape Breton headcount is available, and none is stated here.</p>
       <p>The Cape Breton edge is the wait itself. The median wait for a long-term-care bed in Cape Breton County runs about 115 days, against a provincial median near 75<span class="tier a">Tier A</span> (DHW Continuing Care).</p>
@@ -667,7 +687,7 @@
       <table>
         <thead><tr><th>Lever</th><th>What it does</th><th>Model result, before to after</th><th>Value to the system</th><th>Cost or avoided cost</th><th>Tier</th></tr></thead>
         <tbody>
-          <tr><td><span class="door">Front</span><br>Community diversion</td><td class="pl">Reroutes low-acuity arrivals to community care before the ED.</td><td>Walkouts 22.32 to 18.44%; about 1,836 a year rerouted</td><td>Fewer walkouts at the front door</td><td>About $0.29M a year avoided ($158 per ED visit)</td><td>A/B</td></tr>
+          <tr><td><span class="door">Front</span><br>Community diversion</td><td class="pl">Reroutes low-acuity arrivals to community care before the ED.</td><td>Walkouts 22.32 to 18.44%; about 1,836 a year rerouted</td><td>Fewer walkouts at the front door</td><td>About $290k a year avoided ($158 per ED visit)</td><td>A/B</td></tr>
           <tr><td><span class="door">Front</span><br>NP fast-track</td><td class="pl">A nurse-practitioner lane sees low-acuity patients in parallel.</td><td>Walkouts 22.32 to 4.26%; worst wait 40h to 28h</td><td>Strongest single front-door lever</td><td>One nurse-practitioner lane</td><td>A</td></tr>
           <tr><td><span class="door">Back</span><br>ALC placement speed</td><td class="pl">Moves medically finished patients out faster by adding placement capacity.</td><td>ALC wait 111 to 56 days; ALC share 11.62 to 6.65%</td><td>The only lever that moves the stuck backlog</td><td>About $1.08M a year avoided acute (model)</td><td>A/C</td></tr>
           <tr><td><span class="door">Back</span><br>Ward beds, the contrast</td><td class="pl">Adds staffed ward beds without changing placement.</td><td>Occupancy 88.0 to 74.1%; ALC share 11.62 to 11.51% (flat)</td><td>Clears crowding, but does not move stuck patients</td><td>About $26M a year operating</td><td>A</td></tr>
@@ -675,6 +695,7 @@
           <tr><td><span class="door">Both</span><br>All levers on</td><td class="pl">Front-door diversion and fast-track plus back-door placement speed.</td><td>Walkouts 22.32 to 2.36%; occupancy 90.73 to 61.09%</td><td>Both doors together; the levers substitute, not add</td><td>Sum of the above</td><td>A</td></tr>
         </tbody>
       </table>
+      <p class="tnote">The diversion split is a model output, not an illustration: of about 1,836 patients rerouted a year, the model routes 662 to pharmacy, 606 to the urgent treatment centre, 252 to virtual care, 225 to collaborative or primary care, and 91 to a no-open-service referral.<span class="tier a">Model output</span></p>
       <p class="tnote">Two baselines, labeled and never merged. The front-door (diversion, fast-track) and all-levers rows are the Project 2 report Combined column on a 22.32% walkout baseline. The placement-speed, ward-beds, and community-pool rows are the Project 3 six-scenario sweep on its own 20.40% walkout baseline.</p>
 
       <p class="tcap" style="margin-top:26px">Investment plan summary</p>
@@ -682,11 +703,11 @@
       <table>
         <thead><tr><th>Line item</th><th class="num">Amount</th><th>Tier</th></tr></thead>
         <tbody>
-          <tr><td>Coordination cost</td><td class="num">about $0.29M / yr</td><td>C plan</td></tr>
-          <tr><td>Program enablement</td><td class="num">about $0.14M / yr</td><td>C plan</td></tr>
-          <tr><td><b>Net-new annual investment</b></td><td class="num"><b>about $0.43M / yr</b></td><td>C plan</td></tr>
+          <tr><td>Coordination cost</td><td class="num">about $290k / yr</td><td>C plan</td></tr>
+          <tr><td>Program enablement</td><td class="num">about $140k / yr</td><td>C plan</td></tr>
+          <tr><td><b>Net-new annual investment</b></td><td class="num"><b>about $430k / yr</b></td><td>C plan</td></tr>
           <tr><td>Avoided acute cost</td><td class="num">about $1.08M (model) / $1.22M (report)</td><td>A/C</td></tr>
-          <tr><td><b>Net annual benefit, CBRH cohort</b></td><td class="num"><b>about $0.65M (model) / $0.80M (report)</b></td><td>C plan</td></tr>
+          <tr><td><b>Net annual benefit, CBRH cohort</b></td><td class="num"><b>about $650k (model) / $800k (report)</b></td><td>C plan</td></tr>
           <tr><td>Payback</td><td class="num">about 5 months</td><td>C plan</td></tr>
         </tbody>
       </table>
@@ -725,10 +746,10 @@
 
     <div class="invcard">
       <h3>What it would take, and the payback</h3>
-      <div class="ivrow"><span>Net-new investment (about 3 care-transition coordinators)</span><b>about $0.43M / yr</b></div>
+      <div class="ivrow"><span>Net-new investment (about 3 care-transition coordinators)</span><b>about $430k / yr</b></div>
       <div class="ivrow"><span>Avoided acute cost (model basis)</span><b>about $1.08M / yr</b></div>
       <div class="ivrow"><span>Payback</span><b>about 5 months</b></div>
-      <div class="ivrow"><span>Net annual benefit, CBRH cohort</span><b>about $0.65M / yr</b></div>
+      <div class="ivrow"><span>Net annual benefit, CBRH cohort</span><b>about $650k / yr</b></div>
       <div class="sub2">Plus care-quality gains that are not monetized. Most community placement spend substitutes for acute spend, so it largely self-funds; the net-new money is the coordination layer.</div>
       <div class="sub2">Nova Scotia scale, illustrative: $92M to $182M a year avoided-cost opportunity, midpoint $143M; an extrapolation, not a CBRH model output.</div>
       <div class="flag">Illustrative planning estimate, not a model output and not a measured budget.</div>
@@ -738,8 +759,10 @@
     <div class="subblock">
       <h3>Where this goes next</h3>
       <p class="plain">Widen home care across the whole Cape Breton Regional Municipality, not only Sydney. The direction is home-care clinicians taking on the patients who are waiting and supporting those they safely can in their own communities across the municipality, easing the placement queue from the community side while the bed side catches up.</p>
+      <!-- FLAG for Gavin: this uses the current verified Budget 2026-27 figure ($873.8M toward 5,700 new and replacement spaces by 2032). The Project 3 report uses an older framing (about 1,200 rooms by 2027 and 2,200 by 2032). The page is intentionally more current than the report on this one line; do not revert to the report number. -->
       <p>The bed side is being funded. Nova Scotia's 2026-27 budget commits $873.8 million toward building 5,700 new and replacement long-term-care spaces by 2032<span class="tier prov">Provincial &middot; Tier A</span>. Said plainly: this is supply catching up. The section's finding is that placement speed and home support move the existing backlog faster than beds alone, so the two work together rather than competing.</p>
       <p>The forward extension is One Person One Record connected to triage through a secured API, so the record travels and is secured across the ecosystem, strengthening both doors. This is also a funded provincial direction: the 2026-27 budget commits $233.5 million to roll out One Patient One Record across the province<span class="tier prov">Provincial &middot; Tier A</span>. The model does not simulate OPOR; it remains a forward extension carrying no modeled number, while the provincial investment is real and current.</p>
+      <p>The honest residual points the way too. With all four levers on, the emergency-department bed pool, about 96.6 percent utilized against an 85 percent target, becomes the next constraint, so the 22 staffed emergency beds are the next thing to look at after placement speed and home support.</p>
       <p class="srcline">The 3D model is being extended to show the waiting cohort and municipality-wide home-care support, so the talk can point to it.</p>
     </div>
     <!-- end C-T5 -->
