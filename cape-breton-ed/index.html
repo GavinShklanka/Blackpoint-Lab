@@ -149,6 +149,26 @@
   .launch-3d:hover{background:var(--forest-deep)}
   @media (max-width:820px){.launchcard{grid-template-columns:1fr}}
 
+  /* Project 3 deep-dive (handoff C): tier badges, sub-blocks, lever tables, investment card */
+  .tier{display:inline-block;font-size:10px;letter-spacing:.03em;font-weight:700;padding:1px 7px;border-radius:6px;background:#EFEBE1;color:var(--ink-soft);margin-left:5px;white-space:nowrap;vertical-align:middle}
+  .tier.a{background:rgba(61,164,104,.16);color:var(--forest)}
+  .tier.b{background:rgba(62,107,140,.14);color:var(--blue)}
+  .tier.c{background:rgba(214,154,60,.20);color:#8a5b14}
+  .tier.prov{background:rgba(62,107,140,.12);color:var(--blue)}
+  .subblock{margin-top:34px}
+  .subblock h3{font-family:var(--serif);font-size:21px;color:var(--forest-deep);margin:0 0 10px}
+  .subblock p{margin:0 0 14px}
+  .srcline{font-size:14px;color:var(--ink-soft);margin-top:6px;max-width:70ch}
+  .tcap{font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);font-weight:700;margin:24px 0 2px}
+  .tlabel{font-size:14px;color:var(--ink-soft);margin:2px 0 0}
+  td .door{font-size:11px;letter-spacing:.05em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
+  .invcard{background:var(--forest-deep);color:#EAF1EA;border-radius:16px;padding:26px 28px;margin:18px 0}
+  .invcard h3{font-family:var(--serif);color:#fff;margin:0 0 12px;font-size:23px}
+  .invcard .ivrow{display:flex;justify-content:space-between;gap:14px;padding:7px 0;border-top:1px solid rgba(255,255,255,.12);font-size:15.5px;color:#C9D6CB}
+  .invcard .ivrow:first-of-type{border-top:0}.invcard .ivrow b{color:#fff;white-space:nowrap}
+  .invcard .sub2{color:#9DBBA6;font-size:14.5px;margin-top:14px;line-height:1.5}
+  .invcard .flag{font-style:italic;color:#9DBBA6;font-size:13px;margin-top:10px}
+
   footer{border-top:1px solid var(--line);padding:34px 0 56px;font-size:14.5px;color:var(--ink-soft)}
   footer .name{font-family:var(--serif);color:var(--forest-deep);font-size:16px}
 
@@ -622,6 +642,107 @@
     </div>
 
     <div class="headline"><p>Beds do not fix it. Placement speed does.</p></div>
+
+    <div class="subblock">
+      <h3>The human cost of waiting</h3>
+      <p class="plain">After a patient is designated Alternate Level of Care, life does not pause. It declines. About 18.4 percent die within 90 days of that designation, with measured functional decline while they wait<span class="tier a">Tier A</span>. The evidence is a large ICES cohort (Jones et al., n=54,839, median age 80). In the model's harm story this pairs with about 4.2 adverse events per 100 ALC-days<span class="tier c">Tier C calibration</span>.</p>
+      <p>The strain reaches families. The system does not formally rely on a patient's family, but family caregiving is a shadow cost that carries real health strain for the caregiver. We name it as a recognized systemic strain and attach no dollar figure to it, in keeping with the rule against per-patient costs.</p>
+      <p>The system context is provincial. About 2,000 Nova Scotians are waiting for a long-term-care placement (1,972 in the DHW open data for the week of 25 March 2026; the Minister of Seniors and Long-Term Care has stated the same figure), and about 300 of them are holding a hospital bed while they wait<span class="tier prov">Provincial &middot; Tier A</span>. Province-wide, ALC accounts for about 192,000 hospital bed-days a year, roughly 545 beds-equivalent<span class="tier prov">Provincial &middot; Tier A</span> (CIHI). ALC is broader than the in-hospital placement-waiters, so the two counts are not the same thing. These are Nova Scotia figures, not a Cape Breton headcount; no Cape Breton headcount is available, and none is stated here.</p>
+      <p>The Cape Breton edge is the wait itself. The median wait for a long-term-care bed in Cape Breton County runs about 115 days, against a provincial median near 75<span class="tier a">Tier A</span> (DHW Continuing Care).</p>
+    </div>
+    <!-- end C-T1 -->
+
+    <div class="subblock">
+      <h3>Why invest in home support, not only beds</h3>
+      <p class="plain">Not every ALC patient has the same case. The model routes finished patients by mobility: limited-mobility patients need a long-term-care bed, while many others can be supported safely at home with home care. Investing only in beds serves one path; investing in home support serves the larger, more flexible one.</p>
+      <p>Home support is not a lesser option for the right patient. Hospital-at-home and home-care models preserve or improve survival for appropriate patients, with a mortality risk ratio of about 0.77<span class="tier a">Tier A</span> (Cochrane review; Shepperd RCT).</p>
+      <p>This is already a funded provincial direction. Nova Scotia's 2026-27 budget puts $26.5 million into the Home Support Direct Funding Program to help seniors stay in their own homes<span class="tier prov">Provincial &middot; Tier A</span>.</p>
+      <p>The more proactive the system is, the more it can prevent decline and support a life the patient actually wants, which is better for health and for the family. We state this as design value, not a modeled result.</p>
+    </div>
+    <!-- end C-T2 -->
+
+    <div class="subblock">
+      <h3>The levers, side by side</h3>
+      <p class="tcap">Master value table</p>
+      <table>
+        <thead><tr><th>Lever</th><th>What it does</th><th>Model result, before to after</th><th>Value to the system</th><th>Cost or avoided cost</th><th>Tier</th></tr></thead>
+        <tbody>
+          <tr><td><span class="door">Front</span><br>Community diversion</td><td class="pl">Reroutes low-acuity arrivals to community care before the ED.</td><td>Walkouts 22.32 to 18.44%; about 1,836 a year rerouted</td><td>Fewer walkouts at the front door</td><td>About $0.29M a year avoided ($158 per ED visit)</td><td>A/B</td></tr>
+          <tr><td><span class="door">Front</span><br>NP fast-track</td><td class="pl">A nurse-practitioner lane sees low-acuity patients in parallel.</td><td>Walkouts 22.32 to 4.26%; worst wait 40h to 28h</td><td>Strongest single front-door lever</td><td>One nurse-practitioner lane</td><td>A</td></tr>
+          <tr><td><span class="door">Back</span><br>ALC placement speed</td><td class="pl">Moves medically finished patients out faster by adding placement capacity.</td><td>ALC wait 111 to 56 days; ALC share 11.62 to 6.65%</td><td>The only lever that moves the stuck backlog</td><td>About $1.08M a year avoided acute (model)</td><td>A/C</td></tr>
+          <tr><td><span class="door">Back</span><br>Ward beds, the contrast</td><td class="pl">Adds staffed ward beds without changing placement.</td><td>Occupancy 88.0 to 74.1%; ALC share 11.62 to 11.51% (flat)</td><td>Clears crowding, but does not move stuck patients</td><td>About $26M a year operating</td><td>A</td></tr>
+          <tr><td><span class="door">Back</span><br>Community pool size, the control</td><td class="pl">Grows the community pool without tightening the wait.</td><td>No change (S4 and S5 reproduce baseline)</td><td>Capacity that does not bind does nothing</td><td>Not applicable</td><td>A</td></tr>
+          <tr><td><span class="door">Both</span><br>All levers on</td><td class="pl">Front-door diversion and fast-track plus back-door placement speed.</td><td>Walkouts 22.32 to 2.36%; occupancy 90.73 to 61.09%</td><td>Both doors together; the levers substitute, not add</td><td>Sum of the above</td><td>A</td></tr>
+        </tbody>
+      </table>
+      <p class="tnote">Two baselines, labeled and never merged. The front-door (diversion, fast-track) and all-levers rows are the Project 2 report Combined column on a 22.32% walkout baseline. The placement-speed, ward-beds, and community-pool rows are the Project 3 six-scenario sweep on its own 20.40% walkout baseline.</p>
+
+      <p class="tcap" style="margin-top:26px">Investment plan summary</p>
+      <p class="tlabel">Illustrative planning estimate, not a model output.</p>
+      <table>
+        <thead><tr><th>Line item</th><th class="num">Amount</th><th>Tier</th></tr></thead>
+        <tbody>
+          <tr><td>Coordination cost</td><td class="num">about $0.29M / yr</td><td>C plan</td></tr>
+          <tr><td>Program enablement</td><td class="num">about $0.14M / yr</td><td>C plan</td></tr>
+          <tr><td><b>Net-new annual investment</b></td><td class="num"><b>about $0.43M / yr</b></td><td>C plan</td></tr>
+          <tr><td>Avoided acute cost</td><td class="num">about $1.08M (model) / $1.22M (report)</td><td>A/C</td></tr>
+          <tr><td><b>Net annual benefit, CBRH cohort</b></td><td class="num"><b>about $0.65M (model) / $0.80M (report)</b></td><td>C plan</td></tr>
+          <tr><td>Payback</td><td class="num">about 5 months</td><td>C plan</td></tr>
+        </tbody>
+      </table>
+
+      <details>
+        <summary>Show full results</summary>
+        <div class="body">
+          <p class="tcap">Report Table 2, Project 2 baseline (Combined column)</p>
+          <p class="tlabel">Project 2 sweep on the 22.32% walkout baseline. The front-door and all-levers figures above come from this column.</p>
+          <table>
+            <thead><tr><th>Scenario</th><th class="num">Walkouts</th></tr></thead>
+            <tbody>
+              <tr><td>Baseline</td><td class="num">22.32%</td></tr>
+              <tr><td>Community diversion</td><td class="num">18.44%</td></tr>
+              <tr><td>NP fast-track</td><td class="num">4.26%</td></tr>
+              <tr><td>All levers on</td><td class="num">2.36%</td></tr>
+            </tbody>
+          </table>
+          <p class="tnote">All levers on also moves door-to-doctor 5.84 to 4.58h, admit 29.82 to 27.84h, and occupancy 90.73 to 61.09%.</p>
+
+          <p class="tcap" style="margin-top:22px">Project 3 six-scenario sweep, Project 3 baseline</p>
+          <p class="tlabel">Project 3 sweep on its own 20.40% walkout baseline. The placement-speed, beds, and pool figures come from this sweep. The two baselines are never merged.</p>
+          <table>
+            <thead><tr><th>Scenario</th><th class="num">Walkouts</th><th class="num">Occupancy</th><th class="num">ALC share</th><th class="num">LTC wait</th></tr></thead>
+            <tbody>
+              <tr><td>S1 Baseline</td><td class="num">20.40%</td><td class="num">88.02%</td><td class="num">11.62%</td><td class="num">111 d</td></tr>
+              <tr><td>S3 Faster placement</td><td class="num">19.04%</td><td class="num">83.54%</td><td class="num">6.65%</td><td class="num">56 d</td></tr>
+              <tr><td>S6 Combined</td><td class="num">18.85%</td><td class="num">70.31%</td><td class="num">6.71%</td><td class="num">57 d</td></tr>
+            </tbody>
+          </table>
+          <p class="tnote">S4 and S5 (community pool size) reproduce the baseline exactly: capacity that does not bind changes nothing.</p>
+        </div>
+      </details>
+    </div>
+    <!-- end C-T3 -->
+
+    <div class="invcard">
+      <h3>What it would take, and the payback</h3>
+      <div class="ivrow"><span>Net-new investment (about 3 care-transition coordinators)</span><b>about $0.43M / yr</b></div>
+      <div class="ivrow"><span>Avoided acute cost (model basis)</span><b>about $1.08M / yr</b></div>
+      <div class="ivrow"><span>Payback</span><b>about 5 months</b></div>
+      <div class="ivrow"><span>Net annual benefit, CBRH cohort</span><b>about $0.65M / yr</b></div>
+      <div class="sub2">Plus care-quality gains that are not monetized. Most community placement spend substitutes for acute spend, so it largely self-funds; the net-new money is the coordination layer.</div>
+      <div class="sub2">Nova Scotia scale, illustrative: $92M to $182M a year avoided-cost opportunity, midpoint $143M; an extrapolation, not a CBRH model output.</div>
+      <div class="flag">Illustrative planning estimate, not a model output and not a measured budget.</div>
+    </div>
+    <!-- end C-T4 -->
+
+    <div class="subblock">
+      <h3>Where this goes next</h3>
+      <p class="plain">Widen home care across the whole Cape Breton Regional Municipality, not only Sydney. The direction is home-care clinicians taking on the patients who are waiting and supporting those they safely can in their own communities across the municipality, easing the placement queue from the community side while the bed side catches up.</p>
+      <p>The bed side is being funded. Nova Scotia's 2026-27 budget commits $873.8 million toward building 5,700 new and replacement long-term-care spaces by 2032<span class="tier prov">Provincial &middot; Tier A</span>. Said plainly: this is supply catching up. The section's finding is that placement speed and home support move the existing backlog faster than beds alone, so the two work together rather than competing.</p>
+      <p>The forward extension is One Person One Record connected to triage through a secured API, so the record travels and is secured across the ecosystem, strengthening both doors. This is also a funded provincial direction: the 2026-27 budget commits $233.5 million to roll out One Patient One Record across the province<span class="tier prov">Provincial &middot; Tier A</span>. The model does not simulate OPOR; it remains a forward extension carrying no modeled number, while the provincial investment is real and current.</p>
+      <p class="srcline">The 3D model is being extended to show the waiting cohort and municipality-wide home-care support, so the talk can point to it.</p>
+    </div>
+    <!-- end C-T5 -->
 
     <div class="launchcard">
       <div class="model-still" aria-label="Still image of the 3D model of the Cape Breton hospital region">
