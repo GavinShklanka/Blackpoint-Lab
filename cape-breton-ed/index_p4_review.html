@@ -671,7 +671,7 @@
       <div class="stat"><div class="num">111 &rarr; 56 d</div><div class="lab">LTC placement wait, Cape Breton County median, Tier A (model output)</div></div>
       <div class="stat"><div class="num">88 &rarr; 70%</div><div class="lab">ward occupancy, baseline to beds plus faster placement (model output)</div></div>
       <div class="stat alarm"><div class="num">~20%</div><div class="lab">walkouts, LWBS (model output)</div></div>
-      <div class="stat"><div class="num">~$1.08M</div><div class="lab">per year system avoided acute cost, CBRH cohort (model), paired with reduced ALC harm exposure as placement speeds (Bai et al., 2019; Costa et al., 2012)</div></div>
+      <div class="stat"><div class="num">~$1.08M</div><div class="lab">per year system avoided acute cost, CBRH cohort (model), paired with an Ontario ALC cohort in which 18.4% died within 90 days of designation (Jones et al., 2024)</div></div>
     </div>
 
     <div class="headline"><p>Beds do not fix it. Placement speed does.</p></div>
@@ -680,7 +680,7 @@
 
     <div class="subblock">
       <h3>The human cost of waiting</h3>
-      <p class="plain">After a patient is designated Alternate Level of Care, life does not pause. It declines. Longer waits carry measured functional decline, and the cohort's median age is about 80 (Bai et al., 2019). The deterioration behind it is documented in Canadian cohorts (Bai et al., 2019; Costa et al., 2012): ALC patients face elevated risk of hospital-acquired infection, functional decline, delirium, and mortality, and every day of delayed placement raises their eventual care needs. In the model's harm story this pairs with about 4.2 adverse events per 100 ALC-days<span class="tier c">Tier C calibration</span>.</p>
+      <p class="plain">After a patient is designated Alternate Level of Care, life does not pause. It declines. Longer waits carry measured functional decline, and the cohort's median age is about 80 (Bai et al., 2019). In an Ontario ALC cohort, 18.4% died within 90 days of designation (Jones et al., 2024). The deterioration behind it is documented in Canadian cohorts (Bai et al., 2019; Costa et al., 2012): ALC patients face elevated risk of hospital-acquired infection, functional decline, delirium, and mortality, and every day of delayed placement raises their eventual care needs. In the model's harm story this pairs with about 4.2 adverse events per 100 ALC-days.</p>
       <p>The contrast in cost is stark, as a cohort statistic and not a per-patient score. A median ALC stay runs about 31 days at a median hospital cost near $22,000, against about 4 days and near $5,000 for a non-ALC patient (Bai et al., 2019). And the waits concentrate: patients waiting for a nursing-home bed account for about 41.5 percent of ALC bed-days from only 8.8 percent of ALC patients, because their waits are the longest (Costa et al., 2012). The bottleneck is community supply, not hospital beds.</p>
       <p>The strain reaches families. The system does not formally rely on a patient's family, but family caregiving is a shadow cost that carries real health strain for the caregiver. We name it as a recognized systemic strain and attach no dollar figure to it, in keeping with the rule against per-patient costs.</p>
       <p>The system context is provincial. About 2,000 Nova Scotians are waiting for a long-term-care placement (1,972 in the DHW open data for the week of 25 March 2026; the Minister of Seniors and Long-Term Care has stated the same figure), and about 300 of them are holding a hospital bed while they wait. Province-wide, ALC accounts for about 192,000 hospital bed-days a year, roughly 545 beds-equivalent (CIHI). ALC is broader than the in-hospital placement-waiters, so the two counts are not the same thing. These are Nova Scotia figures, not a Cape Breton headcount; no Cape Breton headcount is available, and none is stated here.</p>
@@ -824,7 +824,7 @@
       <li>Projects 1 and 2 typed the placement wait in; Project 3 makes it emerge from real community capacity.</li>
       <li>ALC bed-days equal arrival rate times placement wait, so adding beds does not change the count; placement speed does.</li>
       <li>Halving the wait (111 to 56 days) roughly halves the ALC bed-day share (11.6 to 6.7 percent).</li>
-      <li>Avoided cost about $1.08M a year for the CBRH cohort, paired with reduced ALC harm exposure as placement speeds.</li>
+      <li>Avoided cost about $1.08M a year for the CBRH cohort, paired with an Ontario cohort figure of 18.4% 90-day ALC mortality (Jones et al., 2024).</li>
       <li>Home First was piloted at CBRH in 2012 before it became provincial policy.</li>
     </ul></div>
   </div>
@@ -974,56 +974,57 @@
 
     <!-- BLOCK 2: THE SCORECARD -->
     <div class="subblock">
-      <span class="discband"><i>&#9679;</i>Policy discussion &middot; Tier-tagged &middot; no model number attached</span>
+      <span class="discband"><i>&#9679;</i>Policy read &middot; the model as a lens on what the province is deploying</span>
       <h3>The scorecard: what Nova Scotia is actually doing</h3>
       <p class="plain">The province is spending, heavily, but mostly on the non-binding lever. The dominant commitments are capacity builds on a long horizon: about 5,700 long-term-care rooms by 2032, the Cape Breton Regional Hospital clinical tower with 72 ward beds finishing in 2031, and more than a billion dollars of regional redevelopment. Scored against the model's finding, most of that spend is the right intention aimed at the lever that does not move the backlog. Each initiative is tested three ways: does it hit the binding lever, is it in the right place, and can it actually be delivered.</p>
+      <p>The value of this read is not to grade the province. It is to show where the model sharpens moves already underway: Nova Scotia has begun deploying every lever category the model tests, and the model identifies which of those moves reaches the constraint and which does not.</p>
       <table>
         <thead><tr><th>Lever</th><th>Hits the binding lever?</th><th>Geography</th><th>Delivery</th><th>Failure mode</th></tr></thead>
         <tbody>
           <tr>
-            <td>~5,700 LTC rooms by 2032<span class="tier a">Tier A</span></td>
+            <td>~5,700 LTC rooms by 2032</td>
             <td><span class="hit p">Partial</span><div class="pl">Adds discharge destinations only if staffed; capacity build is the non-binding lever</div></td>
             <td class="pl">Mixed. Includes CB sites but not proportioned to the 115-day CB wait</td>
             <td class="pl">High risk. AG found 4,836 beds not competitively tendered; weak monitoring; 2032 horizon</td>
             <td class="fmode">Right lever partly, wrong speed</td>
           </tr>
           <tr>
-            <td>CBRH clinical tower, 72 beds<span class="tier a">Tier A</span></td>
+            <td>CBRH clinical tower, 72 beds</td>
             <td><span class="hit w">Weak</span><div class="pl">Adds ward beds, the explicitly non-binding lever</div></td>
             <td class="pl">Correct location (Cape Breton)</td>
             <td class="pl">Clinical services not finished until 2031</td>
             <td class="fmode">Non-binding lever, late</td>
           </tr>
           <tr>
-            <td>Transitional care (West Bedford, Cumberland)<span class="tier a">Tier A</span></td>
+            <td>Transitional care (West Bedford, Cumberland)</td>
             <td><span class="hit s">Strong</span><div class="pl">Targets placement speed directly</div></td>
             <td class="pl">Fails for CBRH. The flagship is sited urban</td>
             <td class="pl">Delivered and operating</td>
             <td class="fmode">Right lever, wrong geography</td>
           </tr>
           <tr>
-            <td>Community paramedicine (Care by Design)<span class="tier a">Tier A</span></td>
+            <td>Community paramedicine (Care by Design)</td>
             <td><span class="hit s">Strong</span><div class="pl">Keeps patients out of the ED</div></td>
             <td class="pl">Under-scaled for rural Cape Breton</td>
             <td class="pl">Proven in NS (47% fewer LTC-to-ED transports), not scaled</td>
             <td class="fmode">Right lever, under-deployed</td>
           </tr>
           <tr>
-            <td>ED flow team (advocates, NPs, PAs, fast-track)<span class="tier a">Tier A</span></td>
+            <td>ED flow team (advocates, NPs, PAs, fast-track)</td>
             <td><span class="hit s">Strong</span><div class="pl">Front-door diversion plus NP fast-track</div></td>
             <td class="pl">Present at CBRH</td>
             <td class="pl">Constrained by CBRH nurse vacancies</td>
             <td class="fmode">Right lever, staffing-limited</td>
           </tr>
           <tr>
-            <td>Home-care expansion<span class="tier a">Tier A</span></td>
+            <td>Home-care expansion</td>
             <td><span class="hit s">Strong</span><div class="pl">The binding community-capacity lever</div></td>
             <td class="pl">Province-wide; rural travel penalty</td>
             <td class="pl">~13% home-care vacancy</td>
             <td class="fmode">Right lever, workforce collapse</td>
           </tr>
           <tr>
-            <td>First Available Bed policy<span class="tier a">Tier A</span></td>
+            <td>First Available Bed policy</td>
             <td><span class="hit s">Strong</span><div class="pl">A placement-speed lever</div></td>
             <td class="pl">Province-wide</td>
             <td class="pl">Operational</td>
@@ -1036,31 +1037,31 @@
 
     <!-- BLOCK 3: THE GEOGRAPHY -->
     <div class="subblock">
-      <span class="discband"><i>&#9679;</i>Policy discussion &middot; Tier-tagged &middot; no model number attached</span>
+      <span class="discband"><i>&#9679;</i>Policy read &middot; where the allocation lands</span>
       <h3>The geography of the choice</h3>
       <p class="plain">The allocation choice has a map. Cape Breton is older and waits longer, yet the flagship transitional-care centre, the one delivered lever that targets placement speed, was sited in West Bedford inside the Halifax region, not in Cape Breton. The contrast below is confirmed public data; no precise coordinates or unpublished regional figures are invented.</p>
       <table>
-        <thead><tr><th>Measure</th><th>Cape Breton</th><th>Nova Scotia</th><th>Tier</th></tr></thead>
+        <thead><tr><th>Measure</th><th>Cape Breton</th><th>Nova Scotia</th></tr></thead>
         <tbody>
-          <tr><td>Seniors, share of population</td><td class="cb">26%</td><td class="prov">22.2%</td><td><span class="tier a">Tier A</span></td></tr>
-          <tr><td>LTC placement wait, county median</td><td class="cb">115 days</td><td class="prov">75 days</td><td><span class="tier a">Tier A</span></td></tr>
-          <tr><td>Population change, 2016 to 2021</td><td class="cb">-0.6%</td><td class="prov">+5.0%</td><td><span class="tier a">Tier A</span></td></tr>
-          <tr><td>Flagship transitional-care centre</td><td class="cb">Not sited here</td><td class="prov">West Bedford (HRM)</td><td><span class="tier a">Tier A</span></td></tr>
+          <tr><td>Seniors, share of population</td><td class="cb">26%</td><td class="prov">22.2%</td></tr>
+          <tr><td>LTC placement wait, county median</td><td class="cb">115 days</td><td class="prov">75 days</td></tr>
+          <tr><td>Population change, 2016 to 2021</td><td class="cb">-0.6%</td><td class="prov">+5.0%</td></tr>
+          <tr><td>Flagship transitional-care centre</td><td class="cb">Not sited here</td><td class="prov">West Bedford (HRM)</td></tr>
         </tbody>
       </table>
-      <p class="tnote">The provincial senior share of 22.2 percent itself sits above the Canadian figure near 19.0 percent, so Cape Breton is the older tail of an already-older province. CBRM income runs about 3.5 percent below the provincial average, and individual CB facility waits range from about 55 to 188 days.<span class="tier a">Tier A</span></p>
+      <p class="tnote">The provincial senior share of 22.2 percent itself sits above the Canadian figure near 19.0 percent, so Cape Breton is the older tail of an already-older province. CBRM income runs about 3.5 percent below the provincial average, and individual CB facility waits range from about 55 to 188 days.</p>
     </div>
 
     <!-- BLOCK 4: WHAT TO DO WHILE WE WAIT -->
     <div class="subblock">
-      <span class="discband"><i>&#9679;</i>Policy discussion &middot; the realistic near-term outcome</span>
+      <span class="discband"><i>&#9679;</i>Policy read &middot; the realistic near-term move</span>
       <h3>What we can do while the buildings are years away</h3>
       <p class="plain">The buildings that add beds finish in 2031 and 2032. The levers that move placement speed do not need a construction date. These are the fast, cheap, no-new-building options that move the binding lever now, and they are where the near-term outcome actually lives.</p>
       <div class="p4grid">
         <div class="card">
           <span class="tag b">Available now</span>
           <h3>Scale community paramedicine in Cape Breton</h3>
-          <p>The Care by Design paramedicine model is already proven in Nova Scotia at 47 percent fewer long-term-care-to-ED transports. It keeps frail patients out of the ED entirely. The gap is rural scale, not proof.<span class="tier a">Tier A</span></p>
+          <p>The Care by Design paramedicine model is already proven in Nova Scotia at 47 percent fewer long-term-care-to-ED transports. It keeps frail patients out of the ED entirely. The gap is rural scale, not proof.</p>
         </div>
         <div class="card">
           <span class="tag b">Available now</span>
@@ -1070,7 +1071,7 @@
         <div class="card">
           <span class="tag b">Available now</span>
           <h3>Home-care wages and guaranteed hours</h3>
-          <p>Home care is the binding community-capacity lever, and it is running at about 13 percent vacancy. Competitive wages and guaranteed hours are the direct fix for the workforce collapse that starves it.<span class="tier a">Tier A</span></p>
+          <p>Home care is the binding community-capacity lever, and it is running at about 13 percent vacancy. Competitive wages and guaranteed hours are the direct fix for the workforce collapse that starves it.</p>
         </div>
         <div class="card">
           <span class="tag a">Model-validated</span>
