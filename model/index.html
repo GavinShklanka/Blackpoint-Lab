@@ -1289,5 +1289,624 @@ if(typeof THREE==="undefined"){
   });
 })();
 </script>
+<!-- ==================================================================================
+     PATIENT POV BRANCHED JOURNEY  (third-person follow-cam)
+     ISOLATED, DELETABLE SUBSYSTEM. Remove this one <script id="patient-pov-journey">
+     block (and this comment) to fully revert the scene. It reads existing scene
+     globals, adds no simulation mechanism, and changes no model number.
+     Veracity: depicts only Project 2 model branches (ALC, admitted non-ALC,
+     community diversion, NP fast-track, LWBS). The scan is the modeled 120-minute
+     diagnostic delay, not an imaging resource pool. Nurse escort + stage are visual
+     staging only. No em-dashes in caption copy.
+=================================================================================== -->
+<script id="patient-pov-journey">
+(function(){
+  "use strict";
+  if(typeof THREE==="undefined"||typeof scene==="undefined"||typeof camera==="undefined"){return;}
+
+  /* ---------- small helpers (local, do not touch sim) ---------- */
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  // triangular sample with mode c (Section 7: ALC placement wait triangular(55,102,188))
+  function tri(a,c,b){var u=Math.random(),fc=(c-a)/(b-a);
+    return u<fc ? a+Math.sqrt(u*(b-a)*(c-a)) : b-Math.sqrt((1-u)*(b-a)*(b-c));}
+  var reduceMotion=false;
+  try{reduceMotion=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;}catch(e){}
+
+  /* ---------- programmable depth: one config, sourced from the model's real pools ----------
+     Every population below reads from this object. Change one number, reshape the scene.
+     Staff counts are the model resource pools (5 physicians, 3 nurses, 1 NP, 22 ED beds).
+     wardOccPct reads the model's baseline occupancy from FROZEN where present. */
+  var POV_DEPTH = {
+    physicians: 5,      // model nPhysicians
+    nurses: 3,          // model nNurses
+    np: 1,              // model nNPPA
+    edBeds: 22,         // model nBeds (staffed ED bays)
+    wardOccPct: (typeof FROZEN!=="undefined"&&FROZEN.baseline&&FROZEN.baseline.occ)?+(FROZEN.baseline.occ/100).toFixed(4):0.88,
+    waitingRoomN: 8,    // seated background patients in the physician queue
+    triageQueueN: 2,    // short line at triage
+    wardShown: 4,       // ward beds rendered on the stage
+    lwbsRenegeEverySec: 14,  // a waiting patient leaves this often (LWBS made visible)
+    serviceCue: true,   // staff attend the focal patient during service dwells
+    crowd: true         // render background patients at all
+  };
+  // depth-subsystem state (all populated in buildDepth, all live inside stageGroup)
+  var povStaffAll=[];                                              // every stage staff mesh
+  var povStaff={triageNurses:[],physicians:[],wardNurse:null,np:null};
+  var waitingPatients=[];                                          // {mesh,seat,state,ph,ctas} reneging queue
+  var crowdIdle=[];                                                // triage-line + other idle background meshes
+  var wardOccupants=[];                                            // lying ward patients
+  var povWaitSeats=[];                                             // seat coords for the physician queue
+  var attendRing=null;                                            // progress ring shown over the attended pair
+  var renegeAcc=0;                                                // LWBS renege throttle accumulator
+
+  /* ---------- journey stage geometry (Section 3), built once ---------- */
+  var SO={x:300,y:0,z:0};                 // stage origin, far off the sim floor (hidden by fog on enter)
+  function P(x,z,y){return v3(SO.x+x,(y||0),SO.z+z);}
+  var stageGroup=null,stageBuilt=false;
+  // station coordinates in stage-local space (x lateral, z forward)
+  var ST={
+    front:[0,0], triage:[0,10], fork:[0,20], wait:[0,30], phys:[0,40], imaging:[0,50],
+    board:[0,60], ward:[0,70], alcDes:[3,70], placeWait:[0.6,71], mobility:[0,80],
+    ltc:[-16,88], home:[18,88], discharge:[16,63],
+    divert:[9,24], edge:[16,30], fastlane:[-12,26], npconsult:[-12,36], leave:[0,-3],
+    waitGrow:[1.2,31],
+    nodes:{
+      "urgent treatment centre":[22,40], "pharmacy":[30,28],
+      "virtual care":[22,28], "collaborative care":[30,40], "no open service":[26,47]
+    }
+  };
+  function marker(x,z,color,txt,sub){
+    var disc=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,0.12,24),smat(color,0.6));
+    disc.position.set(SO.x+x,0.06,SO.z+z);disc.receiveShadow=true;stageGroup.add(disc);
+    var l=label(txt,sub||"",0.7);l.position.set(SO.x+x,3.4,SO.z+z);stageGroup.add(l);
+    return disc;
+  }
+  function buildStage(){
+    if(stageBuilt)return;stageBuilt=true;
+    stageGroup=new THREE.Group();scene.add(stageGroup);
+    var add=function(m){stageGroup.add(m);return m;};
+    // clean raised platform + neutral acute spine
+    var plat=box(78,0.4,120,0x131a21);plat.position.set(SO.x+5,-0.2,SO.z+44);plat.receiveShadow=true;add(plat);
+    var spine=box(4,0.06,104,0x2a333c);spine.position.set(SO.x+0,0.02,SO.z+44);add(spine);
+    // Front door (teal)
+    marker(ST.front[0],ST.front[1],0x4fb0a5,"Front door","entrance");
+    // Triage desk + monitor (nurse placed in buildDepth from POV_DEPTH.nurses)
+    var desk=box(3,1,1.2,0xc7c2b6);desk.position.set(SO.x+2.4,0.5,SO.z+10);add(desk);
+    var mon=box(0.9,0.6,0.08,0x11202a);mon.position.set(SO.x+2.4,1.35,SO.z+9.7);add(mon);   // desk monitor (polish)
+    var monStand=box(0.12,0.35,0.12,0x2b333b);monStand.position.set(SO.x+2.4,1.0,SO.z+9.7);add(monStand);
+    marker(ST.triage[0],ST.triage[1],0xc7c2b6,"Triage","nurse assesses");
+    // CTAS decision fork (amber toward the acute department)
+    var forkA=box(0.4,0.05,11,0xe8a13a);forkA.position.set(SO.x-2.6,0.05,SO.z+24);forkA.rotation.y=0.5;add(forkA);
+    var forkB=box(0.4,0.05,11,0x4fb0a5);forkB.position.set(SO.x+4.5,0.05,SO.z+24);forkB.rotation.y=-0.5;add(forkB);
+    marker(ST.fork[0],ST.fork[1],0xe8a13a,"CTAS decision","acuity fork");
+    // Waiting room chairs (count follows POV_DEPTH.waitingRoomN; patients seated in buildDepth)
+    povWaitSeats=waitSeats();
+    povWaitSeats.forEach(function(s){var ch=box(0.8,0.8,0.8,0x394450);ch.position.set(SO.x+s[0],0.4,SO.z+s[1]);ch.castShadow=true;add(ch);});
+    marker(ST.wait[0],ST.wait[1],0xc7c2b6,"Waiting room","physician queue");
+    // Physician consult (physicians placed in buildDepth from POV_DEPTH.physicians) + two chairs (polish)
+    marker(ST.phys[0],ST.phys[1],0xc7c2b6,"Physician consult","seen");
+    for(var pc=0;pc<2;pc++){var pch=box(0.7,0.7,0.7,0x2f3a44);pch.position.set(SO.x+3.4+pc*1.2,0.35,SO.z+41.2);pch.castShadow=true;add(pch);}
+    // Diagnostic imaging: scanner (this is the modeled 120-min DELAY, not a resource pool)
+    var iroom=box(9,0.1,9,0x1b2530);iroom.position.set(SO.x-6,0.03,SO.z+50);add(iroom);
+    var scan=new THREE.Mesh(new THREE.TorusGeometry(1.5,0.55,12,26),smat(0xbfc7cc,0.4,0.35));
+    scan.position.set(SO.x-6,1.5,SO.z+50);scan.rotation.y=Math.PI/2;scan.castShadow=true;add(scan);
+    var scanBed=box(0.9,0.3,3.2,0xdfe3e6);scanBed.position.set(SO.x-6,0.6,SO.z+50);add(scanBed);
+    marker(ST.imaging[0],ST.imaging[1],0xc7c2b6,"Diagnostic imaging","120-min delay");
+    // Admitted / boarding (amber back-door)
+    marker(ST.board[0],ST.board[1],0xe8a13a,"Admitted, boarding","no ward bed yet");
+    // Ward beds (four)
+    for(var b=0;b<4;b++){var bx=-4.5+b*3;var bed=box(1.4,0.5,2.4,0xcfc8b8);
+      bed.position.set(SO.x+bx,0.3,SO.z+70);bed.castShadow=true;add(bed);}
+    marker(ST.ward[0],ST.ward[1],0xc7c2b6,"Ward bed","acute care");
+    marker(ST.alcDes[0],ST.alcDes[1],0xe8a13a,"ALC","no placement");
+    // Mobility routing fork
+    marker(ST.mobility[0],ST.mobility[1],0xe8a13a,"Mobility routing","LTC or home");
+    // Long-term-care facility (amber roof) + marker
+    var ltcB=box(8,6,8,0xe9ddcf);ltcB.position.set(SO.x-16,3,SO.z+92);ltcB.castShadow=true;ltcB.receiveShadow=true;add(ltcB);
+    var ltcR=new THREE.Mesh(new THREE.ConeGeometry(6.4,2,4),smat(0xe8a13a,0.8));ltcR.position.set(SO.x-16,7,SO.z+92);ltcR.rotation.y=Math.PI/4;ltcR.castShadow=true;add(ltcR);
+    marker(ST.ltc[0],ST.ltc[1],0xe8a13a,"Long-term care","LTC bed");
+    // Home-care house marker
+    var homeB=box(4,3,4,0xc9a36a);homeB.position.set(SO.x+18,1.5,SO.z+92);homeB.castShadow=true;add(homeB);
+    var homeR=new THREE.Mesh(new THREE.ConeGeometry(3.4,1.6,4),smat(0x8a6b3f,0.85));homeR.position.set(SO.x+18,3.8,SO.z+92);homeR.rotation.y=Math.PI/4;homeR.castShadow=true;add(homeR);
+    marker(ST.home[0],ST.home[1],0xc9a36a,"Home care","community");
+    // Discharge / exit door (teal)
+    marker(ST.discharge[0],ST.discharge[1],0x4fb0a5,"Discharge","exit");
+    // Community diversion decision (teal)
+    marker(ST.divert[0],ST.divert[1],0x4fb0a5,"Diversion","low acuity");
+    // Nurse-practitioner fast-track lane (parallel short lane)
+    var lane=box(3,0.06,16,0x2a3d3a);lane.position.set(SO.x-12,0.03,SO.z+31);add(lane);
+    marker(ST.fastlane[0],ST.fastlane[1],0x4fb0a5,"Fast-track lane","NP lane");
+    marker(ST.npconsult[0],ST.npconsult[1],0x4fb0a5,"NP consult","nurse practitioner");
+    // Community nodes (teal, two-door)
+    var nodes=[["Virtual care",22,28],["Pharmacy",30,28],["Urgent treatment centre",22,40],["Collaborative care",30,40]];
+    nodes.forEach(function(n){
+      var nb=box(4,3,4,0x2f6a5a);nb.position.set(SO.x+n[1],1.5,SO.z+n[2]);nb.castShadow=true;add(nb);
+      var d1=box(0.08,1.2,0.7,0xe7d6b6);d1.position.set(SO.x+n[1]-0.85,0.6,SO.z+n[2]+2.05);add(d1);
+      var d2=box(0.08,1.2,0.7,0xe7d6b6);d2.position.set(SO.x+n[1]+0.85,0.6,SO.z+n[2]+2.05);add(d2);
+      var nl=label(n[0],"community",0.5);nl.position.set(SO.x+n[1],4.4,SO.z+n[2]);add(nl);
+    });
+    var noSvc=marker(ST.nodes["no open service"][0],ST.nodes["no open service"][1],0x3a6f68,"No open service","community");
+    // Stage title
+    var t=label("Patient POV journey stage","model dramatization, changes no number",0.85);
+    t.position.set(SO.x+5,13,SO.z-6);add(t);
+    // programmable depth: staff, background patients, attend ring
+    buildDepth();
+  }
+
+  /* ---------- programmable depth build (Enhancements A, B, C) ---------- */
+  function waitSeats(){
+    var arr=[],n=Math.max(1,POV_DEPTH.waitingRoomN|0),perRow=Math.ceil(n/2);
+    for(var i=0;i<n;i++){var row=Math.floor(i/perRow),col=i%perRow;
+      arr.push([-5+col*1.8, 27+row*2.0]);}
+    return arr;
+  }
+  // one stage staff member: person() tinted by COL, with a home pose it returns to after attending
+  function mkStaff(color,x,z,rot,role){
+    var m=person(color);m.position.set(SO.x+x,0,SO.z+z);m.rotation.y=(rot==null?0:rot);
+    m.traverse(function(o){if(o.isMesh)o.castShadow=true;});
+    m.userData.home=v3(SO.x+x,0,SO.z+z);m.userData.homeRot=m.rotation.y;
+    m.userData.attend=false;m.userData.target=m.userData.home.clone();m.userData.faceAt=null;m.userData.role=role;
+    stageGroup.add(m);povStaffAll.push(m);return m;
+  }
+  // CTAS color weighted toward 3 to 5 (the waiting room is the low-to-mid-acuity physician queue)
+  function ctasWeighted(){var r=Math.random();var c=r<0.15?2:(r<0.45?3:(r<0.75?4:5));return {c:c,col:CTAS_COL[c]};}
+  function buildDepth(){
+    /* Enhancement A: staff at the service stations, real counts from POV_DEPTH */
+    var nN=Math.max(1,POV_DEPTH.nurses|0);
+    var wardNurseCount=(nN>=2)?1:0, triageNurseCount=nN-wardNurseCount;
+    var trPos=[[3.4,10.7],[1.4,10.9],[4.6,11.2],[0.4,11.4]];
+    for(var ni=0;ni<triageNurseCount;ni++){var tp=trPos[ni%trPos.length];
+      povStaff.triageNurses.push(mkStaff(COL.nurse,tp[0],tp[1],Math.PI,"nurse"));}   // first one keeps the old trNurse pose
+    if(wardNurseCount>0){var wn=mkStaff(COL.nurse,5,70,Math.PI,"nurse");
+      wn.userData.roam=[v3(SO.x+5,0,SO.z+70),v3(SO.x-5,0,SO.z+70),v3(SO.x+0,0,SO.z+72)];wn.userData.roamI=0;povStaff.wardNurse=wn;}
+    var pN=Math.max(1,POV_DEPTH.physicians|0);
+    var docPos=[[2.6,40],[-2.6,40.6],[4.2,41.6],[-4.2,39.2],[0.6,42.4],[3.2,38.4],[-1.0,38.2]];
+    for(var pi=0;pi<pN;pi++){var dp=docPos[pi%docPos.length];
+      povStaff.physicians.push(mkStaff(COL.doctor,dp[0],dp[1],Math.PI,"doctor"));}    // first one keeps the old doc pose
+    if((POV_DEPTH.np|0)>0){povStaff.np=mkStaff(COL.nurse,-10.5,36,-Math.PI/2,"np");}
+    // progress ring shown over the attended pair during a service dwell
+    attendRing=new THREE.Mesh(new THREE.TorusGeometry(0.55,0.07,8,22),new THREE.MeshBasicMaterial({color:0xf4b942}));
+    attendRing.rotation.x=Math.PI/2;attendRing.visible=false;stageGroup.add(attendRing);
+    /* Enhancement B: background patients */
+    if(POV_DEPTH.crowd){
+      // waiting room: seated physician queue, CTAS-colored, weighted 3 to 5
+      povWaitSeats.forEach(function(s){
+        var cc=ctasWeighted();var m=person(cc.col);m.scale.setScalar(0.92);
+        m.position.set(SO.x+s[0],0.25,SO.z+s[1]);m.rotation.y=Math.PI;
+        m.traverse(function(o){if(o.isMesh)o.castShadow=true;});stageGroup.add(m);
+        waitingPatients.push({mesh:m,seat:v3(SO.x+s[0],0.25,SO.z+s[1]),state:"idle",ph:Math.random()*6.28,ctas:cc.c});
+      });
+      // triage queue: a short line waiting to be assessed
+      var qN=Math.max(0,POV_DEPTH.triageQueueN|0);
+      for(var qi=0;qi<qN;qi++){var cc2=ctasWeighted();var qm=person(cc2.col);
+        qm.position.set(SO.x+0,0,SO.z+(7.4-qi*1.5));qm.rotation.y=0;
+        qm.traverse(function(o){if(o.isMesh)o.castShadow=true;});qm.userData.ph=Math.random()*6.28;
+        stageGroup.add(qm);crowdIdle.push(qm);}
+      // ward beds occupied to the modeled ~88 percent occupancy
+      var nOcc=Math.min(POV_DEPTH.wardShown|0, Math.round((POV_DEPTH.wardShown|0)*POV_DEPTH.wardOccPct));
+      for(var wi=0;wi<nOcc;wi++){var bx=-4.5+wi*3;
+        var cc3=ctasWeighted();var lm=person(cc3.col);lm.rotation.x=-Math.PI/2;lm.position.set(SO.x+bx,0.78,SO.z+70);
+        lm.traverse(function(o){if(o.isMesh)o.castShadow=true;});stageGroup.add(lm);wardOccupants.push(lm);
+        var blank=box(1.2,0.16,1.5,0x5b7d8f);blank.position.set(SO.x+bx,0.62,SO.z+70.4);stageGroup.add(blank); // blanket (polish)
+        var head=box(1.35,0.7,0.16,0xb7b0a2);head.position.set(SO.x+bx,0.7,SO.z+68.7);stageGroup.add(head);}    // headboard (polish)
+    }
+  }
+  /* reset the background crowd to seated on each (re)start */
+  function resetCrowd(){renegeAcc=0;
+    waitingPatients.forEach(function(w){w.state="idle";w.mesh.position.set(w.seat.x,w.seat.y,w.seat.z);});}
+
+  /* ---------- staff attend + crowd updaters (called each POV frame) ---------- */
+  // staff attend maps to modeled seizes only: triage->nurse, consult->physician, fast-track->NP, ward->bed nurse
+  function serviceStaffFor(station){
+    if(!station)return null;
+    if(/Triage/i.test(station))return povStaff.triageNurses[0]||null;
+    if(/Physician consult/i.test(station))return povStaff.physicians[0]||null;
+    if(/Fast-track|NP consult/i.test(station))return povStaff.np||null;
+    if(/Ward bed/i.test(station))return povStaff.wardNurse||null;
+    return null;   // imaging and all others: no staffed resource
+  }
+  function updateService(){
+    var desired=null;
+    if(POV.active&&POV.phase==="dwell"&&POV_DEPTH.serviceCue){
+      var cw=POV.waypoints[POV.wp];if(cw)desired=serviceStaffFor(cw.station);
+    }
+    if(desired!==POV.attendStaff){
+      if(POV.attendStaff)POV.attendStaff.userData.attend=false;
+      POV.attendStaff=desired||null;
+      if(POV.attendStaff)POV.attendStaff.userData.attend=true;
+    }
+    if(POV.attendStaff&&POV.patient){
+      var p=POV.patient.position;
+      POV.attendStaff.userData.target.set(p.x+1.4,0,p.z+0.3);
+      POV.attendStaff.userData.faceAt=p;
+      if(attendRing){attendRing.visible=true;attendRing.position.set(p.x+0.7,2.5,p.z+0.15);attendRing.rotation.y+=0.09;}
+    }else if(attendRing){attendRing.visible=false;}
+  }
+  function updateStaffMotion(dt){
+    var t=performance.now();
+    for(var i=0;i<povStaffAll.length;i++){var s=povStaffAll[i],u=s.userData,tgt;
+      if(u.attend){tgt=u.target;}
+      else if(u.roam){tgt=u.roam[u.roamI];if(s.position.distanceTo(tgt)<0.5)u.roamI=(u.roamI+1)%u.roam.length;}
+      else{tgt=u.home;}
+      s.position.x+=(tgt.x-s.position.x)*0.14;s.position.z+=(tgt.z-s.position.z)*0.14;
+      if(u.attend&&u.faceAt){var dx=u.faceAt.x-s.position.x,dz=u.faceAt.z-s.position.z;
+        if(Math.hypot(dx,dz)>0.05)s.rotation.y=Math.atan2(dx,dz);
+        s.position.y=Math.abs(Math.sin(t*0.006))*0.05;}          // subtle attend motion cue
+      else if(u.roam){var rx=tgt.x-s.position.x,rz=tgt.z-s.position.z;
+        if(Math.hypot(rx,rz)>0.1)s.rotation.y=Math.atan2(rx,rz);s.position.y=0;}
+      else{s.rotation.y+=(u.homeRot-s.rotation.y)*0.1;s.position.y=0;}
+    }
+  }
+  function updateCrowd(dt){
+    if(!POV_DEPTH.crowd)return;
+    var t=performance.now();
+    for(var i=0;i<crowdIdle.length;i++){crowdIdle[i].position.y=Math.abs(Math.sin(t*0.004+crowdIdle[i].userData.ph))*0.05;}
+    for(var j=0;j<waitingPatients.length;j++){var w=waitingPatients[j],m=w.mesh;
+      if(w.state==="idle"){m.position.y=w.seat.y+Math.abs(Math.sin(t*0.004+w.ph))*0.04;}
+      else if(w.state==="leaving"){
+        var door=P(ST.leave[0],ST.leave[1]);
+        var dx=door.x-m.position.x,dz=door.z-m.position.z,d=Math.hypot(dx,dz),sp=4.0*dt*(POV.playSpeed||1);
+        if(d<0.5){ // left without being seen, seat is taken by a new arrival
+          w.state="idle";m.position.set(w.seat.x,w.seat.y,w.seat.z);m.rotation.y=Math.PI;
+          var cc=ctasWeighted();if(m.userData.body)m.userData.body.material.color.setHex(cc.col);w.ctas=cc.c;
+        }else{m.position.x+=dx/d*sp;m.position.z+=dz/d*sp;m.rotation.y=Math.atan2(dx,dz);
+          m.position.y=Math.abs(Math.sin(t*0.012))*0.08;}
+      }
+    }
+    // LWBS made visible: one waiting patient leaves on the throttled interval
+    renegeAcc+=dt*(POV.playSpeed||1);
+    if(renegeAcc>=POV_DEPTH.lwbsRenegeEverySec){renegeAcc=0;
+      var cand=waitingPatients.filter(function(w){return w.state==="idle";});
+      if(cand.length)cand[(Math.random()*cand.length)|0].state="leaving";
+    }
+  }
+
+  /* ---------- per-patient sampling (Section 7) ---------- */
+  var CH=[["urgent treatment centre",606],["pharmacy",662],["virtual care",252],["collaborative care",225],["no open service",91]];
+  var SAMP={};
+  function sampleFor(id){
+    var s={};
+    var admittedRange=(id==="alc"||id==="admitted");
+    s.ctas = admittedRange ? (Math.random()<0.5?2:3) : (Math.random()<0.5?4:5);   // Section 7 valid ranges
+    s.alcWaitDays = Math.round(tri(55,102,188));                                    // triangular(55,102,188), mean ~115
+    s.mobility = (Math.random()<0.73) ? "ltc" : "home";                            // pLTC 0.73 / pHomeCare 0.27
+    var tot=CH.reduce(function(a,c){return a+c[1];},0),r=Math.random()*tot,ch=CH[0];
+    for(var k=0;k<CH.length;k++){r-=CH[k][1];if(r<=0){ch=CH[k];break;}}
+    s.channelName=ch[0];
+    s.d2d=(5.8+(Math.random()-0.5)*2.0).toFixed(1);                                // around 5.8h baseline door-to-doctor
+    s.board=Math.round(28+Math.random()*2);                                        // 28 to 30h admitted time in system
+    return s;
+  }
+  function fillTokens(str){
+    return String(str)
+      .split("{ctas}").join(SAMP.ctas)
+      .split("{alcWait}").join(SAMP.alcWaitDays)
+      .split("{mobilityRoute}").join(SAMP.mobility==="ltc"?"Limited mobility, to a long-term-care bed":"Normal mobility, to home care")
+      .split("{channel}").join(SAMP.channelName)
+      .split("{d2d}").join(SAMP.d2d)
+      .split("{board}").join(SAMP.board);
+  }
+
+  /* ---------- branch waypoint arrays (Sections 8 + 9) ---------- */
+  function wp(station,line,pos,dwellMs,opts){opts=opts||{};
+    return {station:station,line:line,worldPos:pos,dwellMs:dwellMs,
+            escort:!!opts.escort,terminal:!!opts.terminal,faceDir:(opts.faceDir==null?null:opts.faceDir)};}
+  function buildWaypoints(id){
+    var placedPos = SAMP.mobility==="ltc" ? P(ST.ltc[0],ST.ltc[1]) : P(ST.home[0],ST.home[1]);
+    var nodeXY = ST.nodes[SAMP.channelName]||ST.nodes["urgent treatment centre"];
+    var nodePos = P(nodeXY[0],nodeXY[1]-2);
+    if(id==="alc"){
+      return [
+        wp("Front door","Arrival. About 38,900 arrivals a year, time-varying, peaking near 6.6 an hour mid-afternoon.",P(ST.front[0],ST.front[1]),3200),
+        wp("Triage","Triaged CTAS {ctas}. A nurse assesses acuity.",P(ST.triage[0],ST.triage[1]),3200),
+        wp("CTAS decision","Higher acuity. Enters the main department, not diversion or fast-track.",P(ST.fork[0],ST.fork[1]),3000),
+        wp("Waiting room","Waits for a physician. Door-to-doctor about 5.8 hours at baseline. This patient about {d2d} hours.",P(ST.wait[0],ST.wait[1]),3200),
+        wp("Physician consult","Seen. Decision to admit.",P(ST.phys[0],ST.phys[1]),3000),
+        wp("Diagnostic imaging","Diagnostics, about a 120-minute turnaround. This is a modeled delay, not a modeled imaging resource.",P(ST.imaging[0],ST.imaging[1]),3400),
+        wp("Admitted, boarding","Admitted, now boarding for a ward bed. Admitted time in system about 28 to 30 hours, driven by boarding. This patient about {board} hours.",P(ST.board[0],ST.board[1]),3200),
+        wp("Ward bed","In a ward bed for acute care.",P(ST.ward[0],ST.ward[1]),3000,{escort:true}),
+        wp("ALC designation","Medically ready to leave, but no community placement available. Now alternate level of care.",P(ST.alcDes[0],ST.alcDes[1]),3200),
+        wp("Placement wait","Waiting for placement. This patient's wait {alcWait} days. Cape Breton median about 111 to 115 days, Tier A. The ward bed is held the entire time.",P(ST.placeWait[0],ST.placeWait[1]),3800),
+        wp("Mobility routing","Routed by mobility. {mobilityRoute}.",P(ST.mobility[0],ST.mobility[1]),3200),
+        wp("Placed","Placed. Faster placement, a 56-day median, would free this bed sooner and cut the ALC bed-day share from 11.6 to 6.7 percent. Care pairing about 18.4 percent die within 90 days of designation, Tier A. Per-day harm exposure falls about 43 percent under faster placement.",placedPos,5200,{terminal:true})
+      ];
+    }
+    if(id==="admitted"){
+      return [
+        wp("Front door","Arrival. About 38,900 arrivals a year, time-varying.",P(ST.front[0],ST.front[1]),3000),
+        wp("Triage","Triaged CTAS {ctas}. A nurse assesses acuity.",P(ST.triage[0],ST.triage[1]),3000),
+        wp("CTAS decision","Higher acuity. Enters the main department.",P(ST.fork[0],ST.fork[1]),2800),
+        wp("Waiting room","Waits for a physician. Door-to-doctor about 5.8 hours at baseline. This patient about {d2d} hours.",P(ST.wait[0],ST.wait[1]),3000),
+        wp("Physician consult","Seen. Decision to admit.",P(ST.phys[0],ST.phys[1]),2800),
+        wp("Diagnostic imaging","Diagnostics, about a 120-minute turnaround. A modeled delay, not a modeled imaging resource.",P(ST.imaging[0],ST.imaging[1]),3200),
+        wp("Admitted, boarding","Admitted, now boarding for a ward bed. This patient about {board} hours.",P(ST.board[0],ST.board[1]),3000,{escort:true}),
+        wp("Ward bed","In a ward bed for acute care.",P(ST.ward[0],ST.ward[1]),3000),
+        wp("Acute stay completes","Acute care completes.",P(ST.ward[0]+1.5,ST.ward[1]),2800),
+        wp("Discharge","Discharged home. Admitted patients are discharged in a median of about four days. About 92 percent of admits are not ALC.",P(ST.discharge[0],ST.discharge[1]),4200,{terminal:true})
+      ];
+    }
+    if(id==="diversion"){
+      return [
+        wp("Front door","Arrival.",P(ST.front[0],ST.front[1]),2800),
+        wp("Triage","Triaged CTAS {ctas}. Low acuity.",P(ST.triage[0],ST.triage[1]),3000),
+        wp("Diversion decision","Diverted from the emergency department. Diversion fraction 0.2.",P(ST.divert[0],ST.divert[1]),3000),
+        wp("Community routing","Routed to {channel}. About 1,836 patients a year diverted. Split urgent treatment centre 606, pharmacy 662, virtual 252, collaborative 225, no open service 91.",P(ST.edge[0],ST.edge[1]),3400,{escort:true}),
+        wp("Treated in community","Treated in the community. Emergency load reduced. Admission wait down about 0.70 hours. Channel split is a model output.",nodePos,4600,{terminal:true})
+      ];
+    }
+    if(id==="fasttrack"){
+      return [
+        wp("Front door","Arrival.",P(ST.front[0],ST.front[1]),2800),
+        wp("Triage","Triaged CTAS {ctas}. Low acuity, kept in the department.",P(ST.triage[0],ST.triage[1]),3000),
+        wp("Fast-track lane","Sent to the nurse-practitioner fast-track lane. Wait about 5 minutes.",P(ST.fastlane[0],ST.fastlane[1]),3000,{escort:true}),
+        wp("NP consult","Treated by the nurse-practitioner. Fast-track is the strongest single front-door lever, cutting walkouts from 22.32 to 4.26 percent. About 7,391 patients a year use this lane.",P(ST.npconsult[0],ST.npconsult[1]),4200),
+        wp("Discharge","Discharged.",P(ST.discharge[0],ST.discharge[1]),3600,{terminal:true})
+      ];
+    }
+    // LWBS
+    return [
+      wp("Front door","Arrival.",P(ST.front[0],ST.front[1]),2800),
+      wp("Triage","Triaged CTAS {ctas}.",P(ST.triage[0],ST.triage[1]),3000),
+      wp("Waiting room","Waits for a physician in the main queue.",P(ST.wait[0],ST.wait[1]),3200),
+      wp("The wait grows","The wait exceeds what the patient will tolerate.",P(ST.waitGrow[0],ST.waitGrow[1]),3600,{impatient:true}),
+      wp("Left without being seen","Leaves without being seen. Baseline about 19 to 22 percent of patients. Many return later, sicker, at higher acute cost.",P(ST.leave[0],ST.leave[1]),4200,{terminal:true})
+    ];
+  }
+
+  /* ---------- POV state + walk engine + follow-cam ---------- */
+  var POV={active:false,playing:true,playSpeed:1,branch:null,waypoints:[],wp:0,phase:"idle",
+    dwellLeft:0,target:null,patient:null,escort:null,attendStaff:null,
+    followDist:6,heightUp:3.5,orbitYaw:0,orbitPitch:0.34,savedCam:null,walkSpeed:4.2};
+
+  function spawnPatient(id){
+    var col={alc:0xe8a13a,admitted:0xc7c2b6,diversion:0x4fb0a5,fasttrack:0x4fb0a5,lwbs:0xc0473a}[id]||0xc7c2b6;
+    var m=person(col);m.position.copy(POV.waypoints[0].worldPos);m.rotation.y=0;
+    m.traverse(function(o){if(o.isMesh)o.castShadow=true;});
+    stageGroup.add(m);POV.patient=m;
+  }
+  function spawnEscort(){
+    if(POV.escort)return;
+    var n=person(0x3fae9e);n.position.copy(POV.patient.position).add(v3(1.3,0,-0.6));
+    n.traverse(function(o){if(o.isMesh)o.castShadow=true;});stageGroup.add(n);POV.escort=n;
+  }
+  function updateEscort(){
+    if(!POV.escort)return;var p=POV.patient.position;
+    var tx=p.x+1.3,tz=p.z-0.6,ep=POV.escort.position;
+    ep.x+=(tx-ep.x)*0.2;ep.z+=(tz-ep.z)*0.2;ep.y=p.y;POV.escort.rotation.y=POV.patient.rotation.y;
+  }
+  function removeEscort(){if(POV.escort){stageGroup.remove(POV.escort);POV.escort=null;}}
+
+  function advanceFromDwell(){
+    var cur=POV.waypoints[POV.wp];
+    if(cur.terminal){POV.phase="done";return;}
+    POV.target=POV.waypoints[POV.wp+1];POV.phase="travel";
+    if(POV.target.escort)spawnEscort();
+  }
+  function arriveWaypoint(){
+    POV.wp++;var w=POV.waypoints[POV.wp];POV.patient.position.y=0;
+    if(w.faceDir!=null)POV.patient.rotation.y=w.faceDir;
+    updateCaption(POV.wp);removeEscort();
+    POV.phase="dwell";POV.dwellLeft=w.dwellMs;
+  }
+  function travelStep(sdt){
+    var p=POV.patient.position,t=POV.target.worldPos;
+    var dx=t.x-p.x,dz=t.z-p.z,d=Math.hypot(dx,dz),s=POV.walkSpeed*sdt;
+    if(d<0.25||s>=d){p.x=t.x;p.z=t.z;p.y=0;arriveWaypoint();return;}
+    p.x+=dx/d*s;p.z+=dz/d*s;POV.patient.rotation.y=Math.atan2(dx,dz);
+    p.y=Math.abs(Math.sin(performance.now()*0.012))*0.09;   // walking bob
+    updateEscort();
+  }
+  function povTick(dt){
+    if(POV.patient&&POV.playing){
+      var sp=POV.playSpeed;
+      if(POV.phase==="dwell"){
+        // impatience wobble at the LWBS wait
+        var cw=POV.waypoints[POV.wp];
+        if(cw&&/wait grows|Waits for a physician/i.test(cw.station+cw.line)){
+          POV.patient.position.y=Math.abs(Math.sin(performance.now()*0.02))*0.05;
+        }
+        POV.dwellLeft-=dt*1000*sp;
+        if(POV.dwellLeft<=0)advanceFromDwell();
+      }else if(POV.phase==="travel"){
+        travelStep(dt*sp);
+      }
+    }
+    if(stageBuilt){updateService();updateStaffMotion(dt);updateCrowd(dt);}
+    followCam(dt);
+  }
+  function followCam(dt){
+    if(!POV.patient)return;var p=POV.patient.position;
+    var az=POV.patient.rotation.y+Math.PI+POV.orbitYaw;
+    var horiz=POV.followDist*Math.cos(POV.orbitPitch);
+    var dpx=p.x+Math.sin(az)*horiz, dpz=p.z+Math.cos(az)*horiz;
+    var dpy=p.y+POV.heightUp+POV.followDist*Math.sin(POV.orbitPitch);
+    if(reduceMotion){camera.position.set(dpx,dpy,dpz);}
+    else{camera.position.x+=(dpx-camera.position.x)*0.12;
+      camera.position.y+=(dpy-camera.position.y)*0.12;
+      camera.position.z+=(dpz-camera.position.z)*0.12;}
+    camera.lookAt(p.x,p.y+1.1,p.z);
+  }
+
+  /* ---------- hook the shared per-frame camera step (does not edit sim) ---------- */
+  var _origCamTick=window.camTick;
+  window.camTick=function(dt){ if(POV.active){povTick(dt);} else { _origCamTick(dt); } };
+
+  /* ---------- enter / exit ---------- */
+  function enterStageCamera(){
+    POV.savedCam={focus:focus.clone(),camDist:camDist,camYaw:camYaw,camPitch:camPitch,
+                  fogNear:scene.fog.near,fogFar:scene.fog.far};
+    scene.fog.near=40;scene.fog.far=135;                 // fog out the sim floor so the one patient reads
+  }
+  function startBranch(id){
+    buildStage();stageGroup.visible=true;resetCrowd();
+    if(!POV.active){enterStageCamera();}
+    SAMP=sampleFor(id);
+    POV.branch=id;POV.waypoints=buildWaypoints(id);POV.wp=0;
+    if(POV.patient){stageGroup.remove(POV.patient);POV.patient=null;}
+    removeEscort();
+    spawnPatient(id);
+    POV.active=true;POV.playing=true;POV.playSpeed=1;POV.orbitYaw=0;POV.orbitPitch=0.34;POV.followDist=6;
+    updateCaption(0);
+    POV.phase="dwell";POV.dwellLeft=POV.waypoints[0].dwellMs;
+    hidePicker();showControls();showCaption();setSpeedButtons();setPlayLabel();
+  }
+  function exitPOV(){
+    POV.active=false;POV.playing=false;POV.phase="idle";
+    if(POV.patient){stageGroup.remove(POV.patient);POV.patient=null;}
+    removeEscort();
+    if(POV.attendStaff){POV.attendStaff.userData.attend=false;POV.attendStaff=null;}
+    if(attendRing)attendRing.visible=false;renegeAcc=0;
+    if(stageGroup)stageGroup.visible=false;
+    if(POV.savedCam){
+      focus.copy(POV.savedCam.focus);camDist=POV.savedCam.camDist;camYaw=POV.savedCam.camYaw;camPitch=POV.savedCam.camPitch;
+      scene.fog.near=POV.savedCam.fogNear;scene.fog.far=POV.savedCam.fogFar;flyTo=null;
+    }
+    hidePicker();hideControls();hideCaption();
+  }
+
+  /* ---------- UI overlays ---------- */
+  var css=document.createElement("style");
+  css.textContent=
+    "#pov-picker{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:rgba(8,12,16,.72);backdrop-filter:blur(3px)}"+
+    "#pov-picker .box{width:min(560px,94vw);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px 22px;box-shadow:0 20px 60px #000a}"+
+    "#pov-picker h2{margin:0 0 3px;font-size:19px;font-weight:800}"+
+    "#pov-picker .sub{color:var(--muted);font-size:12px;margin-bottom:14px;line-height:1.4}"+
+    "#pov-picker .grid{display:flex;flex-direction:column;gap:8px}"+
+    "#pov-picker button.pk{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;border:1px solid var(--line);border-left:4px solid var(--line);background:#0e141a;color:var(--ink);border-radius:9px;padding:10px 13px;cursor:pointer;transition:.15s}"+
+    "#pov-picker button.pk:hover{border-color:var(--amber);background:#131b22}"+
+    "#pov-picker button.pk b{font-size:13.5px;font-weight:800}#pov-picker button.pk span{font-size:11px;color:var(--muted);line-height:1.35}"+
+    "#pov-picker .cl{margin-top:13px;width:100%;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:8px;font-weight:700;cursor:pointer;font-size:12px}"+
+    "#pov-picker .cl:hover{color:var(--ink);border-color:var(--amber)}"+
+    "#pov-cap{position:fixed;left:50%;bottom:88px;transform:translateX(-50%);z-index:1000;width:min(620px,92vw);display:none;"+
+      "background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;box-shadow:0 12px 40px #0009;pointer-events:none}"+
+    "#pov-cap .hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px}"+
+    "#pov-cap .st{font-size:15px;font-weight:800;color:var(--amber-bright)}"+
+    "#pov-cap .ix{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:.1em}"+
+    "#pov-cap .ln{font-size:12.5px;color:var(--ink);line-height:1.45;margin-top:5px}"+
+    "#pov-cap .ft{font-size:9.5px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:7px}"+
+    "#pov-controls{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:1001;display:none;gap:7px;align-items:center;"+
+      "background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:7px 9px;box-shadow:0 10px 30px #0009}"+
+    "#pov-controls button{border:1px solid var(--line);background:#0e141a;color:var(--ink);border-radius:8px;padding:7px 11px;font-size:12px;font-weight:700;cursor:pointer}"+
+    "#pov-controls button:hover{border-color:var(--amber)}"+
+    "#pov-controls button.on{background:var(--amber-bright);color:#0c1116;border-color:var(--amber-bright)}"+
+    "#pov-controls .sep{width:1px;height:20px;background:var(--line);margin:0 2px}"+
+    "#pov-controls .back{background:transparent;color:var(--amber)}";
+  document.head.appendChild(css);
+
+  var branchMeta=[
+    ["alc","ALC","Higher acuity, admitted, then stuck waiting for a community placement while holding a ward bed.","#e8a13a"],
+    ["admitted","Admitted (non-ALC)","Higher acuity, admitted, treated, discharged home in about four days.","#c7c2b6"],
+    ["diversion","Community diversion","Low acuity, diverted from the ED to a community channel.","#4fb0a5"],
+    ["fasttrack","Fast-track","Low acuity, kept in the department for the nurse-practitioner lane.","#4fb0a5"],
+    ["lwbs","Left without being seen","Low acuity, waits, then leaves before being seen.","#c0473a"]
+  ];
+  var picker=document.createElement("div");picker.id="pov-picker";
+  var pbtns=branchMeta.map(function(m){
+    return '<button class="pk" data-b="'+m[0]+'" style="border-left-color:'+m[3]+'"><b style="color:'+m[3]+'">'+m[1]+'</b><span>'+m[2]+'</span></button>';
+  }).join("");
+  picker.innerHTML='<div class="box"><h2>Patient POV</h2>'+
+    '<div class="sub">Pick a patient type. The camera leaves the model floor and follows one sampled patient of that type through their full route. Captions carry model numbers. This mode changes no model number.</div>'+
+    '<div class="grid">'+pbtns+'</div>'+
+    '<button class="cl" data-close="1">Cancel</button></div>';
+  document.body.appendChild(picker);
+  picker.addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    if(b.dataset.close){hidePicker();return;}
+    if(b.dataset.b)startBranch(b.dataset.b);
+  });
+
+  var cap=document.createElement("div");cap.id="pov-cap";
+  cap.innerHTML='<div class="hd"><span class="st" id="pov-cap-station"></span><span class="ix" id="pov-cap-idx"></span></div>'+
+    '<div class="ln" id="pov-cap-line"></div>'+
+    '<div class="ft">Model dramatization, changes no number</div>';
+  document.body.appendChild(cap);
+
+  var controls=document.createElement("div");controls.id="pov-controls";
+  controls.innerHTML='<button id="pov-play">Pause</button><div class="sep"></div>'+
+    '<button class="spd" data-s="1">1x</button><button class="spd" data-s="2">2x</button><button class="spd" data-s="4">4x</button>'+
+    '<div class="sep"></div><button id="pov-replay">Replay</button><button class="back" id="pov-back">Back to model</button>';
+  document.body.appendChild(controls);
+  controls.addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    if(b.id==="pov-play"){POV.playing=!POV.playing;setPlayLabel();}
+    else if(b.classList.contains("spd")){POV.playSpeed=parseInt(b.dataset.s,10);setSpeedButtons();}
+    else if(b.id==="pov-replay"){startBranch(POV.branch);}
+    else if(b.id==="pov-back"){exitPOV();}
+  });
+
+  function openPicker(){picker.style.display="flex";}
+  function hidePicker(){picker.style.display="none";}
+  function showControls(){controls.style.display="flex";}
+  function hideControls(){controls.style.display="none";}
+  function showCaption(){cap.style.display="block";}
+  function hideCaption(){cap.style.display="none";}
+  function setPlayLabel(){var e=document.getElementById("pov-play");if(e)e.textContent=POV.playing?"Pause":"Play";}
+  function setSpeedButtons(){controls.querySelectorAll(".spd").forEach(function(b){
+    b.classList.toggle("on",parseInt(b.dataset.s,10)===POV.playSpeed);});}
+  function updateCaption(i){
+    var w=POV.waypoints[i];if(!w)return;
+    var st=document.getElementById("pov-cap-station"),ln=document.getElementById("pov-cap-line"),ix=document.getElementById("pov-cap-idx");
+    if(st)st.textContent=w.station;
+    if(ln)ln.textContent=fillTokens(w.line);
+    if(ix)ix.textContent=(i+1)+" / "+POV.waypoints.length;
+  }
+
+  /* ---------- input: open on hospital click, orbit/zoom/Esc in POV (capture phase) ---------- */
+  var ray=new THREE.Raycaster(),m2=new THREE.Vector2();
+  var downX=0,downY=0,orbitDrag=false,ox=0,oy=0;
+  function hospitalClick(e){
+    var dx=e.clientX-downX,dy=e.clientY-downY;
+    if(Math.abs(dx)+Math.abs(dy)>5)return;           // a drag, not a click
+    m2.x=(e.clientX/innerWidth)*2-1;m2.y=-(e.clientY/innerHeight)*2+1;
+    ray.setFromCamera(m2,camera);
+    var hits=ray.intersectObjects(clickTargets,false);
+    if(hits[0]&&hits[0].object.userData.fly&&hits[0].object.userData.fly.dist===30){  // hospital signature
+      e.stopPropagation();openPicker();
+    }
+  }
+  window.addEventListener("pointerdown",function(e){
+    if(POV.active){orbitDrag=true;ox=e.clientX;oy=e.clientY;e.stopPropagation();}
+    else{downX=e.clientX;downY=e.clientY;}
+  },true);
+  window.addEventListener("pointermove",function(e){
+    if(POV.active&&orbitDrag){
+      POV.orbitYaw-=(e.clientX-ox)*0.005;
+      POV.orbitPitch=clamp(POV.orbitPitch+(e.clientY-oy)*0.004,-0.2,1.2);
+      ox=e.clientX;oy=e.clientY;e.stopPropagation();
+    }
+  },true);
+  window.addEventListener("pointerup",function(e){
+    if(POV.active){orbitDrag=false;e.stopPropagation();}
+    else{hospitalClick(e);}
+  },true);
+  window.addEventListener("wheel",function(e){
+    if(POV.active){POV.followDist=clamp(POV.followDist+e.deltaY*0.01,3,20);e.stopPropagation();e.preventDefault();}
+  },{capture:true,passive:false});
+  window.addEventListener("keydown",function(e){
+    if(POV.active&&(e.key==="Escape"||e.key==="Esc")){exitPOV();e.stopPropagation();}
+  },true);
+
+  /* ---------- debug handle for verification (harmless if unused) ---------- */
+  window.__POV={open:openPicker,start:startBranch,exit:exitPOV,obj:POV,depth:POV_DEPTH,
+    state:function(){return {active:POV.active,branch:POV.branch,wp:POV.wp,phase:POV.phase,playing:POV.playing,
+      speed:POV.playSpeed,nWaypoints:POV.waypoints.length,
+      cam:camera.position.toArray().map(function(n){return +n.toFixed(1);}),
+      patient:POV.patient?POV.patient.position.toArray().map(function(n){return +n.toFixed(1);}):null,
+      capStation:(document.getElementById("pov-cap-station")||{}).textContent,
+      capLine:(document.getElementById("pov-cap-line")||{}).textContent,
+      pickerOpen:picker.style.display!=="none"&&picker.style.display!=="",
+      sample:SAMP};},
+    counts:function(){return {built:stageBuilt,
+      triageNurses:povStaff.triageNurses.length,physicians:povStaff.physicians.length,
+      np:povStaff.np?1:0,wardNurse:povStaff.wardNurse?1:0,staffTotal:povStaffAll.length,
+      waiting:waitingPatients.length,triageQueue:crowdIdle.length,wardOccupants:wardOccupants.length,
+      wardExpected:Math.round((POV_DEPTH.wardShown|0)*POV_DEPTH.wardOccPct),
+      attend:POV.attendStaff?POV.attendStaff.userData.role:null,
+      ringVisible:attendRing?attendRing.visible:false,
+      leaving:waitingPatients.filter(function(w){return w.state==="leaving";}).length,
+      renegeAcc:+renegeAcc.toFixed(2)};}
+  };
+})();
+</script>
 </body>
 </html>
