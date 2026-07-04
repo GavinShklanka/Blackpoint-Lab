@@ -972,6 +972,29 @@
     })();
     </script>
 
+    <!-- BLOCK 1c: WHAT THE MODEL ASSUMES (model inputs) -->
+    <div class="subblock">
+      <h3>What the model assumes</h3>
+      <p class="plain">Every duration is a range, not a fixed number. Each assumption carries an evidence tier: A verified, B proxy, C calibrated and swept.</p>
+      <p class="tcap">Model inputs and assumptions</p>
+      <table>
+        <thead><tr><th>Assumption</th><th>Setting in the model</th><th>Why, and the logic</th><th>Tier</th></tr></thead>
+        <tbody>
+          <tr><td>Arrivals shape</td><td>Time-varying Poisson (24-hour rate array), afternoon peak, overnight trough; annual volume validated to 38,500 to 39,300</td><td class="pl">Real arrivals surge in the afternoon; a flat rate would hide the peak that creates the queue</td><td>A</td></tr>
+          <tr><td>Service times</td><td>Distributions, not fixed numbers (physician time triangular, mode 45 min)</td><td class="pl">Real service times vary; fixing them would erase the queueing the model exists to measure</td><td>B</td></tr>
+          <tr><td>ED capacity</td><td>22 beds, 5 physicians, 3 nurses, 1 nurse practitioner</td><td class="pl">Front-door staffed capacity; set to reproduce observed baseline waits, since no CBRH roster is published</td><td>C</td></tr>
+          <tr><td>Ward beds</td><td>162 acute beds, expansion tested at 234</td><td class="pl">The bed-expansion lever, tested as a contrast; the model finds it clears crowding but not the backlog</td><td>A</td></tr>
+          <tr><td>Community diversion</td><td>20% of low-acuity (CTAS 4-5) routed to community</td><td class="pl">The front-door diversion lever; the share of low-acuity demand community services can absorb</td><td>B</td></tr>
+          <tr><td>Walkout mechanism</td><td>Low-acuity patients leave after a modeled wait</td><td class="pl">How walkouts happen; tuned so the model reproduces the observed baseline walkout rate</td><td>B</td></tr>
+          <tr><td>Boarding delay</td><td>Held fixed (about 19.8 h), not driven by ward occupancy</td><td class="pl">A modeling choice for stability; the occupancy-driven version was numerically unstable. Disclosed consequence: adding ward beds cannot shorten the admit wait in the model</td><td>A value, judgment choice</td></tr>
+          <tr><td>ALC bed-holding</td><td>The medically finished patient holds the ward bed until a placement slot opens</td><td class="pl">This coupling is the reason placement speed, not bed count, governs stuck bed-days</td><td>Structural</td></tr>
+          <tr><td>Placement wait</td><td>Triangular(55, 102, 188) days, mean 115</td><td class="pl">The Cape Breton county placement-wait distribution, seated as an input, not produced by the model</td><td>A / B</td></tr>
+          <tr><td>ALC share of admits</td><td>2%, tuned to a 17 to 28% bed-day band, swept 1.4 to 2.6%</td><td class="pl">CBRH's exact fraction is unpublished; calibrated to the plausible band. Direction holds across the sweep</td><td>C</td></tr>
+          <tr><td>Placement capacity</td><td>Finite, tuned to the 115-day wait</td><td class="pl">The back-door lever; the only setting that moves stuck bed-days, placement wait, and avoided cost</td><td>B</td></tr>
+        </tbody>
+      </table>
+    </div>
+
     <!-- BLOCK 2: THE SCORECARD -->
     <div class="subblock">
       <span class="discband"><i>&#9679;</i>Policy read &middot; the model as a lens on what the province is deploying</span>
