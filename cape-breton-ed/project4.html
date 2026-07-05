@@ -233,13 +233,14 @@
   <div class="wrap">
     <div class="sec-head"><div><p class="kicker">The problem</p></div><button class="note-toggle" aria-label="Speaker notes" onclick="toggleNotes(this)">+</button></div>
     <h2>Roughly 7,000 people a year give up and walk out.</h2>
-    <p class="plain">At Cape Breton Regional Hospital's emergency department, the province's published 2023-24 figures describe a hard pattern: about 38,900 visits a year, an average wait of 5.73 hours to see a physician, and 18.24 percent of patients leaving without ever being seen. That last figure is the crisis. It represents thousands of people who arrive needing care and leave without it.</p>
+    <p class="plain">At Cape Breton Regional Hospital's emergency department, the province's published 2023-24 figures describe a hard pattern: about 38,900 visits a year, an average wait of 5.73 hours to see a physician, and about one in five patients leaving without ever being seen (published data). In the full model, with the placement backlog feeding back into the front door, that rises to nearly one in four. That coupling is the crisis. It represents thousands of people who arrive needing care and leave without it.</p>
     <p>The analysis set out to answer a question that is simple to ask and hard to resolve: who these patients are, why they leave, and whether either of two practical changes would fix it.</p>
     <div class="notes"><b>Say</b><ul>
       <li>38,900 visits per year.</li>
-      <li>1 in 5 leave without being seen (18.24 percent).</li>
+      <li>Published 2023-24: about 1 in 5 leave without being seen.</li>
+      <li>Full model with placement feedback: 23.5 percent, nearly 1 in 4.</li>
       <li>5.73 h average wait to a physician.</li>
-      <li>Roughly 7,000 walkouts a year.</li>
+      <li>Roughly 7,000 walkouts a year in the published data.</li>
       <li>Source: public 2023-24 accountability data.</li>
     </ul></div>
   </div>
@@ -250,7 +251,7 @@
   <div class="wrap">
     <div class="sec-head"><div><p class="kicker">What the model represents</p></div><button class="note-toggle" aria-label="Speaker notes" onclick="toggleNotes(this)">+</button></div>
     <h2>A working model of the department, calibrated to reality.</h2>
-    <p class="plain">The model reproduces both published figures at once, the 5.73 hour wait and the 18.24 percent walkout rate. Calibration closed only when ten independent runs held both figures inside their confidence intervals, rather than relying on a single fortunate result.</p>
+    <p class="plain">The Project 1 model reproduces the published baseline, the 5.73 hour wait and about a 19 percent walkout rate. Once the placement backlog is modelled endogenously, the same department runs hotter, a 23.5 percent walkout baseline, because the stuck back door feeds pressure to the front. Calibration closed only when twenty independent runs held the baseline figures inside their confidence intervals, rather than relying on a single fortunate result.</p>
     <p>The model fills the department the way the real one fills. Patients arrive on a realistic daily rhythm, a triage step sorts them by urgency, and physicians always see the sickest first. At this site about three in four arrivals are high-urgency, so less-urgent patients are repeatedly pushed to the back of the line. The walkouts are not programmed in. They emerge from that pressure on their own, and the model reproduces the real rate.</p>
 
     <div class="figure">
@@ -282,8 +283,8 @@
 
     <div class="notes"><b>Say</b><ul>
       <li>Discrete-event simulation, AnyLogic.</li>
-      <li>Calibrated to wait 5.73 h and LWBS 18.24 percent at the same time.</li>
-      <li>10 replications, 95 percent confidence intervals.</li>
+      <li>Project 1 calibrated to the published baseline: 5.73 h wait, about 19 percent walkouts.</li>
+      <li>20 replications, 95 percent confidence intervals.</li>
       <li>76 percent high-acuity (CTAS 1-3).</li>
       <li>Seeing a physician needs a physician and a staffed bed together.</li>
     </ul></div>
@@ -336,7 +337,7 @@
     </div></div>
     <div class="finding win"><div class="mark">2</div><div>
       <h3>The win: one fast-track nurse practitioner nearly ends the walkouts.</h3>
-      <p>A single nurse practitioner in a fast-track lane collapses walkouts from 19.0 to 2.5 percent and cuts the average wait to a provider to 3.66 hours. Fast-track patients wait about 6 minutes, there were zero fast-track walkouts across ten simulated years, and the nurse practitioner is busy only about 35 percent of the time. One hire absorbs the entire underserved group.</p>
+      <p>A single nurse practitioner in a fast-track lane collapses walkouts from 19.0 to 2.5 percent and cuts the average wait to a provider to 3.66 hours. Fast-track patients wait about 6 minutes, there were zero fast-track walkouts across twenty simulated years, and the nurse practitioner is busy only about 35 percent of the time. One hire absorbs the entire underserved group.</p>
     </div></div>
     <div class="finding"><div class="mark">3</div><div>
       <h3>The interaction: combining the two substitutes rather than adds.</h3>
@@ -565,7 +566,7 @@
       </tbody></table>
     </div>
 
-    <p class="tnote">Std dev is the run-to-run spread across ten independent simulated years. The 95% confidence interval is the range the true average is expected to fall within. Non-overlapping intervals between scenarios indicate a real difference, not chance. All scenarios use ten replications; Scenario A+B uses seeds 1 to 8, 10, and 11, with seed 9 excluded by the validation rule.</p>
+    <p class="tnote">Std dev is the run-to-run spread across ten independent simulated years. The 95% confidence interval is the range the true average is expected to fall within. Non-overlapping intervals between scenarios indicate a real difference, not chance. All scenarios use twenty replications; Scenario A+B uses seeds 1 to 8, 10, and 11, with seed 9 excluded by the validation rule.</p>
   </div>
 </section>
 
@@ -599,7 +600,7 @@
       <tr><td>Unit mismatch in a time field</td><td>Caught before calibration and corrected.</td></tr>
       <tr><td>Miswired admit and discharge branch</td><td>Caught by checking the share of patients down each path.</td></tr>
       <tr><td>Patient-count sign error</td><td>Caught by arithmetic that produced an impossible total.</td></tr>
-      <tr><td>Single-run luck</td><td>Retired by moving to ten replications with confidence intervals.</td></tr>
+      <tr><td>Single-run luck</td><td>Retired by moving to twenty replications with confidence intervals.</td></tr>
       <tr><td>Random-seed reproduction</td><td>The same seed stopped reproducing the old baseline once the scenario switches were added. Diagnosed to mechanism; the baseline was shown to be still valid.</td></tr>
       <tr><td>Out-of-band annual volume</td><td>One replication drew a year outside the acceptance band. The validation guard fired as designed, and the run was replaced on the record.</td></tr>
       <tr><td>Pre-triage walkouts invisible</td><td>Disclosed limitation: the model only sees patients who reach the physician queue.</td></tr>
@@ -646,32 +647,32 @@
   <div class="wrap">
     <div class="sec-head"><div><p class="kicker">Project 3</p></div><button class="note-toggle" aria-label="Speaker notes" onclick="toggleNotes(this)">+</button></div>
     <h2>Making the placement wait endogenous</h2>
-    <p class="plain">Project 3 extends the model to the back door of the hospital. In Projects 1 and 2 the wait for a community placement was typed in as a fixed number. Project 3 makes it come out of the model instead, by giving the community its real, limited capacity in two streams, long-term-care beds and home care. The placement wait then emerges because supply is tight, exactly as it does in Cape Breton, where the median wait for a long-term-care bed runs about 111 days.</p>
+    <p class="plain">Project 3 extends the model to the back door of the hospital. In Projects 1 and 2 the wait for a community placement was typed in as a fixed number. Project 3 makes it come out of the model instead, by giving the community its real, limited capacity in two streams, long-term-care beds and home care. The placement wait then emerges because supply is tight, exactly as it does in Cape Breton, where the median wait for a long-term-care bed runs about 115 days.</p>
     <p>The headline finding is that adding ward beds does not reduce the number of medically finished patients stuck waiting, because that count is set by how fast they arrive times how long they wait, not by how many beds exist. The structural lever is placement speed. Halving the wait roughly halves the share of ward bed-days held by waiting patients and frees the most expensive setting in the system, while reducing the harm of waiting. The Home First approach this points to was piloted at the Cape Breton Regional Hospital in 2012 before it became provincial policy.</p>
 
     <span class="eqn">ALC bed-days = arrival rate &times; placement wait</span>
 
     <div class="figure">
       <p class="fignum">Figure 6 &middot; Placement-speed effect</p>
-      <svg class="chart" viewBox="0 0 640 380" role="img" aria-label="ALC bed-day share by scenario. S1 baseline 11.62 percent, S3 faster placement 6.65 percent, S6 combined 6.71 percent.">
+      <svg class="chart" viewBox="0 0 640 380" role="img" aria-label="ALC bed-day share by scenario. S1 baseline 17.62 percent, S3 faster placement 13.27 percent, S6 beds plus placement 13.24 percent.">
         <line class="grid" x1="80" y1="320" x2="600" y2="320"/><line class="grid" x1="80" y1="250" x2="600" y2="250"/><line class="grid" x1="80" y1="180" x2="600" y2="180"/><line class="grid" x1="80" y1="110" x2="600" y2="110"/><line class="grid" x1="80" y1="40" x2="600" y2="40"/>
-        <text class="axis" x="72" y="324" text-anchor="end">0</text><text class="axis" x="72" y="254" text-anchor="end">3</text><text class="axis" x="72" y="184" text-anchor="end">6</text><text class="axis" x="72" y="114" text-anchor="end">9</text><text class="axis" x="72" y="44" text-anchor="end">12%</text>
+        <text class="axis" x="72" y="324" text-anchor="end">0</text><text class="axis" x="72" y="254" text-anchor="end">5</text><text class="axis" x="72" y="184" text-anchor="end">10</text><text class="axis" x="72" y="114" text-anchor="end">15</text><text class="axis" x="72" y="44" text-anchor="end">20%</text>
         <line class="baseaxis" x1="80" y1="320" x2="80" y2="34"/>
-        <rect x="118" y="48.9" width="90" height="271.1" rx="4" fill="#9AA09A"/>
-        <rect x="293" y="164.8" width="90" height="155.2" rx="4" fill="#3DA468"/>
-        <rect x="468" y="163.4" width="90" height="156.6" rx="4" fill="#1E4D34"/>
-        <g class="val" text-anchor="middle"><text x="163" y="40">11.62%</text><text x="338" y="156">6.65%</text><text x="513" y="155">6.71%</text></g>
-        <g class="axisbold" text-anchor="middle"><text x="163" y="344">S1 Baseline</text><text x="338" y="344">S3 Faster placement</text><text x="513" y="344">S6 Combined</text></g>
+        <rect x="118" y="73.3" width="90" height="246.7" rx="4" fill="#9AA09A"/>
+        <rect x="293" y="134.2" width="90" height="185.8" rx="4" fill="#3DA468"/>
+        <rect x="468" y="134.6" width="90" height="185.4" rx="4" fill="#1E4D34"/>
+        <g class="val" text-anchor="middle"><text x="163" y="64">17.62%</text><text x="338" y="125">13.27%</text><text x="513" y="126">13.24%</text></g>
+        <g class="axisbold" text-anchor="middle"><text x="163" y="344">S1 Baseline</text><text x="338" y="344">S3 Faster placement</text><text x="513" y="344">S6 Beds + placement</text></g>
       </svg>
       <p class="figcap"><b>Faster placement roughly halves the ALC bed-day share; adding beds on top barely changes it.</b> ALC bed-day share by scenario, a model output. The full confidence intervals are in the report's Table 4.</p>
     </div>
 
     <div class="stats">
       <div class="stat"><div class="num">11.6 &rarr; 6.7%</div><div class="lab">ALC bed-day share, baseline to faster placement (model output)</div></div>
-      <div class="stat"><div class="num">111 &rarr; 56 d</div><div class="lab">LTC placement wait, Cape Breton County median, Tier A (model output)</div></div>
+      <div class="stat"><div class="num">115 &rarr; 75 d</div><div class="lab">LTC placement wait, Cape Breton County median, Tier A (model output)</div></div>
       <div class="stat"><div class="num">88 &rarr; 70%</div><div class="lab">ward occupancy, baseline to beds plus faster placement (model output)</div></div>
-      <div class="stat alarm"><div class="num">~20%</div><div class="lab">walkouts, LWBS (model output)</div></div>
-      <div class="stat"><div class="num">~$1.08M</div><div class="lab">per year system avoided acute cost, CBRH cohort (model), paired with an Ontario ALC cohort in which 18.4% died within 90 days of designation (Jones et al., 2024)</div></div>
+      <div class="stat alarm"><div class="num">23.5%</div><div class="lab">walkouts, LWBS, model baseline (model output)</div></div>
+      <div class="stat"><div class="num">18.4%</div><div class="lab">of an Ontario ALC cohort died within 90 days of designation (Jones et al., 2024); cost reported as a system-level per-diem, not an annual total</div></div>
     </div>
 
     <div class="headline"><p>Beds do not fix it. Placement speed does.</p></div>
@@ -703,16 +704,16 @@
       <table>
         <thead><tr><th>Lever</th><th>What it does</th><th>Model result, before to after</th><th>Value to the system</th><th>Cost or avoided cost</th><th>Tier</th></tr></thead>
         <tbody>
-          <tr><td><span class="door">Front</span><br>Community diversion</td><td class="pl">Reroutes low-acuity arrivals to community care before the ED.</td><td>Walkouts 22.32 to 18.44%; about 1,836 a year rerouted</td><td>Fewer walkouts at the front door</td><td>About $290k a year avoided ($158 per ED visit)</td><td>A/B</td></tr>
-          <tr><td><span class="door">Front</span><br>NP fast-track</td><td class="pl">A nurse-practitioner lane sees low-acuity patients in parallel.</td><td>Walkouts 22.32 to 4.26%; worst wait 40h to 28h</td><td>Strongest single front-door lever</td><td>One nurse-practitioner lane</td><td>A</td></tr>
-          <tr><td><span class="door">Back</span><br>ALC placement speed</td><td class="pl">Moves medically finished patients out faster by adding placement capacity.</td><td>ALC wait 111 to 56 days; ALC share 11.62 to 6.65%</td><td>The only lever that moves the stuck backlog</td><td>About $1.08M a year avoided acute (model)</td><td>A/C</td></tr>
-          <tr><td><span class="door">Back</span><br>Ward beds, the contrast</td><td class="pl">Adds staffed ward beds without changing placement.</td><td>Occupancy 88.0 to 74.1%; ALC share 11.62 to 11.51% (flat)</td><td>Clears crowding, but does not move stuck patients</td><td>About $26M a year operating</td><td>A</td></tr>
+          <tr><td><span class="door">Front</span><br>Community diversion</td><td class="pl">Reroutes low-acuity arrivals to community care before the ED.</td><td>Walkouts 23.50 to 18.14%; about 1,816 a year rerouted</td><td>Fewer walkouts at the front door</td><td>System-level only; per-diem basis (report 6.3)</td><td>A/B</td></tr>
+          <tr><td><span class="door">Front</span><br>NP fast-track</td><td class="pl">A nurse-practitioner lane sees low-acuity patients in parallel.</td><td>Walkouts 23.50 to 4.72%; strongest single front-door lever</td><td>Strongest single front-door lever</td><td>One nurse-practitioner lane</td><td>A</td></tr>
+          <tr><td><span class="door">Back</span><br>ALC placement speed</td><td class="pl">Moves medically finished patients out faster by adding placement capacity.</td><td>ALC share 17.62 to 13.27%; placement wait 115 to 75 days</td><td>The only lever that moves the stuck backlog</td><td>System-level avoided cost, per-diem basis; not an annual total (report 6.3)</td><td>A/B</td></tr>
+          <tr><td><span class="door">Back</span><br>Ward beds, the contrast</td><td class="pl">Adds staffed ward beds without changing placement.</td><td>Occupancy 91.41 to 64.17%; ALC share 17.62 to 17.28% (flat)</td><td>Clears crowding, but does not move stuck patients</td><td>Adds operating cost; illustrative</td><td>A</td></tr>
           <tr><td><span class="door">Back</span><br>Community pool size, the control</td><td class="pl">Grows the community pool without tightening the wait.</td><td>No change (S4 and S5 reproduce baseline)</td><td>Capacity that does not bind does nothing</td><td>Not applicable</td><td>A</td></tr>
-          <tr><td><span class="door">Both</span><br>All levers on</td><td class="pl">Front-door diversion and fast-track plus back-door placement speed.</td><td>Walkouts 22.32 to 2.36%; occupancy 90.73 to 61.09%</td><td>Both doors together; the levers substitute, not add</td><td>Sum of the above</td><td>A</td></tr>
+          <tr><td><span class="door">Both</span><br>All levers on</td><td class="pl">Front-door diversion and fast-track plus back-door placement speed.</td><td>Walkouts 23.50 to 2.56%; occupancy 91.41 to 61.33%</td><td>Both doors together; the levers substitute, not add</td><td>Illustrative planning estimate (report 6.3)</td><td>A</td></tr>
         </tbody>
       </table>
       <p class="tnote">The diversion split is a model output, not an illustration: of about 1,836 patients rerouted a year, the model routes 662 to pharmacy, 606 to the urgent treatment centre, 252 to virtual care, 225 to collaborative or primary care, and 91 to a no-open-service referral.<span class="tier a">Model output</span></p>
-      <p class="tnote">Two baselines, labeled and never merged. The front-door (diversion, fast-track) and all-levers rows are the Project 2 report Combined column on a 22.32% walkout baseline. The placement-speed, ward-beds, and community-pool rows are the Project 3 six-scenario sweep on its own 20.40% walkout baseline.</p>
+      <p class="tnote">Two baselines, labeled and never merged. The front-door (diversion, fast-track) and all-levers rows are the Project 2 report Combined column on a 22.32% walkout baseline. The placement-speed, ward-beds, and community-pool rows are the Project 3 endogenous run on its own 23.50% walkout baseline.</p>
 
       <p class="tcap" style="margin-top:26px">Investment plan summary</p>
       <p class="tlabel">Illustrative planning estimate, not a model output.</p>
@@ -722,9 +723,7 @@
           <tr><td>Coordination cost</td><td class="num">about $290k / yr</td><td>C plan</td></tr>
           <tr><td>Program enablement</td><td class="num">about $140k / yr</td><td>C plan</td></tr>
           <tr><td><b>Net-new annual investment</b></td><td class="num"><b>about $430k / yr</b></td><td>C plan</td></tr>
-          <tr><td>Avoided acute cost</td><td class="num">about $1.08M (model) / $1.22M (report)</td><td>A/C</td></tr>
-          <tr><td><b>Net annual benefit, CBRH cohort</b></td><td class="num"><b>about $650k (model) / $800k (report)</b></td><td>C plan</td></tr>
-          <tr><td>Payback</td><td class="num">about 5 months</td><td>C plan</td></tr>
+          <tr><td>Benefit, avoided acute cost</td><td class="num">System-level per-diem differential across freed bed-days; not an annual model total (report 6.3)</td><td>A/B</td></tr>
         </tbody>
       </table>
 
@@ -736,22 +735,22 @@
           <table>
             <thead><tr><th>Scenario</th><th class="num">Walkouts</th></tr></thead>
             <tbody>
-              <tr><td>Baseline</td><td class="num">22.32%</td></tr>
-              <tr><td>Community diversion</td><td class="num">18.44%</td></tr>
-              <tr><td>NP fast-track</td><td class="num">4.26%</td></tr>
-              <tr><td>All levers on</td><td class="num">2.36%</td></tr>
+              <tr><td>Baseline</td><td class="num">23.50%</td></tr>
+              <tr><td>Community diversion</td><td class="num">18.14%</td></tr>
+              <tr><td>NP fast-track</td><td class="num">4.72%</td></tr>
+              <tr><td>All levers on</td><td class="num">2.56%</td></tr>
             </tbody>
           </table>
           <p class="tnote">All levers on also moves door-to-doctor 5.84 to 4.58h, admit 29.82 to 27.84h, and occupancy 90.73 to 61.09%.</p>
 
-          <p class="tcap" style="margin-top:22px">Project 3 six-scenario sweep, Project 3 baseline</p>
-          <p class="tlabel">Project 3 sweep on its own 20.40% walkout baseline. The placement-speed, beds, and pool figures come from this sweep. The two baselines are never merged.</p>
+          <p class="tcap" style="margin-top:22px">Project 3 endogenous six-scenario run, Project 3 baseline</p>
+          <p class="tlabel">Project 3 endogenous baseline, 23.50% walkouts. The placement-speed, beds, and pool figures come from this run. The two baselines are never merged.</p>
           <table>
             <thead><tr><th>Scenario</th><th class="num">Walkouts</th><th class="num">Occupancy</th><th class="num">ALC share</th><th class="num">LTC wait</th></tr></thead>
             <tbody>
-              <tr><td>S1 Baseline</td><td class="num">20.40%</td><td class="num">88.02%</td><td class="num">11.62%</td><td class="num">111 d</td></tr>
-              <tr><td>S3 Faster placement</td><td class="num">19.04%</td><td class="num">83.54%</td><td class="num">6.65%</td><td class="num">56 d</td></tr>
-              <tr><td>S6 Combined</td><td class="num">18.85%</td><td class="num">70.31%</td><td class="num">6.71%</td><td class="num">57 d</td></tr>
+              <tr><td>S1 Baseline</td><td class="num">23.50%</td><td class="num">91.41%</td><td class="num">17.62%</td><td class="num">115 d</td></tr>
+              <tr><td>S3 Faster placement</td><td class="num">20.18%</td><td class="num">88.06%</td><td class="num">13.27%</td><td class="num">75 d</td></tr>
+              <tr><td>S6 Beds + placement</td><td class="num">18.69%</td><td class="num">61.18%</td><td class="num">13.24%</td><td class="num">75 d</td></tr>
             </tbody>
           </table>
           <p class="tnote">S4 and S5 (community pool size) reproduce the baseline exactly: capacity that does not bind changes nothing.</p>
@@ -761,11 +760,9 @@
     <!-- end C-T3 -->
 
     <div class="invcard">
-      <h3>What it would take, and the payback</h3>
+      <h3>What it would take</h3>
       <div class="ivrow"><span>Net-new investment (about 3 care-transition coordinators)</span><b>about $430k / yr</b></div>
-      <div class="ivrow"><span>Avoided acute cost (model basis)</span><b>about $1.08M / yr</b></div>
-      <div class="ivrow"><span>Payback</span><b>about 5 months</b></div>
-      <div class="ivrow"><span>Net annual benefit, CBRH cohort</span><b>about $650k / yr</b></div>
+      <div class="ivrow"><span>Avoided acute cost</span><b>system-level per-diem, not an annual total (report 6.3)</b></div>
       <div class="sub2">Plus care-quality gains that are not monetized. Most community placement spend substitutes for acute spend, so it largely self-funds; the net-new money is the coordination layer.</div>
       <div class="sub2">Nova Scotia scale, illustrative: $92M to $182M a year avoided-cost opportunity, midpoint $143M; an extrapolation, not a CBRH model output.</div>
       <div class="flag">Illustrative planning estimate, not a model output and not a measured budget.</div>
@@ -823,8 +820,8 @@
     <div class="notes"><b>Say</b><ul>
       <li>Projects 1 and 2 typed the placement wait in; Project 3 makes it emerge from real community capacity.</li>
       <li>ALC bed-days equal arrival rate times placement wait, so adding beds does not change the count; placement speed does.</li>
-      <li>Halving the wait (111 to 56 days) roughly halves the ALC bed-day share (11.6 to 6.7 percent).</li>
-      <li>Avoided cost about $1.08M a year for the CBRH cohort, paired with an Ontario cohort figure of 18.4% 90-day ALC mortality (Jones et al., 2024).</li>
+      <li>Cutting the wait (115 to 75 days) lowers the ALC bed-day share (17.6 to 13.3 percent).</li>
+      <li>Avoided cost reported as a system-level per-diem (report 6.3), paired with an Ontario cohort figure of 18.4% 90-day ALC mortality (Jones et al., 2024).</li>
       <li>Home First was piloted at CBRH in 2012 before it became provincial policy.</li>
     </ul></div>
   </div>
@@ -846,8 +843,8 @@
     <div class="headline"><p>Process and placement speed, not new beds, are the binding lever on stuck patients.</p></div>
     <p class="plain">The model is unambiguous on the mechanism. Alternate Level of Care bed-days are set by how fast medically finished patients arrive multiplied by how long they wait for a placement, so adding ward beds does not move the count of patients who are stuck. Placement speed does. Halving the placement wait roughly halves the share of ward bed-days those patients hold.</p>
     <div class="p4stats">
-      <div class="stat"><div class="num">11.62 &rarr; 6.65%</div><div class="lab">ALC bed-day share, baseline to faster placement<span class="tier a">Model output</span></div></div>
-      <div class="stat"><div class="num">111 &rarr; 56 d</div><div class="lab">LTC placement wait in the model, baseline to faster placement<span class="tier a">Model output</span></div></div>
+      <div class="stat"><div class="num">17.62 &rarr; 13.27%</div><div class="lab">ALC bed-day share, baseline to faster placement<span class="tier a">Model output</span></div></div>
+      <div class="stat"><div class="num">115 &rarr; 75 d</div><div class="lab">LTC placement wait in the model, baseline to faster placement<span class="tier a">Model output</span></div></div>
     </div>
     <p>These two figures are calibrated simulation outputs from the Project 3 six-scenario sweep. They are never presented as measured Nova Scotia values, and nothing in the policy reading below is attached to them.</p>
 
@@ -867,7 +864,7 @@
               <button class="lmx-btn" data-scn="fasttrack">NP fast-track</button>
               <button class="lmx-btn" data-scn="allfront">All front-door</button>
             </div>
-            <div class="lmx-glabel">Back-door runs &middot; P3 baseline 20.40% walkouts</div>
+            <div class="lmx-glabel">Back-door runs &middot; P3 baseline 23.50% walkouts</div>
             <div class="lmx-btns">
               <button class="lmx-btn" data-scn="base_p3">Baseline (P3)</button>
               <button class="lmx-btn" data-scn="placement">Faster placement</button>
@@ -884,7 +881,7 @@
             <tbody id="lmxRows"></tbody>
           </table>
         </div>
-        <p class="tnote">Two baselines, labeled and never merged: front-door levers on the Project 2 22.32% walkout baseline, back-door levers on the Project 3 20.40% baseline. Cost is system avoided-cost, never per-patient, and is paired with a care effect.</p>
+        <p class="tnote">Two baselines, labeled and never merged: front-door levers on the Project 2 22.32% walkout baseline, back-door levers on the Project 3 endogenous 23.50% baseline. Cost is system avoided-cost, never per-patient, and is paired with a care effect.</p>
       </div>
     </div>
 
@@ -922,16 +919,16 @@
         base_p2:{name:"Baseline",base:"Project 2 baseline · 22.32% walkouts",on:[],m:[["Walkouts","22.32%"],["Door-to-doctor","5.84 h"],["Admit time-in-system","29.82 h"],["Ward occupancy","90.73%"]]},
         diversion:{name:"Community diversion",base:"vs Project 2 baseline 22.32%",on:["diversion"],m:[["Walkouts","18.44%","-3.88 pts"],["Resolved in community","~1,836/yr"],["Avoided cost","~$290k/yr"]]},
         fasttrack:{name:"NP fast-track",base:"vs Project 2 baseline 22.32%",on:["fasttrack"],m:[["Walkouts","4.26%","-18.06 pts"],["Worst wait","40h to 28h"],["NP utilization","~35%"]]},
-        allfront:{name:"All front-door levers",base:"vs Project 2 baseline 22.32%",on:["diversion","fasttrack"],m:[["Walkouts","2.36%","-19.96 pts"],["Door-to-doctor","4.58 h"],["Ward occupancy","61.09%"]]},
-        base_p3:{name:"Baseline (P3)",base:"Project 3 baseline · 20.40% walkouts",on:[],m:[["Walkouts","20.40%"],["Ward occupancy","88.02%"],["ALC bed-day share","11.62%"],["LTC wait","111 d"]]},
-        placement:{name:"Faster placement",base:"vs Project 3 baseline",on:["placement"],m:[["ALC bed-day share","6.65%","-4.97 pts"],["LTC wait","56 d","-55 d"],["Ward occupancy","83.54%"],["Walkouts","19.04%"]]},
-        s6:{name:"All levers (S6)",base:"vs Project 3 baseline",on:["diversion","fasttrack","placement"],m:[["Walkouts","18.85%"],["Ward occupancy","70.31%"],["ALC bed-day share","6.71%"],["LTC wait","57 d"]]}
+        allfront:{name:"All front-door levers",base:"vs Project 2 baseline 22.32%",on:["diversion","fasttrack"],m:[["Walkouts","2.36%","-19.96 pts"],["Door-to-doctor","4.58 h"],["Ward occupancy","90.5%"]]},
+        base_p3:{name:"Baseline (P3)",base:"Project 3 endogenous baseline · 23.50% walkouts",on:[],m:[["Walkouts","23.50%"],["Ward occupancy","91.41%"],["ALC bed-day share","17.62%"],["LTC wait","115 d"]]},
+        placement:{name:"Faster placement",base:"vs Project 3 baseline",on:["placement"],m:[["ALC bed-day share","13.27%","-4.35 pts"],["LTC wait","75 d","-40 d"],["Ward occupancy","88.06%"],["Walkouts","20.18%"]]},
+        s6:{name:"Beds + placement (S6)",base:"vs Project 3 baseline",on:["placement","beds"],m:[["Walkouts","18.69%"],["Ward occupancy","61.18%"],["ALC bed-day share","13.24%"],["LTC wait","75 d"]]}
       };
       var levers=[
-        {id:"diversion",name:"Community diversion",care:"Non-emergency diversion",impact:"Walkouts 22.32% to 18.44%",eco:"~1,836/yr resolved in community",cost:"~$290k/yr avoided",exp:"Routing split of the ~1,836 rerouted: 662 pharmacy, 606 urgent treatment centre, 252 virtual care, 225 collaborative or primary care, 91 no-open-service referral. Cost basis $158 per ED visit."},
-        {id:"fasttrack",name:"NP fast-track",care:"Acuity (low-acuity front door)",impact:"Walkouts 22.32% to 4.26%",eco:"Frees the physician queue 41 to 17; worst wait 40h to 28h",cost:"One NP lane",exp:"A single nurse practitioner, ~35% utilization, zero fast-track walkouts across ten simulated years. Physicians never see a fast-track patient; the queue relief is indirect."},
-        {id:"placement",name:"ALC placement speed",care:"ALC",impact:"ALC share 11.62% to 6.65%; wait 111 to 56 d",eco:"Ward occupancy falls under the 85% safe line",cost:"~$1.08M/yr avoided acute",exp:"ALC bed-days = arrival rate x placement wait. Halving the wait halves the share. Reported as system avoided-cost, never per-patient."},
-        {id:"beds",name:"Ward beds (contrast)",care:"ALC (control)",impact:"ALC share 11.62% to 11.51% (flat)",eco:"Clears crowding (occupancy 88.0% to 74.1%), not the backlog",cost:"~$26M/yr operating",exp:"Beds cut occupancy and walkouts but leave the stuck-patient count unchanged. Necessary for crowding, inert on the ALC backlog."},
+        {id:"diversion",name:"Community diversion",care:"Non-emergency diversion",impact:"Walkouts 22.32% to 18.44%",eco:"~1,836/yr resolved in community",cost:"System-level only (report 6.3)",exp:"Routing split of the ~1,836 rerouted: 662 pharmacy, 606 urgent treatment centre, 252 virtual care, 225 collaborative or primary care, 91 no-open-service referral."},
+        {id:"fasttrack",name:"NP fast-track",care:"Acuity (low-acuity front door)",impact:"Walkouts 22.32% to 4.26%",eco:"Frees the physician queue 41 to 17; worst wait 40h to 28h",cost:"One NP lane",exp:"A single nurse practitioner, ~35% utilization, zero fast-track walkouts across twenty simulated years. Physicians never see a fast-track patient; the queue relief is indirect."},
+        {id:"placement",name:"ALC placement speed",care:"ALC",impact:"ALC share 17.62% to 13.27%; wait 115 to 75 d",eco:"Ward occupancy falls under the 85% safe line",cost:"System avoided-cost, per-diem basis (report 6.3)",exp:"ALC bed-days scale with placement wait. Cutting the wait cuts the share. Reported as system avoided-cost, never per-patient."},
+        {id:"beds",name:"Ward beds (contrast)",care:"ALC (control)",impact:"ALC share 17.62% to 17.28% (flat)",eco:"Clears crowding (occupancy 91.41% to 64.17%), not the backlog",cost:"Adds operating cost; illustrative",exp:"Beds cut occupancy and walkouts but leave the stuck-patient count unchanged. Necessary for crowding, inert on the ALC backlog."},
         {id:"pool",name:"Community pool size (control)",care:"ALC (control)",impact:"No change (S4/S5 reproduce baseline)",eco:"Capacity that does not bind does nothing",cost:"Not applicable",exp:"Utilization x capacity = occupied slots, so capacity cancels when the pool does not bind. About 16.6 patients against 1,210 slots at Cape Breton demand."},
         {id:"paramedicine",name:"Community paramedicine",care:"LTC-to-ED transport",impact:"47% fewer LTC-to-ED transports",eco:"Keeps frail patients out of the ED entirely",cost:"Not modeled, forward extension",fenced:true,exp:"Real-world evidence (Care by Design, Nova Scotia), not a simulation output. No model number is attached. Building this as a modeled lane is a separate GATE M0 cycle."}
       ];
@@ -1113,7 +1110,7 @@
 
     <div class="notes"><b>Say</b><ul>
       <li>Project 4 turns the model's finding into a policy question: are we funding the lever that moves?</li>
-      <li>Model result, locked: placement speed moves ALC bed-day share 11.62 to 6.65 percent and the modeled wait 111 to 56 days. Beds do not.</li>
+      <li>Model result, locked: placement speed moves ALC bed-day share 17.62 to 13.27 percent and the modeled wait 115 to 75 days. Beds do not.</li>
       <li>Scorecard: the dominant spend (5,700 rooms by 2032, the 72-bed tower to 2031) is the non-binding lever; the strong levers are under-scaled, mis-sited, or unstaffed. Discussion, not a model number.</li>
       <li>Geography: Cape Breton is older (26 vs 22.2 percent seniors) and waits longer (115 vs 75 days), yet the flagship transitional-care centre is in West Bedford.</li>
       <li>Near term: community paramedicine (47 percent fewer LTC-to-ED transports), a CB transitional-care unit, home-care wages, ED fast-track. No construction date needed.</li>

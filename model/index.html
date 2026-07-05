@@ -36,19 +36,6 @@
   .pair{display:flex;gap:8px;margin-top:8px;padding:8px 10px;border-radius:8px;background:#1a120a;border:1px solid #3a2a14}
   .pair .ci{color:var(--amber);font-size:13px}.pair .ct{font-size:10.5px;color:#e7cfa6;line-height:1.35}
   .ns{font-size:10.5px;color:var(--muted);margin-top:9px;line-height:1.4;border-top:1px solid #1c2730;padding-top:8px}.ns b{color:var(--ink)}
-  #twodoor{top:356px;left:14px;width:322px;z-index:11}#twodoor .panel{padding:12px 14px}
-  .td-head{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-  .td-thesis{font-weight:800;font-size:13.5px;color:var(--ink);line-height:1.16;margin-bottom:9px}
-  .td-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .td-lab{font-size:9px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:4px}
-  .td-col.front .td-lab{color:var(--teal)}.td-col.back .td-lab{color:var(--amber)}
-  .td-row{display:flex;justify-content:space-between;align-items:baseline;font-size:10.5px;color:var(--muted);padding:2px 0;gap:8px}
-  .td-row b{color:var(--ink);font-size:11.5px;font-variant-numeric:tabular-nums}
-  .td-cost{font-size:10.5px;color:#e7cfa6;line-height:1.4;margin-top:9px;border-top:1px solid #1c2730;padding-top:8px}.td-cost b{color:var(--ink)}
-  .td-invest{margin-top:8px;font-size:10.5px;line-height:1.4}
-  .td-invest .iv{display:flex;justify-content:space-between;padding:2px 0;color:var(--muted)}.td-invest .iv b{color:var(--teal)}
-  .td-flag{font-size:9.5px;color:var(--muted);margin-top:4px;font-style:italic}
-  .td-prompt{font-size:10.5px;color:var(--muted);margin-top:9px;border-top:1px solid #1c2730;padding-top:8px}
   #bl{bottom:14px;left:14px;width:330px}#bl .panel{padding:11px 14px;margin-top:9px}#live .row{padding:4px 0}
   .legkey{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:2px 0 6px;font-weight:700}
   .legend{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px}
@@ -66,7 +53,7 @@
   .hint{font-size:10px;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:5px 9px;backdrop-filter:blur(6px);max-width:230px;text-align:right;line-height:1.4}
   body.record .hud:not(#cap){opacity:0;transition:.4s}
   #cap{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:20;opacity:0;text-align:center;pointer-events:none;transition:.4s}
-  body.record #cap,body.tour #cap{opacity:1}#cap .t{font-size:15px;font-weight:800;color:#fff;text-shadow:0 2px 14px #000}
+  body.record #cap{opacity:1}#cap .t{font-size:15px;font-weight:800;color:#fff;text-shadow:0 2px 14px #000}
   #cap .s{font-size:11px;color:#d8e2ea;text-shadow:0 2px 10px #000;margin-top:3px}
   #infoBtn{margin-left:auto;cursor:pointer;color:var(--muted);font-size:15px;font-weight:700}
   #infoBtn:hover{color:var(--amber)}
@@ -77,20 +64,6 @@
   #explain .em b{color:var(--amber)}
   #explain .src{color:var(--muted)}
   #explain .cl{position:absolute;top:8px;right:13px;cursor:pointer;color:var(--muted);font-size:19px;line-height:1}
-  #costInfoBtn{margin-left:auto;cursor:pointer;color:var(--muted);font-size:15px;font-weight:700}#costInfoBtn:hover{color:var(--teal)}
-  #insights{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:50;width:min(560px,94vw);max-height:88vh;overflow:auto;padding:18px 20px;display:none}
-  #insights h3{margin:0 0 3px;font-size:17px}
-  #insights .sub{color:var(--muted);font-size:11px;margin-bottom:8px;line-height:1.4}
-  #insights .cl{position:absolute;top:9px;right:14px;cursor:pointer;color:var(--muted);font-size:20px;line-height:1}
-  #insights h4{margin:16px 0 7px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
-  .lever{border-top:1px solid #1c2730;padding:8px 0;font-size:12px;line-height:1.45}.lever:first-of-type{border-top:0}
-  .lever .ln{font-weight:800;color:var(--ink)}.lever .fig{color:var(--muted)}
-  .lever .tag{display:inline-block;font-size:9px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:2px 7px;border-radius:999px;margin-left:6px;background:#1c2730;color:var(--muted)}
-  .lever .tag.p3{background:#2a2012;color:var(--amber)}
-  .icard{background:#0c1a18;border:1px solid #21433d;border-radius:10px;padding:14px 16px;margin-top:6px;font-size:12px;line-height:1.5}
-  .icard .ir{display:flex;justify-content:space-between;padding:3px 0;color:var(--muted)}.icard .ir b{color:var(--teal)}
-  .icard .note{color:#c9d6cb;margin-top:8px}.icard .flag{color:var(--muted);font-style:italic;margin-top:8px;font-size:11px}
-  .opcard{background:#141821;border:1px solid #2b3342;border-left:4px solid #8a98a8;border-radius:10px;padding:14px 16px;margin-top:6px;font-size:12px;line-height:1.55;color:#cdd6dd}.opcard b{color:#fff}
   #npccard{position:fixed;z-index:40;width:218px;padding:11px 13px 12px;display:none}
   #npccard .nm{font-weight:800;font-size:15px;line-height:1.1}
   #npccard .rl{color:var(--amber);font-size:10px;text-transform:uppercase;letter-spacing:.16em;font-weight:700;margin-top:3px}
@@ -123,30 +96,11 @@
   <div class="row"><span class="k">Home-care wait</span><span class="v" id="m_home"></span></div>
 </div></div>
 <div class="hud" id="cost"><div class="panel">
-  <div class="mhead"><span class="dot" style="background:var(--teal)"></span>Avoided cost + care · Obermeyer-paired<span id="costInfoBtn" title="Levers, investment, and OPOR">&#9432;</span></div>
-  <div class="big" id="c_save">$0</div>
+  <div class="mhead"><span class="dot" style="background:var(--teal)"></span>Avoided cost + care · Obermeyer-paired</div>
+  <div class="big" id="c_save">n/a</div>
   <div class="k" style="margin-top:2px">system avoided acute cost · CBRH cohort, model</div>
   <div class="pair"><div class="ci">&#9829;</div><div class="ct" id="c_care"></div></div>
   <div class="ns" id="c_ns"></div>
-</div></div>
-<div class="hud" id="twodoor"><div class="panel">
-  <div class="td-head"><span class="dot" style="background:var(--teal)"></span>Two-door summary</div>
-  <div class="td-thesis">Beds do not fix it. Placement speed does.</div>
-  <div class="td-grid">
-    <div class="td-col front">
-      <div class="td-lab">Front door · diversion</div>
-      <div class="td-row"><span>Diverted today</span><b id="td_div">0</b></div>
-      <div class="td-row"><span>Admission-wait effect</span><b id="td_wait">about 0.70 h</b></div>
-    </div>
-    <div class="td-col back">
-      <div class="td-lab">Back door · placement</div>
-      <div class="td-row"><span>ALC bed-day share</span><b id="td_alc"></b></div>
-      <div class="td-row"><span>Ward occupancy</span><b id="td_occ"></b></div>
-      <div class="td-row"><span>Bed-days freed</span><b id="td_freed">0</b></div>
-    </div>
-  </div>
-  <div class="td-cost" id="td_cost"></div>
-  <div id="td_invest"></div>
 </div></div>
 <div class="hud" id="bl">
   <div class="panel" id="live">
@@ -185,11 +139,6 @@
     <button class="btn" id="shadowBtn">Shadows</button>
   </div>
   <div class="btnrow">
-    <button class="btn" id="divertBtn">Divert low-acuity</button>
-    <button class="btn" id="oporBtn">OPOR layer</button>
-  </div>
-  <div class="btnrow">
-    <button class="btn" id="tourBtn">Two-door tour</button>
     <button class="btn" id="recBtn">Record mode</button>
     <button class="btn" id="resetBtn">Reset run</button>
   </div>
@@ -200,39 +149,12 @@
   <span class="cl" onclick="toggleExplain(false)">&times;</span>
   <h3>What the locked numbers mean</h3>
   <div class="sub">Plain-English read of the LOCKED MODEL OUTPUT. These are full-year model values and do not change with the visual controls below. Sources tagged by evidence tier.</div>
-  <div class="em"><b>LWBS, walkouts: 20.40%</b><br>Share of ED arrivals who leave without being seen. It rises when the ward stays full and admitted patients board in the ED, so the front door backs up behind the back door. <span class="src">Model output.</span></div>
-  <div class="em"><b>Ward occupancy: 88.02%</b><br>Average share of staffed ward beds in use. The higher it runs, the less slack there is to admit the next patient. <span class="src">Model output.</span></div>
-  <div class="em"><b>ALC bed-day share: 11.62%</b><br>Share of ward bed-days held by Alternate Level of Care patients, who are medically ready to leave but waiting for a place to go. The model's pALC is calibrated to the provincial 21.3% ALC day-share, not measured at CBRH. <span class="src">Calibrated, Tier B. No Cape Breton ALC percentage is presented as measured.</span></div>
-  <div class="em"><b>LTC placement wait: 111 days</b><br>Median time from ALC designation to a long-term care bed. This dwell is what fills the ward, and halving it is what drains it. <span class="src">Cape Breton County median, Tier A (DHW).</span></div>
+  <div class="em"><b>LWBS, walkouts: 23.50%</b><br>Share of ED arrivals who leave without being seen. It rises when the ward stays full and admitted patients board in the ED, so the front door backs up behind the back door. <span class="src">Model output.</span></div>
+  <div class="em"><b>Ward occupancy: 91.41%</b><br>Average share of staffed ward beds in use. The higher it runs, the less slack there is to admit the next patient. <span class="src">Model output.</span></div>
+  <div class="em"><b>ALC bed-day share: 17.62%</b><br>Share of ward bed-days held by Alternate Level of Care patients, who are medically ready to leave but waiting for a place to go. The model's pALC is calibrated to the provincial 21.3% ALC day-share, not measured at CBRH. <span class="src">Calibrated, Tier B. No Cape Breton ALC percentage is presented as measured.</span></div>
+  <div class="em"><b>LTC placement wait: 115 days</b><br>Median time from ALC designation to a long-term care bed. This dwell is what fills the ward, and cutting it is what drains it. <span class="src">Cape Breton County median, Tier A (DHW).</span></div>
   <div class="em"><b>Home-care wait: 8 days</b><br>Median wait to start home care for those routed to the community rather than to long-term care. <span class="src">National median, Tier B (CIHI).</span></div>
   <div class="em src">Avoided cost is reported as a system or cohort figure and is always paired with the harm it represents (Obermeyer pairing). No per-patient dollar values.</div>
-</div>
-<div id="insights" class="panel">
-  <span class="cl" onclick="toggleInsights(false)">&times;</span>
-  <h3>The four levers, the payback, and the record</h3>
-  <div class="sub">Front-door and all-levers figures are the report Combined column (Project 2 baseline 22.32%). Placement-speed figures are the Project 3 sweep (baseline 20.40%). The two baselines are tagged and never merged.</div>
-
-  <h4>Front-to-back lever strip</h4>
-  <div class="lever"><span class="ln">Front door, community diversion</span><span class="tag">report Combined</span><br><span class="fig">Walkouts 22.32 to 18.44%, about 1,836 a year rerouted, about $0.29M a year avoided.</span></div>
-  <div class="lever"><span class="ln">Front door, NP fast-track</span><span class="tag">report Combined</span><br><span class="fig">Walkouts 22.32 to 4.26%. The strongest single front-door lever.</span></div>
-  <div class="lever"><span class="ln">Back door, placement speed</span><span class="tag p3">Project 3</span><br><span class="fig">ALC wait 111 to 56 days, ALC share 11.62 to 6.65%, about $1.08M a year avoided.</span></div>
-  <div class="lever"><span class="ln">All levers on</span><span class="tag">report Combined</span><br><span class="fig">Walkouts 22.32 to 2.36%, occupancy 90.73 to 61.09%.</span></div>
-
-  <h4>What it would take, and the payback</h4>
-  <div class="icard">
-    <div class="ir"><span>Net-new investment (about 3 care-transition coordinators)</span><b>about $0.43M / yr</b></div>
-    <div class="ir"><span>Avoided acute cost</span><b>about $1.08M / yr</b></div>
-    <div class="ir"><span>Payback</span><b>about 5 months</b></div>
-    <div class="ir"><span>Net annual benefit, CBRH cohort</span><b>about $0.65M / yr</b></div>
-    <div class="note">Plus care-quality gains that are not monetized. Most community placement spend substitutes for acute spend, so it largely self-funds; the net-new money is the coordination layer.</div>
-    <div class="note">Nova Scotia scale, illustrative: $92M to $182M a year avoided-cost opportunity, midpoint $143M; not CBRH-specific.</div>
-    <div class="flag">Illustrative planning estimate, not a model output.</div>
-  </div>
-
-  <h4 style="color:#9aa6b3">OPOR + secured API, forward extension</h4>
-  <div class="opcard">
-    <b>One Person One Record</b> connected to ED triage through a secured API means the patient's record travels and is secured across the ecosystem: ED, community clinic, long-term care, home care. It secures the system through a single source of truth, controlled access with an audit trail, and fewer handoff failures where data is lost or re-keyed today. It strengthens both doors: the front door hands a diverted patient's triage note to the receiving clinic; the back door moves the record and care plan with an ALC patient at placement. It is not in the model and no number here depends on it.
-  </div>
 </div>
 
 <!-- Three.js r128 vendored locally so the scene runs with no internet (room wifi cannot break it). -->
@@ -245,8 +167,8 @@
 </script>
 <script>
 /* ===== DATA (inlined; canonical in data/*.json) ===== */
-const FROZEN={baseline:{label:"Baseline",speed:1.0,lwbs:20.40,occ:88.02,alc:11.62,ltc:111,home:8,careExposure:0},
-  fasterPlacement:{label:"Faster",speed:0.5,lwbs:19.04,occ:83.54,alc:6.65,ltc:56,home:8,careExposure:43}};
+const FROZEN={baseline:{label:"Baseline",speed:1.0,lwbs:23.50,occ:91.41,alc:17.62,ltc:115,home:8,careExposure:0},
+  fasterPlacement:{label:"Faster",speed:0.5,lwbs:20.18,occ:88.06,alc:13.27,ltc:75,home:8,careExposure:43}};
 const NS={mid:143,lo:92,hi:182},ANNUAL=38900,WINDOWS={week:7,month:30,biannual:182,year:365};
 // ===== CITY GRID + HOSPITAL RING (T2) =====
 const GX=[-120,-80,-40,40,80,120], GZ=[-120,-80,-40,40,80,120];  // avenues (x) and streets (z); none at 0 (hospital sits there)
@@ -294,7 +216,6 @@ let hospitalShell=[],cutaway=false;          // walls we can fade to reveal the 
 let heli=null,heliTimer=14;                   // periodic medevac helicopter
 let scenario="baseline",windowKey="year",placedCount=0;
 let period="afternoon",outlier=false;   // time-of-day pacing + atypical-day toggle (visual only)
-let community=[],diversion=false,divertFrac=0.6,divertedCount=0,freedBedDays=0,opor=false; // two-door (v8) + OPOR (v9)
 const root=document.getElementById('app');
 
 /* ===== MATERIAL CACHE + INSTANCING CORE (Task 4 + Task 7) ===== */
@@ -344,7 +265,7 @@ function init(){
   sun.shadow.mapSize.set(2048,2048);const sc=sun.shadow.camera;
   sc.left=-95;sc.right=95;sc.top=95;sc.bottom=-95;sc.near=1;sc.far=320;sun.shadow.bias=-0.0004;sun.shadow.normalBias=0.03;
   scene.add(sun);scene.add(new THREE.DirectionalLight(0xbfe0ff,0.16).translateX(-40));
-  buildGround();buildRoads();buildHospital();buildFacilities();buildHomeCare();buildCommunity();buildStaff();buildAmbient();
+  buildGround();buildRoads();buildHospital();buildFacilities();buildHomeCare();buildStaff();buildAmbient();
   buildInstances();
   clock=new THREE.Clock();setScenario("baseline");setPeriod("afternoon");bindUI();
   // cutaway ON by default so the patient flow always reads (Task 3)
@@ -631,28 +552,6 @@ function buildHomeCare(){
   const hl=label("Home care","community");hl.position.set((a+b)/2,7,54);scene.add(hl);
 }
 
-/* ===== FRONT-DOOR COMMUNITY NODES (v8 two-door) ===== */
-const COMMUNITY=[
-  {name:"Virtual care",         x:-24, z:20},
-  {name:"Pharmacy",             x:-11, z:25},
-  {name:"Urgent treatment ctr", x:11,  z:25},
-  {name:"Collaborative care",   x:24,  z:20}
-];
-function buildCommunity(){
-  for(const c of COMMUNITY){
-    const grp=new THREE.Group();
-    const b=box(2.4,2.0,2.4,0x2c5a54);b.position.y=1.0;b.castShadow=true;b.receiveShadow=true;grp.add(b);
-    const rf=new THREE.Mesh(new THREE.ConeGeometry(1.95,1.0,4),smat(0x4fb0a5,0.8));rf.position.y=2.5;rf.rotation.y=Math.PI/4;rf.castShadow=true;grp.add(rf);
-    const sign=box(1.9,0.5,0.12,0x4fb0a5);sign.position.set(0,1.45,-1.32);grp.add(sign);   // teal sign faces the hospital
-    grp.position.set(c.x,0,c.z);scene.add(grp);
-    const lab=label(c.name,"community",0.55);lab.position.set(c.x,3.6,c.z);scene.add(lab);
-    c.pos=v3(c.x,0,c.z);c.door=v3(c.x,0,c.z-1.5);c.mesh=b;
-    b.userData.fly={pos:v3(c.x,0,c.z),dist:12};clickTargets.push(b);
-    community.push(c);
-  }
-  const tl=label("Front door","community diversion",0.78);tl.position.set(0,6,30);scene.add(tl);
-}
-
 /* ===== FIGURES ===== */
 const COL={walkin:0x5b8fc7,acute:0xe6e3da,alc:0xe8a13a,worker:0x4fb0a5,doctor:0xf4f4ef,nurse:0x3fae9e};
 function mk(geo,c,y){const m=new THREE.Mesh(geo,lmat(c));m.position.y=y;return m;}
@@ -782,12 +681,6 @@ function setPath(o,pts){o.path=pts.map(p=>{const c=(p.clone?p.clone():v3(p.x,0,p
 function spawn(){if(agents.length>=TUNE.maxAgents)return;
   const ctas=pickCTAS(false);const m=person(CTAS_COL[ctas]);m.position.copy(C.ED);scene.add(m);
   const a={mesh:m,state:"toTriage",path:[C.TRIAGE.clone()],pi:0,speed:TUNE.walkSpeed,ctas};
-  // front-door diversion: peel low-acuity (CTAS 4/5) off to a community node before the ED (v8-T2)
-  if(diversion && ctas>=4 && community.length && Math.random()<divertFrac){
-    const node=community[(Math.random()*community.length)|0];
-    a.outcome="divert";a.node=node;a.state="diverting";setPath(a,[node.door.clone()]);
-    agents.push(a);tagNPC(m,'patient',{ctas,agent:a});return;
-  }
   const r=Math.random();
   if(r<FROZEN[scenario].lwbs/100)a.outcome="lwbs";
   else if(Math.random()<TUNE.pAdmit)a.outcome=(Math.random()<TUNE.pALCofAdmit)?"alc":"acute";
@@ -826,26 +719,9 @@ function updateAgents(dt){
           else if(a.dest==="home")dispatchHome(a,i);else dispatchLTC(a,i);} break;
       case "decline": a.t-=dt;a.mesh.position.y-=dt*0.25;if(a.t<=0){placedCount++;kill(a,i);} break;
       case "placing": if(step(a,dt,true)){enterBuilding(a.fac);placedCount++;kill(a,i);} break;
-      case "diverting": if(step(a,dt,true)){divertedCount++;frontDoorCue(a);kill(a,i);} break;  // resolved in community (v8-T2)
       case "leaving": if(step(a,dt,true)){kill(a,i);} break;
     }}
 }
-// floating cost cues (handoff B): throttled, illustrative, change no counter
-let floaters=[],_fdCueT=0,_bdCueT=0;
-function makeTagSprite(text,color){const cv=document.createElement('canvas');cv.width=512;cv.height=72;const g=cv.getContext('2d');
-  g.fillStyle='rgba(12,17,22,.86)';roundRect(g,2,8,508,54,12);g.fill();
-  g.fillStyle=color||'#eef2f5';g.font='bold 29px ui-sans-serif,Segoe UI,Arial';g.textAlign='center';g.textBaseline='middle';
-  g.fillText(text,256,36);
-  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true}));
-  sp.scale.set(7.2,1.0,1);return sp;}
-function floatTag(text,pos,color){if(floaters.length>14)return;
-  const sp=makeTagSprite(text,color);sp.position.set(pos.x,(pos.y||0)+2.4,pos.z);scene.add(sp);
-  floaters.push({sp,life:2.6});}
-function updateFloaters(dt){for(let i=floaters.length-1;i>=0;i--){const f=floaters[i];f.life-=dt;
-  f.sp.position.y+=dt*1.4;f.sp.material.opacity=Math.max(0,Math.min(1,f.life));
-  if(f.life<=0){scene.remove(f.sp);floaters.splice(i,1);}}}
-function frontDoorCue(a){if(_fdCueT>0)return;_fdCueT=4.5;floatTag("about $158 ED visit avoided",a.mesh.position,'#7fd6c9');}   // B-T5
-function backDoorCue(pos){if(scenario!=="fasterPlacement"||_bdCueT>0)return;_bdCueT=4;floatTag("about $489 a day saved, acute to community",pos,'#f0c98a');}  // B-T3
 // a visible patient seated in the transport so you can watch them ride (T1)
 function ridePassenger(parent,color){const p=person(color);p.scale.set(0.74,0.74,0.74);p.position.set(0,0.82,0.25);
   p.traverse(o=>{if(o.isMesh)o.castShadow=false;});parent.add(p);return p;}
@@ -921,7 +797,7 @@ function arriveHome(house){if(units.length<TUNE.maxUnits){const g=new THREE.Grou
   units.push({mesh:g,path:[house.door.clone()],pi:0,speed:2.0,fac:null});}
   else placedCount++;}
 function updateUnits(dt){for(let i=units.length-1;i>=0;i--){const u=units[i];
-  if(step(u,dt,true)){if(u.fac)enterBuilding(u.fac);backDoorCue(u.mesh.position);scene.remove(u.mesh);unclick(u.mesh);units.splice(i,1);placedCount++;}}}
+  if(step(u,dt,true)){if(u.fac)enterBuilding(u.fac);scene.remove(u.mesh);unclick(u.mesh);units.splice(i,1);placedCount++;}}}
 function enterBuilding(fac){if(!fac)return;fac.occ++;
   const lit=Math.min(fac.wins.length,fac.occ);for(let k=0;k<lit;k++)fac.wins[k].material.color.setHex(0xffd98a);}
 
@@ -938,8 +814,6 @@ function frame(){
   const si=periodInterval();spawnAcc+=dt*1000;while(spawnAcc>si){spawnAcc-=si;spawn();}
   ambAcc+=dt*1000;if(ambAcc>TUNE.ambulanceEveryMs){ambAcc=0;if(Math.random()<TUNE.pAmbulance)spawnAmbulance();}
   updateSignals(dt);updateAgents(dt);updateVehicles(dt);updateUnits(dt);updateStaff(dt);updateAmbient(dt);updateHeli(dt);
-  if(tourStops){tourTimer-=dt;if(tourTimer<=0)nextTourStop();}
-  if(_fdCueT>0)_fdCueT-=dt;if(_bdCueT>0)_bdCueT-=dt;updateFloaters(dt);
   camTick(dt);refreshLive();renderer.render(scene,camera);
 }
 function loop(){frame();requestAnimationFrame(loop);}
@@ -957,11 +831,7 @@ function updateSignals(dt){sigT+=dt;for(const h in signals){const s=signals[h];s
 function refreshLive(){let filled=0,alc=0,transit=0,board=0;
   for(const b of beds)if(b.occupant)filled++;for(const a of agents){if(a.state==="bedALC")alc++;if(a.state==="boarding")board++;}
   for(const v of vehicles)if((v.type==="van"||v.type==="car")&&v.state==="out")transit++;
-  // ward bed-days freed climbs under faster placement (back door, v8-T3): ~55 bed-days saved per placement vs baseline wait
-  if(placedCount>_lastPlaced){const spread=FROZEN.baseline.ltc-FROZEN.fasterPlacement.ltc;
-    if(scenario==="fasterPlacement")freedBedDays+=(placedCount-_lastPlaced)*spread;_lastPlaced=placedCount;}
-  set("l_ward",filled+" / "+beds.length);set("l_alc",alc);set("l_board",board);set("l_transit",transit);set("l_placed",placedCount);
-  if(typeof updateTwoDoor==='function')updateTwoDoor();}
+  set("l_ward",filled+" / "+beds.length);set("l_alc",alc);set("l_board",board);set("l_transit",transit);set("l_placed",placedCount);}
 function set(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
 function setHTML(id,v){const e=document.getElementById(id);if(e)e.innerHTML=v;}
 function setScenario(s){scenario=s;const f=FROZEN[s];
@@ -969,42 +839,22 @@ function setScenario(s){scenario=s;const f=FROZEN[s];
   setHTML("m_lwbs",f.lwbs.toFixed(1)+'<span class="u">%</span>');setHTML("m_occ",f.occ.toFixed(1)+'<span class="u">%</span>');
   setHTML("m_alc",f.alc.toFixed(2)+'<span class="u">% bed-days</span>');setHTML("m_ltc",f.ltc+'<span class="u">days</span>');
   setHTML("m_home",f.home+'<span class="u">days</span>');
-  if(s==="baseline"){set("c_save","$0");
-    setHTML("c_care","Baseline. ALC patients hold ward beds about "+f.ltc+" days. Flip the lever to halve the wait. Paired harm: 18.4% die within 90 days of ALC designation; 4.2 adverse events per 100 ALC-days.");
+  if(s==="baseline"){set("c_save","n/a");
+    setHTML("c_care","Baseline. ALC patients hold ward beds about "+f.ltc+" days. Flip the lever to cut the wait.");
     setHTML("c_ns","<b>Nova Scotia scale:</b> 192,000 ALC days a year. Faster placement is where the avoided cost and avoided harm live.");
     set("capT","Baseline: the ward fills with ALC patients who cannot move");
-  }else{set("c_save","~$1.08M / yr");
+  }else{set("c_save","per-diem basis");
     setHTML("c_care","Care pairing: per-ALC-day harm exposure down about "+f.careExposure+"%. 18.4% die within 90 days of ALC designation; 4.2 adverse events per 100 ALC-days.");
     setHTML("c_ns","<b>Nova Scotia scale, illustrative:</b> ~$"+NS.mid+"M/yr avoided ($"+NS.lo+"M to $"+NS.hi+"M); 192k ALC days x acute-minus-LTC spread. Not CBRH-specific.");
-    set("capT","Faster placement: the ward drains, the wait halves to "+f.ltc+" days");}
-  updateLittle();updateTwoDoor();resetRun();}
+    set("capT","Faster placement: the ward drains, the wait falls to "+f.ltc+" days");}
+  updateLittle();resetRun();}
 // Little's Law readout (T13): ALC bed-days = inflow rate x dwell; updates with the placement-speed lever
 function updateLittle(){const f=FROZEN[scenario];
   setHTML("little_eq","<b>ALC bed-days = inflow rate x dwell</b><br>dwell (placement wait) = <b>"+f.ltc+" days</b> &nbsp;|&nbsp; ALC bed-day share = <b style=\"color:var(--amber)\">"+f.alc.toFixed(2)+"%</b>");
   const harm = scenario==="baseline"
     ? "Harm paired: at baseline exposure, 18.4% die within 90 days of ALC designation."
     : "Harm paired: per-ALC-day harm exposure down about "+f.careExposure+"%.";
-  setHTML("little_note","Inflow does not change with placement speed, so adding ward beds does not change ALC bed-days (L = inflow x dwell); it only adds empty beds. Halving the wait (111 to 56 days) is what halves ALC occupancy. "+harm);}
-// Two-door HUD (v8-T4): front-door diversion + back-door placement, grounded in the locked numbers
-function updateTwoDoor(){const f=FROZEN[scenario];
-  set("td_div",divertedCount);
-  setHTML("td_alc",f.alc.toFixed(2)+"%");setHTML("td_occ",f.occ.toFixed(1)+"%");
-  set("td_freed",Math.round(freedBedDays).toLocaleString());
-  setHTML("td_cost", scenario==="baseline"
-    ? "<b>Avoided acute cost:</b> $0 at baseline. Paired harm: 18.4% die within 90 days of ALC designation; 4.2 adverse events per 100 ALC-days."
-    : "<b>Avoided acute cost:</b> about $1.08M a year, CBRH cohort. Paired harm: per-ALC-day exposure down about "+f.careExposure+"%.");
-  if(typeof updateInvest==='function')updateInvest();}
-// Investment block in the two-door HUD (B-T2): appears under Faster; prompt under Baseline
-function updateInvest(){const el=document.getElementById('td_invest');if(!el)return;
-  if(scenario==="fasterPlacement"){
-    el.innerHTML='<div class="td-invest">'
-      +'<div class="iv"><span>Net-new investment</span><b>about $0.43M / yr</b></div>'
-      +'<div class="iv"><span>Avoided acute cost</span><b>about $1.08M / yr</b></div>'
-      +'<div class="iv"><span>Payback</span><b>about 5 months</b></div>'
-      +'<div class="td-flag">Illustrative planning estimate</div></div>';
-  }else{
-    el.innerHTML='<div class="td-prompt">Flip the lever to see the payback.</div>';
-  }}
+  setHTML("little_note","Inflow does not change with placement speed, so adding ward beds does not change ALC bed-days (L = inflow x dwell); it only adds empty beds. Cutting the wait (115 to 75 days) is what lowers ALC occupancy. "+harm);}
 // Time-of-day arrival pacing (visual only). Locked panel keeps its full-year values.
 const PERIODS={
   morning:{label:"Morning Lull",rate:0.5,note:"Morning lull: arrivals are light and the ED has slack."},
@@ -1026,42 +876,11 @@ function setOutlier(on){outlier=(on===undefined?!outlier:on);
   if(b){b.style.borderColor=outlier?'var(--amber)':'';b.style.color=outlier?'var(--amber)':'';b.textContent=outlier?'Outlier: ON (atypical)':'Outlier / atypical day';}
   const t=document.getElementById('outlierTag');if(t)t.style.display=outlier?'inline-block':'none';
   updatePeriodNote();}
-// front-door diversion toggle (v8-T2)
-function setDiversion(on){diversion=(on===undefined?!diversion:on);
-  const b=document.getElementById('divertBtn');
-  if(b){b.style.borderColor=diversion?'var(--teal)':'';b.style.color=diversion?'var(--teal)':'';b.textContent=diversion?'Diversion: ON':'Divert low-acuity';}
-  if(typeof updateTwoDoor==='function')updateTwoDoor();}
-// OPOR record layer (B-T1): neutral, illustrative links of the secured record across the ecosystem; no number, no agent moves
-let oporGroup=null;
-function oporLabel(){const cv=document.createElement('canvas');cv.width=512;cv.height=140;const g=cv.getContext('2d');
-  g.fillStyle='rgba(12,17,22,.84)';roundRect(g,0,0,512,140,18);g.fill();
-  g.fillStyle='#cdd6dd';g.font='bold 32px ui-sans-serif,Segoe UI,Arial';g.textAlign='center';g.fillText('OPOR record layer',256,58);
-  g.fillStyle='#8a98a8';g.font='600 23px ui-sans-serif,Segoe UI,Arial';g.fillText('illustrative extension, not modeled',256,98);
-  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),depthTest:false,transparent:true}));
-  sp.scale.set(8,2.2,1);return sp;}
-function buildOpor(){
-  oporGroup=new THREE.Group();
-  const mat=new THREE.LineBasicMaterial({color:0x8a98a8,transparent:true,opacity:0.32});  // neutral grey-blue, not teal or amber
-  const hub=new THREE.Vector3(0,4,0);
-  const dests=[];
-  community.forEach(c=>dests.push(c.pos));facilities.forEach(f=>dests.push(f.pos));homeZone.forEach(h=>dests.push(h.pos));
-  dests.forEach(d=>{const geo=new THREE.BufferGeometry().setFromPoints([hub.clone(),new THREE.Vector3(d.x,1.5,d.z)]);
-    oporGroup.add(new THREE.Line(geo,mat));});
-  const lab=oporLabel();lab.position.set(0,17,0);oporGroup.add(lab);
-  scene.add(oporGroup);oporGroup.visible=false;
-}
-function setOpor(on){opor=(on===undefined?!opor:on);
-  if(opor&&!oporGroup)buildOpor();
-  if(oporGroup)oporGroup.visible=opor;
-  const b=document.getElementById('oporBtn');
-  if(b){b.style.borderColor=opor?'#8a98a8':'';b.style.color=opor?'#cdd6dd':'';b.textContent=opor?'OPOR layer: ON':'OPOR layer';}}
 function resetRun(){for(let i=agents.length-1;i>=0;i--)kill(agents[i],i);
   for(let i=vehicles.length-1;i>=0;i--)scene.remove(vehicles[i].mesh);vehicles.length=0;
   for(let i=units.length-1;i>=0;i--){scene.remove(units[i].mesh);unclick(units[i].mesh);}units.length=0;
   for(const b of beds)b.occupant=null;for(const f of facilities){f.occ=0;f.wins.forEach(w=>w.material.color.setHex(0x86c5e0));}
-  placedCount=0;spawnAcc=0;ambAcc=0;divertedCount=0;freedBedDays=0;_lastPlaced=0;
-  if(typeof updateTwoDoor==='function')updateTwoDoor();}
-let _lastPlaced=0;
+  placedCount=0;spawnAcc=0;ambAcc=0;}
 
 /* ===== FREE-ROAM + AERIAL CAMERA ===== */
 let focus=v3(4,0,6),camYaw=0.7,camPitch=0.95,camDist=120,flyTo=null,flyDist=null,keys={},drag=false,dragBtn=0,px=0,py=0,moved=0;
@@ -1090,25 +909,6 @@ function camTick(dt){
   focus.x=Math.max(-160,Math.min(160,focus.x));focus.z=Math.max(-160,Math.min(160,focus.z));
   const ox=camDist*Math.sin(camPitch)*Math.sin(camYaw),oz=camDist*Math.sin(camPitch)*Math.cos(camYaw),oy=camDist*Math.cos(camPitch);
   camera.position.set(focus.x+ox,focus.y+oy,focus.z+oz);camera.lookAt(focus);}
-/* ===== TWO-DOOR CAMERA TOUR (v8-T5; OPOR + investment stop added in B-T4) ===== */
-let tourStops=null,tourIdx=0,tourTimer=0;
-const TOUR=[
-  {focus:[-2,0,22], dist:34, yaw:0,   pitch:0.50, t:5, cap:"Front door: low-acuity patients divert to community care"},
-  {focus:[8,0,-4],  dist:30, yaw:0.6, pitch:0.72, t:5, cap:"The ward: ALC patients in amber hold beds, waiting to move"},
-  {focus:[60,0,0],  dist:42, yaw:0.9, pitch:0.62, t:5, cap:"Back door: faster placement moves them out to LTC and home care"},
-  {focus:[0,0,4],   dist:150,yaw:0.4, pitch:0.32, t:7, cap:"The record follows the patient. The investment pays back in months.",
-    onEnter:()=>{setScenario('fasterPlacement');setOpor(true);}}  // OPOR + investment stop (B-T4)
-];
-function startTour(){ if(tourStops){endTour();return;}
-  tourStops=TOUR; tourIdx=-1; document.body.classList.add('tour');   // show captions but keep the HUD visible
-  const b=document.getElementById('tourBtn'); if(b){b.style.borderColor='var(--teal)';b.style.color='var(--teal)';}
-  nextTourStop(); }
-function nextTourStop(){ tourIdx++; if(!tourStops||tourIdx>=tourStops.length){endTour();return;}
-  const s=tourStops[tourIdx]; if(s.onEnter)s.onEnter();
-  flyTo=v3(s.focus[0],s.focus[1],s.focus[2]); flyDist=s.dist; camYaw=s.yaw; camPitch=s.pitch;
-  set("capT",s.cap); tourTimer=s.t; }
-function endTour(){ tourStops=null; document.body.classList.remove('tour');
-  const b=document.getElementById('tourBtn'); if(b){b.style.borderColor='';b.style.color='';} }
 // fade the hospital shell so the patient flow inside the ED + ward is visible (FlexSim-style cutaway)
 function setCutaway(on){cutaway=on;
   for(const m of hospitalShell){if(!m.material)continue;
@@ -1133,8 +933,6 @@ function showNPCCard(npc,x,y){const el=document.getElementById('npccard');if(!el
 function hideNPCCard(){const el=document.getElementById('npccard');if(el)el.style.display='none';}
 function toggleExplain(on){const el=document.getElementById('explain');if(!el)return;
   if(on===undefined)on=el.style.display!=='block';el.style.display=on?'block':'none';}
-function toggleInsights(on){const el=document.getElementById('insights');if(!el)return;
-  if(on===undefined)on=el.style.display!=='block';el.style.display=on?'block':'none';}
 function bindUI(){const cv=renderer.domElement,ray=new THREE.Raycaster(),m2=new THREE.Vector2();
   cv.addEventListener('pointerdown',e=>{drag=true;dragBtn=e.button;px=e.clientX;py=e.clientY;moved=0;});
   addEventListener('pointerup',e=>{if(drag&&moved<5){m2.x=(e.clientX/innerWidth)*2-1;m2.y=-(e.clientY/innerHeight)*2+1;
@@ -1156,16 +954,12 @@ function bindUI(){const cv=renderer.domElement,ray=new THREE.Raycaster(),m2=new 
   document.getElementById('seg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setScenario(b.dataset.s);});
   document.getElementById('periodSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setPeriod(b.dataset.p);});
   document.getElementById('outlierBtn').addEventListener('click',()=>setOutlier());
-  document.getElementById('divertBtn').addEventListener('click',()=>setDiversion());
-  document.getElementById('tourBtn').addEventListener('click',startTour);
-  document.getElementById('oporBtn').addEventListener('click',()=>setOpor());
   document.getElementById('resetBtn').addEventListener('click',resetRun);
   document.getElementById('recBtn').addEventListener('click',()=>document.body.classList.toggle('record'));
   const cb=document.getElementById('cutawayBtn');
   cb.addEventListener('click',()=>{setCutaway(!cutaway);cb.textContent=cutaway?'Show walls':'See patients';cb.style.borderColor=cutaway?'var(--amber)':'';cb.style.color=cutaway?'var(--amber)':'';});
   document.getElementById('aerialBtn').addEventListener('click',setAerial);
   document.getElementById('infoBtn').addEventListener('click',()=>toggleExplain());
-  document.getElementById('costInfoBtn').addEventListener('click',()=>toggleInsights());
   document.getElementById('shadowBtn').addEventListener('click',()=>{renderer.shadowMap.enabled=!renderer.shadowMap.enabled;
     scene.traverse(o=>{if(o.material){if(Array.isArray(o.material))o.material.forEach(m=>m.needsUpdate=true);else o.material.needsUpdate=true;}});});
   addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});}
@@ -1177,118 +971,7 @@ if(typeof THREE==="undefined"){
   document.body.appendChild(d);
 }else{init();}
 </script>
-<!-- =========================================================
-     SECRET FLY MODE  (additive module; edits no existing logic)
-     Enter: press  H , or click the medevac helicopter on screen.
-     Exit:  Esc
-     Move:  W forward / S back / A,D turn / Space up / Shift down
-     View:  drag the mouse to orbit around your helicopter
-     Speed: press  T  to step the throttle up (x1 to x4)
-     Auto-hovers when you release the keys, so it is hard to crash.
-     To hide it, change the H key on the line marked SECRET.
-     ========================================================= -->
-<script>
-(function(){
-  let flyOn=false, ship=null, vel={x:0,y:0,z:0}, yaw=Math.PI, saved=null;
-  const fk={up:false,down:false};
-  const THR=[1,1.8,2.8,4]; let thr=0;
-  let oYaw=0, oPitch=0.32, oDist=18, od=false, opx=0, opy=0;
-  let curPitch=0, curRoll=0;
 
-  const hint=document.createElement('div');
-  hint.style.cssText='position:fixed;left:50%;bottom:84px;transform:translateX(-50%);z-index:60;display:none;background:rgba(16,22,29,.9);color:#eef2f5;border:1px solid #2b3742;border-radius:9px;padding:8px 14px;font:600 12px ui-sans-serif,Segoe UI,Arial;backdrop-filter:blur(6px);white-space:nowrap';
-  hint.innerHTML='Helicopter &nbsp;\u00b7&nbsp; W/S move \u00b7 A/D turn \u00b7 Space up \u00b7 Shift down \u00b7 drag to orbit \u00b7 T throttle \u00b7 Esc exit';
-  document.body.appendChild(hint);
-
-  const gauge=document.createElement('div');
-  gauge.style.cssText='position:fixed;left:50%;bottom:120px;transform:translateX(-50%);z-index:60;display:none;width:220px;background:rgba(16,22,29,.9);border:1px solid #2b3742;border-radius:10px;padding:9px 12px;font:600 11px ui-sans-serif,Segoe UI,Arial;color:#9fb0bd;backdrop-filter:blur(6px)';
-  gauge.innerHTML='<div style="display:flex;justify-content:space-between;margin-bottom:5px"><span>SPEED</span><span id="flySpd" style="color:#eef2f5">0</span></div><div style="height:7px;background:#0a0f14;border-radius:4px;overflow:hidden"><div id="flyBar" style="height:100%;width:0%;background:linear-gradient(90deg,#4fb0a5,#f4b942)"></div></div><div style="margin-top:6px;display:flex;justify-content:space-between"><span>THROTTLE</span><span id="flyThr" style="color:#f4b942">x1.0</span></div>';
-  document.body.appendChild(gauge);
-
-  function makeShip(){ const s=(typeof helicopter==='function')?helicopter():new THREE.Mesh(new THREE.BoxGeometry(2,1,3),new THREE.MeshStandardMaterial({color:0xd23b3b})); s.rotation.order='YXZ'; return s; }
-  function enter(at){
-    if(flyOn) return;
-    saved={fx:focus.x,fy:focus.y,fz:focus.z,camYaw:camYaw,camPitch:camPitch,camDist:camDist,fogFar:scene.fog.far};
-    flyTo=null; ship=makeShip();
-    const sx=(at&&at.x!=null)?at.x:ROOFPAD.x, sy=Math.max(14,(at&&at.y!=null)?at.y:ROOFPAD.y+12), sz=(at&&at.z!=null)?at.z:ROOFPAD.z;
-    ship.position.set(sx,sy,sz); scene.add(ship);
-    yaw=Math.PI; vel={x:0,y:0,z:0}; oYaw=0; oPitch=0.32; oDist=18; curPitch=0; curRoll=0;
-    scene.fog.far=Math.max(scene.fog.far,650);
-    flyOn=true; hint.style.display='block'; gauge.style.display='block';
-  }
-  function exit(){
-    if(!flyOn) return; flyOn=false;
-    if(ship){scene.remove(ship); ship=null;}
-    if(saved){focus.set(saved.fx,saved.fy,saved.fz); camYaw=saved.camYaw; camPitch=saved.camPitch; camDist=saved.camDist; scene.fog.far=saved.fogFar;}
-    flyTo=null; fk.up=false; fk.down=false; od=false; hint.style.display='none'; gauge.style.display='none';
-  }
-  function fly(dt){
-    if(!ship){flyOn=false;return;}
-    const mult=THR[thr];
-    if(keys.a) yaw+=1.5*dt;
-    if(keys.d) yaw-=1.5*dt;
-    const fx=Math.sin(yaw), fz=Math.cos(yaw), acc=34*mult;
-    if(keys.w){vel.x+=fx*acc*dt; vel.z+=fz*acc*dt;}
-    if(keys.s){vel.x-=fx*acc*dt; vel.z-=fz*acc*dt;}
-    if(fk.up) vel.y+=28*dt;
-    if(fk.down) vel.y-=28*dt;
-    const dh=Math.pow(0.88,dt*60), dv=Math.pow(0.82,dt*60);
-    vel.x*=dh; vel.z*=dh; vel.y*=dv;
-    const sp=Math.hypot(vel.x,vel.z), mx=42*mult; if(sp>mx){vel.x*=mx/sp; vel.z*=mx/sp;}
-    const p=ship.position;
-    p.x=Math.max(-150,Math.min(150,p.x+vel.x*dt));
-    p.z=Math.max(-150,Math.min(150,p.z+vel.z*dt));
-    p.y=Math.max(3,Math.min(160,p.y+vel.y*dt));
-    const fwd=vel.x*fx+vel.z*fz;
-    const tgtPitch=Math.max(-0.12,Math.min(0.5, fwd*0.02));
-    const turn=(keys.a?1:0)-(keys.d?1:0);
-    const tgtRoll=turn*0.5;
-    curPitch+=(tgtPitch-curPitch)*Math.min(1,8*dt);
-    curRoll +=(tgtRoll -curRoll )*Math.min(1,8*dt);
-    ship.rotation.set(curPitch, yaw, curRoll);
-    if(ship.userData.rotor) ship.userData.rotor.rotation.y+=dt*30;
-    if(ship.userData.trotor) ship.userData.trotor.rotation.x+=dt*34;
-    const ang=yaw+Math.PI+oYaw, horiz=oDist*Math.cos(oPitch), vt=oDist*Math.sin(oPitch);
-    const tx=p.x+Math.sin(ang)*horiz, ty=p.y+vt+2, tz=p.z+Math.cos(ang)*horiz;
-    camera.position.lerp(new THREE.Vector3(tx,ty,tz), Math.min(1,7*dt));
-    camera.lookAt(p.x,p.y+1,p.z);
-    const e1=document.getElementById('flySpd'), e2=document.getElementById('flyBar'), e3=document.getElementById('flyThr');
-    if(e1) e1.textContent=Math.round(sp);
-    if(e2) e2.style.width=Math.min(100,sp/168*100)+'%';
-    if(e3) e3.textContent='x'+mult.toFixed(1);
-  }
-
-  const orig=camTick;
-  camTick=function(dt){ if(flyOn) fly(dt); else orig(dt); };
-
-  const ray=new THREE.Raycaster(), mv=new THREE.Vector2();
-  renderer.domElement.addEventListener('pointerup',function(e){
-    if(flyOn) return;
-    if(typeof moved!=='undefined' && moved>=5) return;
-    if(!(typeof heli!=='undefined' && heli && heli.mesh)) return;
-    mv.x=(e.clientX/innerWidth)*2-1; mv.y=-(e.clientY/innerHeight)*2+1;
-    ray.setFromCamera(mv,camera);
-    if(ray.intersectObject(heli.mesh,true).length){ const q=heli.mesh.position; enter({x:q.x,y:q.y,z:q.z}); }
-  });
-
-  renderer.domElement.addEventListener('pointerdown',function(e){ if(flyOn){od=true;opx=e.clientX;opy=e.clientY;} });
-  addEventListener('pointermove',function(e){ if(flyOn&&od){ oYaw-=(e.clientX-opx)*0.006; oPitch=Math.max(-0.25,Math.min(1.2,oPitch+(e.clientY-opy)*0.005)); opx=e.clientX; opy=e.clientY; } });
-  addEventListener('pointerup',function(){ od=false; });
-  renderer.domElement.addEventListener('wheel',function(e){ if(flyOn){ e.preventDefault(); oDist=Math.max(8,Math.min(60,oDist+e.deltaY*0.03)); } },{passive:false});
-
-  addEventListener('keydown',function(e){
-    if(e.key==='Escape'){ exit(); return; }
-    if(!flyOn){ if(e.key==='h'||e.key==='H') enter(); return; }
-    if(e.key===' '){ fk.up=true; e.preventDefault(); }
-    if(e.key==='Shift') fk.down=true;
-    if(e.key==='t'||e.key==='T') thr=(thr+1)%THR.length;
-  });
-  addEventListener('keyup',function(e){
-    if(e.key===' ') fk.up=false;
-    if(e.key==='Shift') fk.down=false;
-  });
-})();
-</script>
 <!-- ==================================================================================
      PATIENT POV BRANCHED JOURNEY  (third-person follow-cam)
      ISOLATED, DELETABLE SUBSYSTEM. Remove this one <script id="patient-pov-journey">
@@ -1639,7 +1322,7 @@ if(typeof THREE==="undefined"){
         wp("Front door","Arrival.",P(ST.front[0],ST.front[1]),2800),
         wp("Triage","Triaged CTAS {ctas}. Low acuity, kept in the department.",P(ST.triage[0],ST.triage[1]),3000),
         wp("Fast-track lane","Sent to the nurse-practitioner fast-track lane. Wait about 5 minutes.",P(ST.fastlane[0],ST.fastlane[1]),3000,{escort:true}),
-        wp("NP consult","Treated by the nurse-practitioner. Fast-track is the strongest single front-door lever, cutting walkouts from 22.32 to 4.26 percent. About 7,391 patients a year use this lane.",P(ST.npconsult[0],ST.npconsult[1]),4200),
+        wp("NP consult","Treated by the nurse-practitioner. Fast-track is the strongest single front-door lever, cutting walkouts from 23.50 to 4.72 percent. About 9,201 patients a year use this lane.",P(ST.npconsult[0],ST.npconsult[1]),4200),
         wp("Discharge","Discharged.",P(ST.discharge[0],ST.discharge[1]),3600,{terminal:true})
       ];
     }
