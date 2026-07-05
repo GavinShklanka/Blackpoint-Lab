@@ -74,6 +74,21 @@
 </style>
 </head>
 <body>
+<!-- WebGL availability guard: show guidance instead of a black screen when the browser has no 3D context. Shows nothing when WebGL works. Changes no model number. -->
+<script>
+(function(){
+  function ok(){try{var c=document.createElement("canvas");return !!(window.WebGLRenderingContext&&(c.getContext("webgl")||c.getContext("experimental-webgl")));}catch(e){return false;}}
+  if(ok())return;
+  function show(){
+    if(document.getElementById("webgl-fallback"))return;
+    var d=document.createElement("div");d.id="webgl-fallback";
+    d.style.cssText="position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#0b0f14;color:#e6edf3;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;text-align:center;padding:24px";
+    d.innerHTML='<div style="max-width:540px"><div style="font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#5fd3c4;margin-bottom:14px">3D view needs WebGL</div><div style="font-size:20px;font-weight:700;margin-bottom:14px">This browser is not providing a 3D graphics context</div><p style="margin:0 0 12px;line-height:1.6;color:#aeb9c4;font-size:15px">The page is fine. The browser has WebGL turned off, so the model cannot draw. Turn on hardware acceleration and reload.</p><p style="margin:0;line-height:1.6;color:#aeb9c4;font-size:15px">Chrome: Settings, then System, turn on "Use graphics acceleration when available", then Relaunch. Or open in Edge or Firefox. Status at chrome://gpu</p></div>';
+    document.body.appendChild(d);
+  }
+  if(document.body)show();else document.addEventListener("DOMContentLoaded",show);
+})();
+</script>
 <div id="app"></div>
 <div class="hud" id="topleft"><div class="panel">
   <div class="eyebrow">Cape Breton Regional Hospital · model, dramatized</div>
