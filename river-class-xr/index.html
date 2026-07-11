@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Shared Decision Room · Black Point Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16212b; --ink-2:#1f2e3a; --steel:#45606f; --steel-soft:#7f97a5;
+    --line:#d5dde2; --paper:#e9edf0; --surface:#ffffff;
+    --go:#0f7a63; --go-soft:#e2f1ec; --go-soft-2:#dcefe9;
+    --amber:#8a6d1c; --amber-soft:#f5e9c9; --red-soft:#fbe3da;
+    --gold:#8a6d1c; --gold-soft:#f5eeda; /* BPA gold placeholder: confirm against brand asset */
+    --rust:#a1522e;
+    --shadow: 0 1px 2px rgba(22,33,43,.06), 0 8px 24px rgba(22,33,43,.06);
+    --inset: inset 0 2px 5px rgba(22,33,43,.08);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important;} }
+  html,body{margin:0;padding:0;}
+  body{font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;padding:28px 18px 40px;}
+  .wrap{max-width:960px;margin:0 auto;}
+  .panel{background:linear-gradient(180deg,var(--ink-2),var(--ink));border-radius:14px 14px 0 0;padding:22px 26px 18px;color:#eaf0f4;}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:0 0 8px;}
+  h1{font-family:"Archivo",sans-serif;font-weight:800;font-size:clamp(22px,4.2vw,32px);line-height:1.08;margin:0 0 6px;letter-spacing:-.01em;}
+  .sub{color:#a9bcc8;font-size:14px;margin:0;max-width:72ch;}
+  .brand{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--steel-soft);margin-top:10px;}
+  nav.tabs{display:flex;flex-wrap:wrap;background:var(--surface);border-left:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .tab{flex:1 1 auto;min-width:120px;padding:12px 8px;border:none;background:transparent;cursor:pointer;font-family:"Archivo",sans-serif;font-weight:700;font-size:12.5px;color:var(--steel-soft);border-bottom:3px solid transparent;transition:color .2s,border-color .2s;}
+  .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--gold);}
+  .tab:focus-visible{outline:3px solid var(--ink);outline-offset:-3px;}
+  .view{display:none;background:var(--surface);border-left:1px solid var(--line);border-right:1px solid var(--line);padding:24px 26px;}
+  .view.active{display:block;}
+  h2{font-family:"Archivo",sans-serif;font-weight:800;font-size:20px;margin:0 0 4px;}
+  h3{font-family:"Archivo",sans-serif;font-size:15px;margin:0 0 6px;}
+  .lede{color:var(--steel);font-size:13.5px;margin:0 0 18px;max-width:78ch;}
+  .tag{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:9.5px;font-weight:600;letter-spacing:.08em;padding:2px 8px;border-radius:12px;white-space:nowrap;}
+  .tag.hot{background:var(--red-soft);color:var(--rust);}
+  .tag.go{background:var(--go-soft-2);color:var(--go);}
+  .tag.amber{background:var(--amber-soft);color:var(--amber);}
+  .tag.tier{background:#eef1f3;color:var(--steel-soft);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:700px){.grid2{grid-template-columns:1fr;}}
+  .card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--paper);box-shadow:var(--inset);}
+  .card p{margin:6px 0 0;font-size:12.5px;color:var(--steel);}
+  .bignum{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:30px;color:var(--go);}
+  .callout{border-left:4px solid var(--go);background:var(--go-soft);border-radius:0 10px 10px 0;padding:12px 16px;font-size:13px;margin-top:14px;}
+  .warn{border-left:3px solid var(--gold);background:var(--gold-soft);border-radius:0 10px 10px 0;padding:12px 16px;font-size:13px;margin-top:14px;color:#4d3d10;}
+  .hypo{border-left:4px solid var(--amber);background:var(--amber-soft);border-radius:0 10px 10px 0;padding:12px 16px;font-size:12.5px;margin-top:14px;color:#4d3d10;}
+  /* problem view */
+  .rank{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:var(--paper);box-shadow:var(--inset);}
+  .rank .num{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:24px;color:var(--gold);line-height:1;min-width:28px;}
+  .rank h3{margin:0 0 2px;font-size:14px;}
+  .rank p{margin:0;font-size:12px;color:var(--steel);}
+  .stagebar{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 12px;}
+  .stagebtn{flex:1 1 90px;border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:8px 6px;cursor:pointer;font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;color:var(--steel);transition:background .2s,color .2s;}
+  .stagebtn[aria-selected="true"]{background:var(--ink);color:#eaf0f4;border-color:var(--ink);}
+  .stagebtn:focus-visible{outline:3px solid var(--ink);outline-offset:2px;}
+  .stagecard{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--paper);box-shadow:var(--inset);}
+  .stagecard p{margin:4px 0 0;font-size:12.5px;}
+  .stagecard .pain{color:#4d3d10;background:var(--gold-soft);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:8px 12px;margin-top:10px;font-size:12.5px;}
+  /* verdicts */
+  .vgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px;}
+  @media(max-width:760px){.vgrid{grid-template-columns:1fr;}}
+  .vcard{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--paper);box-shadow:var(--inset);display:flex;flex-direction:column;gap:8px;}
+  .vcard h3{margin:0;font-size:14px;}
+  .vcard p{margin:0;font-size:11.5px;color:var(--steel);}
+  /* decision room */
+  .roombar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .rolebtn{border:1px solid var(--line);background:var(--paper);border-radius:8px;padding:8px 14px;cursor:pointer;font-family:"Archivo",sans-serif;font-weight:700;font-size:12px;color:var(--steel);}
+  .rolebtn[aria-selected="true"]{background:var(--go);color:#fff;border-color:var(--go);}
+  .rolebtn:focus-visible{outline:3px solid var(--ink);outline-offset:2px;}
+  .ship{width:100%;height:auto;display:block;margin:0 0 12px;}
+  .comp{cursor:pointer;}
+  .comp rect{fill:#cfd9df;stroke:#7f97a5;stroke-width:1;transition:fill .2s;}
+  .comp:hover rect{fill:#b9c8d0;}
+  .comp[data-sel="1"] rect{fill:var(--go);stroke:var(--go);}
+  .comp[data-sel="1"] text{fill:#ffffff;}
+  .comp text{font-family:"IBM Plex Mono",monospace;font-size:7.5px;fill:#45606f;pointer-events:none;}
+  .comp:focus{outline:none;}
+  .comp:focus rect{stroke:var(--ink);stroke-width:2;}
+  .roomgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:700px){.roomgrid{grid-template-columns:1fr;}}
+  .roomcard{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:var(--paper);box-shadow:var(--inset);}
+  .roomcard h3{font-size:13.5px;}
+  .roomcard ul{margin:6px 0 0;padding-left:18px;font-size:12.5px;}
+  .roomcard li{margin-bottom:4px;}
+  .rec{font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:6px;}
+  .rec b{color:var(--go);}
+  .locked{color:var(--steel-soft);font-style:italic;}
+  /* roadmap */
+  .step{display:flex;gap:12px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:var(--paper);box-shadow:var(--inset);}
+  .step .no{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:13px;color:#fff;background:var(--go);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .step .no.later{background:var(--steel-soft);}
+  .step h3{margin:0 0 2px;font-size:14px;}
+  .step p{margin:0;font-size:12.5px;color:var(--steel);}
+  .disclaimer{background:var(--gold-soft);border-left:3px solid var(--gold);border-right:1px solid var(--line);padding:14px 26px 14px 22px;font-size:12px;color:#4d3d10;line-height:1.55;}
+  .disclaimer b{color:var(--gold);font-family:"Archivo";}
+  .method{background:var(--ink);color:#b7c6d0;border-radius:0 0 14px 14px;padding:16px 26px 20px;font-size:11.5px;line-height:1.6;}
+  .method h2{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--steel-soft);margin:0 0 8px;font-weight:600;}
+  .method p{margin:0 0 6px;}
+  .src{font-size:10.5px;color:var(--steel-soft);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="panel">
+    <p class="eyebrow">A decision-support walk-through, not a sales demo</p>
+    <h1>The Shared Decision Room</h1>
+    <p class="sub">Extended Reality, or XR, means using headsets or a large screen room to see and walk around a 3D model instead of reading flat drawings. This piece shows how XR can help many groups make big decisions on Canada&rsquo;s warship programs faster, with a clear record of who decided what. The heart of it is view 4: click through the decision room yourself.</p>
+    <p class="brand">Black Point Analytics · Gavin Taras Shklanka · July 2026</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Views">
+    <button class="tab" role="tab" id="tab-0" aria-controls="view-0" aria-selected="true">1 · The Scene</button>
+    <button class="tab" role="tab" id="tab-1" aria-controls="view-1" aria-selected="false">2 · The Real Problem</button>
+    <button class="tab" role="tab" id="tab-2" aria-controls="view-2" aria-selected="false">3 · What Works</button>
+    <button class="tab" role="tab" id="tab-3" aria-controls="view-3" aria-selected="false">4 · The Decision Room</button>
+    <button class="tab" role="tab" id="tab-4" aria-controls="view-4" aria-selected="false">5 · Everything in Sync</button>
+    <button class="tab" role="tab" id="tab-5" aria-controls="view-5" aria-selected="false">6 · Start Small</button>
+  </nav>
+
+  <!-- VIEW 1: THE SCENE -->
+  <section class="view active" id="view-0" role="tabpanel" aria-labelledby="tab-0">
+    <h2>Canada is rebuilding its navy</h2>
+    <p class="lede">The largest naval build-up since the Second World War, and the largest defence purchase in Canadian history alongside it.</p>
+    <div class="grid2">
+      <div class="card"><h3>River-class destroyers</h3><span class="bignum">$84.5B</span><p>to buy up to 15 ships at Irving Shipbuilding in Halifax, and about $306 billion over the life of the fleet, which covers decades of operating and maintaining them (Parliamentary Budget Officer, 2022).</p></div>
+      <div class="card"><h3>New submarines</h3><span class="bignum">Up to 12</span><p>On July 6, 2026, Canada chose the German company TKMS as its preferred builder. Preferred means chosen to negotiate with: it is not a signed deal, and the submarines are not confirmed to be built in Canada.</p></div>
+      <div class="card"><h3>Why it matters</h3><p style="font-size:13px;color:var(--ink);">Protecting the Arctic and meeting Canada&rsquo;s commitments to NATO and NORAD, the North American defence partnership. Canada&rsquo;s four current Victoria-class submarines are aging and largely out of service; the new fleet would replace them.</p></div>
+      <div class="card"><h3>Two yards, and a growing cluster</h3><p style="font-size:13px;color:var(--ink);">Canada&rsquo;s National Shipbuilding Strategy runs on two big yards: Irving in Halifax builds the combat ships, and Seaspan in Vancouver builds the non-combat ships and is lined up for in-Canada support of the new submarines.</p><p>Alongside them, Kraken Robotics, a Canadian sonar and subsea-technology company (sonar uses sound to picture the sea floor), is expanding into Nova Scotia with a new Dartmouth battery plant opened in early 2026. It does not build ships and is not on these programs, but it shows the region is already building real naval technology, and it is the kind of regional partner a growing Nova Scotia marine-technology cluster could draw on.</p></div>
+    </div>
+    <div class="callout"><b>The point of this piece:</b> programs this large succeed or fail on big, shared decisions. The pages that follow show where those decisions go wrong today, what XR can honestly fix, and one standout idea: the shared decision room.</div>
+  </section>
+
+  <!-- VIEW 2: THE REAL PROBLEM -->
+  <section class="view" id="view-1" role="tabpanel" aria-labelledby="tab-1">
+    <h2>The problem is not too few workers. It is redoing work, and too many separate views.</h2>
+    <p class="lede">The big shortage figures of 200,000 to 250,000 workers describe the whole United States industry, not Irving. Irving&rsquo;s own stated need is about 400 to 600 more tradespeople: a manageable scale-up, not a crisis.</p>
+    <div class="rank"><span class="num">1</span><div><h3>Work done in the wrong order, and design changes that ripple</h3><p>The US Government Accountability Office, the audit office that studies naval shipbuilding, finds these are the main sources of delay and overrun across programs and decades. That is the US signal. The Canadian anchor: on River-class, the final design review is not expected until 2028, about three years after full-rate construction began, and the shore test site at Hartlen Point is ready early 2028.</p></div></div>
+    <div class="rank"><span class="num">2</span><div><h3>Many groups, each seeing only part of the picture</h3><p>The shipyard, the Royal Canadian Navy, the government, safety regulators, and, on the submarine side, foreign partners. Each works from its own documents. Agreeing takes long meetings, and reconstructing who approved what, when, and why is hard.</p></div></div>
+    <h3 style="margin-top:18px;">Walk the build: where redone work lands</h3>
+    <p class="lede" style="margin-bottom:0;">Five steps, from steel to sea. Click each one. This is a general shipbuilding pattern from the design family River-class shares, not Irving-internal data.</p>
+    <div class="stagebar" role="tablist" aria-label="Build steps" id="stagebar"></div>
+    <div class="stagecard" id="stagecard" aria-live="polite"></div>
+  </section>
+
+  <!-- VIEW 3: WHAT WORKS -->
+  <section class="view" id="view-2" role="tabpanel" aria-labelledby="tab-2">
+    <h2>Be honest about what works: three XR uses, ranked by proof</h2>
+    <p class="lede">XR is often sold with impressive percentages. Most do not survive contact with the evidence.</p>
+    <div class="vgrid">
+      <div class="vcard"><h3>1 · VR training for welders</h3><span class="tag go">PROVEN</span><p>VR means a headset that puts you in a fully simulated practice space. A controlled study found VR-assisted welding training beat traditional training across four weld types while saving about $244 per student in materials and time (Stone, Watts and Zhong, 2011). That US study is the signal; the Canadian anchor is Red Seal welding training, and results are still to be confirmed at Canadian warship grade.</p></div>
+      <div class="vcard"><h3>2 · AR instructions on the shop floor</h3><span class="tag amber">PROMISING, UNPROVEN</span><p>AR means digital guidance laid over the real work in front of you. Picture a pipefitter in the Halifax yard fitting a complex pipe run in a tight compartment: instead of walking back to a paper drawing, the next connection is shown on the actual pipe in front of them. The idea is sound. It just has not been measured at a yard like Irving yet, and a plain tablet may do much of the same job for less.</p></div>
+      <div class="vcard"><h3>3 · The immersive walk-through</h3><span class="tag hot">MOSTLY FOR SHOW</span><p>Impressive to look at, but for everyday coordination an ordinary screen shows the same information for far less money. One valuable exception: high-stakes decisions where several groups must agree in the same 3D space. That exception is view 4.</p></div>
+    </div>
+    <div class="warn"><b>Ground rule used throughout:</b> vendor and marketing numbers are not treated as evidence. Only measured comparisons against the normal way of working count.</div>
+  </section>
+
+  <!-- VIEW 4: THE DECISION ROOM -->
+  <section class="view" id="view-3" role="tabpanel" aria-labelledby="tab-3">
+    <h2>The standout idea: one ship, one room, every decision on the record</h2>
+    <p class="lede">Everyone walks through the same 3D ship and sees the current design. Every important part carries a simple record: who approved it, when, and against which requirement. Each person sees the view for their role, and only what they are allowed to see. Try it: <b>choose a role, then click a compartment.</b></p>
+    <div class="roombar" role="tablist" aria-label="Choose your role" id="rolebar"></div>
+    <svg class="ship" viewBox="0 0 900 190" role="group" aria-label="Simplified side view of a destroyer with five clickable compartments" id="shipsvg">
+      <path d="M20,150 L60,110 L840,110 L880,140 L840,170 L60,170 Z" fill="#dfe6ea" stroke="#7f97a5" stroke-width="1.5"/>
+      <rect x="330" y="60" width="130" height="50" fill="#dfe6ea" stroke="#7f97a5" stroke-width="1.5"/>
+      <rect x="470" y="80" width="90" height="30" fill="#dfe6ea" stroke="#7f97a5" stroke-width="1.5"/>
+      <line x1="395" y1="60" x2="395" y2="25" stroke="#7f97a5" stroke-width="3"/>
+    </svg>
+    <div class="roomgrid">
+      <div class="roomcard" id="compcard" aria-live="polite"></div>
+      <div class="roomcard" id="rolecard" aria-live="polite"></div>
+    </div>
+    <div class="hypo"><b>How the role views work.</b> This draws on early research from the MIT Media Lab (Hossein Rahnama, called Perspective-Aware AI): one 3D model, and each person sees the version their job needs, with access set by role. It has never been used in shipbuilding, so treat it as a direction to test at the Halifax yard, not a finished tool. The names and records shown here are made-up examples.</div>
+  </section>
+
+  <!-- VIEW 5: EVERYTHING IN SYNC -->
+  <section class="view" id="view-4" role="tabpanel" aria-labelledby="tab-4">
+    <h2>Everything in sync: the people, the plan, and the record</h2>
+    <p class="lede">The build works when the right people reach competence on time, the overseers agree in one place, and the record keeps up. Here is who it takes, and how the pieces line up on the road to first delivery in the early 2030s.</p>
+    <h3>The people it takes, and where XR honestly helps</h3>
+    <p class="lede" style="margin-bottom:8px;">Time-to-competence figures are Canadian certification standards (Red Seal trades; NRCan CAN/CGSB-48.9712 for inspection; Engineers Nova Scotia for P.Eng): a general pattern, not Irving-measured numbers.</p>
+    <table>
+      <thead><tr><th>Role</th><th>What they do</th><th>Time to competence</th><th>Where XR honestly helps</th></tr></thead>
+      <tbody>
+        <tr><td><b>Welders</b></td><td>Join the steel</td><td>About 3 years, roughly 6,000 hours to Red Seal</td><td><span class="tag go">VR pre-training: proven</span></td></tr>
+        <tr><td><b>Pipefitters</b></td><td>Install piping in the outfitting phase</td><td>Multi-year Red Seal</td><td>VR plausible; AR promising but unproven</td></tr>
+        <tr><td><b>Shipfitters</b></td><td>Lay out and fit steel before welding</td><td>1 to 3 years</td><td>VR plausible</td></tr>
+        <tr><td><b>Combat-systems electricians</b></td><td>Power and combat wiring, late stage</td><td>4-plus years, plus security clearance; scarce</td><td>Decision room helps sequencing</td></tr>
+        <tr><td><b>Machinists, millwrights</b></td><td>Align motors, shafts, equipment</td><td>3 to 4 years</td><td>Limited</td></tr>
+        <tr><td><b>Insulators, coaters</b></td><td>Insulation and coatings; coating rework is common</td><td>Months to 2 years</td><td>Limited</td></tr>
+        <tr><td><b>Riggers, scaffolders</b></td><td>Move and position blocks; safe access; critical for lifts</td><td>Months to 2 years</td><td>Limited</td></tr>
+        <tr><td><b>Sheet-metal workers</b></td><td>Ducting and joinery</td><td>3 to 4 years</td><td>Limited</td></tr>
+        <tr><td><b>QA and NDT inspectors</b></td><td>Check weld and joint integrity; they gate progress</td><td>Years to Level 2 or 3 under Canadian NDT certification (NRCan)</td><td>Decision room: the inspection record in one place</td></tr>
+        <tr><td><b>Naval architects, marine engineers</b></td><td>Design and design changes, the origin of most rework</td><td>Engineering degree plus P.Eng</td><td>Decision room: fewer rippling changes</td></tr>
+        <tr><td><b>Combat-systems integrators</b></td><td>Integrate and commission the combat system</td><td>Security-cleared and scarce</td><td>Decision room: one record at the hard gates</td></tr>
+      </tbody>
+    </table>
+    <h3 style="margin-top:18px;">The people who oversee it</h3>
+    <p class="lede" style="margin-bottom:8px;">The yard planner, the Navy sponsor, the government, the safety regulator, the Department of National Defence, and, on the submarine side, allied partners in Germany and Norway. Each sees the same ship filtered to their role: that is the decision room in view 4.</p>
+    <h3 style="margin-top:18px;">How it works in sync: the road to the early 2030s</h3>
+    <div class="vgrid" style="margin-top:10px;">
+      <div class="vcard"><h3>Before the build</h3><span class="tag tier">PRE-FLIGHT</span><p>Design and planning. VR pre-training brings welders and fitters up to competence before they touch a live hull, so the workforce is ready when each stage needs it. Stabilizing the design early is the single biggest lever against rework.</p></div>
+      <div class="vcard"><h3>During the build</h3><span class="tag tier">IN-FLIGHT</span><p>Assembly, hull join, and the long outfitting phase. The shared decision room gives every group one current model and one record, so out-of-sequence work and rework shrink, and design changes are agreed once, in one place, instead of through email chains.</p></div>
+      <div class="vcard"><h3>Delivery</h3><span class="tag tier">LANDING</span><p>Integration, trials, and handover. A clean, auditable record of who approved what, against which requirement, speeds sign-off at the hard gates. That helps the first ship land on its early-2030s target, and the pattern repeat across the fleet.</p></div>
+    </div>
+    <div class="warn"><b>The honest gate stays.</b> Only VR training is proven. The decision room is a promising direction built on early MIT research. AR is conditional. Nothing in this section changes that ranking.</div>
+  </section>
+
+  <!-- VIEW 6: START SMALL -->
+  <section class="view" id="view-5" role="tabpanel" aria-labelledby="tab-5">
+    <h2>Keep it simple, and start small</h2>
+    <p class="lede">The analysis and the models run on their own computers, where they already live. The XR room only shows the results. No full automated digital copy of the ship: this problem does not need one, and building one would only add cost.</p>
+    <div class="step"><span class="no">1</span><div><h3>Now: one real decision in the room</h3><p>On River-class at Irving. Measure how quickly the decision gets made against the normal process, and whether the record of who approved what is complete.</p></div></div>
+    <div class="step"><span class="no">2</span><div><h3>Now: one VR training task</h3><p>Welding, measured against normal training: how fast a new hire reaches a qualified weld, and whether more stay past the difficult first year.</p></div></div>
+    <div class="step"><span class="no later">3</span><div><h3>Later, and only if those work: submarines and the Arctic</h3><p>The submarine program would add partners in Germany and Norway to the same room, with Seaspan in Vancouver lined up for in-Canada support. Arctic surveillance would add the watch over Canada&rsquo;s waters. Future possibilities, not current work.</p></div></div>
+    <div class="callout"><b>The close:</b> build strong internally. Irving builds the hulls in Halifax, Seaspan builds in Vancouver, marine-technology firms like Kraken are growing in the region, and a governed decision room gives everyone one shared ship and one clear record, honest about what is proven and what is not. Getting these shared decisions right is part of how Canada meets its NATO, NORAD, and Arctic commitments on time, keeps public money accountable with a clear record, and builds one governed way of deciding that could carry across Irving, Seaspan, the submarine program, and Arctic surveillance. The prize is a repeatable, auditable way to decide, not a one-off tool.</div>
+  </section>
+
+  <div class="disclaimer">
+    <b>Illustrative content is labelled.</b> The decision-room records and any interactive figures are invented examples that demonstrate the mechanism; they are not Irving data. Three kinds of facts are kept separate throughout: Canada or Irving specific facts, general shipbuilding patterns, and results from other fields used as rough guides.
+  </div>
+
+  <footer class="method">
+    <h2>Sources, plainly</h2>
+    <p>Parliamentary Budget Officer (2022): about $84.5 billion to buy the River-class ships, about $306 billion over the fleet&rsquo;s life. Prime Minister of Canada (July 6, 2026): TKMS of Germany preferred, not signed, for up to 12 submarines; build location not confirmed. US Government Accountability Office: redone work and design change as the main delay drivers. McKinsey and Company (January 2026): the 200,000 to 250,000 worker figure is US industry-wide; Irving&rsquo;s stated need is about 400 to 600 (The Globe and Mail). Stone, Watts and Zhong (2011), Welding Journal: about $244 saved per student with VR welding training. Rahnama and colleagues, Perspective-Aware AI (Springer, 2026): early research, unproven in shipbuilding. Kraken Robotics public disclosures: the Dartmouth battery plant and Nova Scotia expansion. Canadian certification anchors: Red Seal trades, NRCan CAN/CGSB-48.9712 (NDT inspection), Engineers Nova Scotia (P.Eng).</p>
+    <p class="src">Built by Black Point Analytics · Gavin Taras Shklanka · July 2026. Published with Black Point Analytics&rsquo; explicit approval; the underlying analysis is decision support, not advice.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- tabs ---------- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
+  var views = Array.prototype.slice.call(document.querySelectorAll(".view"));
+  function selectTab(i){
+    tabs.forEach(function(t,j){ t.setAttribute("aria-selected", j===i ? "true" : "false"); });
+    views.forEach(function(v,j){ v.classList.toggle("active", j===i); });
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener("click", function(){ selectTab(i); });
+    t.addEventListener("keydown", function(e){
+      var d = e.key==="ArrowRight" ? 1 : e.key==="ArrowLeft" ? -1 : 0;
+      if(d){ var n=(i+d+tabs.length)%tabs.length; selectTab(n); tabs[n].focus(); e.preventDefault(); }
+    });
+  });
+
+  /* ---------- view 2: build steps ---------- */
+  var stages = [
+    { n:"1", name:"Cut steel, build panels", what:"Plates are cut and welded into flat panels. Everything downstream starts here.", pain:"A design change after this point means cutting apart finished work." },
+    { n:"2", name:"Build the blocks", what:"Panels become 3D blocks. Pipes and cables are fitted early, while access is easy.", pain:"Work pushed past this stage costs far more in cramped spaces later." },
+    { n:"3", name:"Join the hull", what:"Giant blocks are lifted and joined into a ship. Some joining happens outdoors in the weather.", pain:"One delayed lift stalls the whole hull behind it." },
+    { n:"4", name:"Fit out 700 compartments", what:"The longest phase. Many trades work in tight, sequenced spaces.", pain:"This is where most redone work surfaces, and where the bill lands." },
+    { n:"5", name:"Integrate and test", what:"Combat systems are proven at the Hartlen Point shore test facility first (ready early 2028), then the ship goes to trials.", pain:"A hard gate: extra yard labour cannot speed it up." }
+  ];
+  var stagebar = document.getElementById("stagebar");
+  var stagecard = document.getElementById("stagecard");
+  var curStage = 0;
+  stages.forEach(function(st,i){
+    var b = document.createElement("button");
+    b.className = "stagebtn"; b.setAttribute("role","tab");
+    b.setAttribute("aria-selected", i===0 ? "true" : "false");
+    b.textContent = st.n + " · " + st.name.split(",")[0];
+    b.addEventListener("click", function(){ renderStage(i); });
+    b.addEventListener("keydown", function(e){
+      var d = e.key==="ArrowRight" ? 1 : e.key==="ArrowLeft" ? -1 : 0;
+      if(d){ var n=(curStage+d+stages.length)%stages.length; renderStage(n); stagebar.children[n].focus(); e.preventDefault(); }
+    });
+    stagebar.appendChild(b);
+  });
+  function renderStage(i){
+    curStage = i;
+    Array.prototype.forEach.call(stagebar.children, function(b,j){ b.setAttribute("aria-selected", j===i ? "true" : "false"); });
+    var st = stages[i];
+    stagecard.innerHTML = "<h3>Step " + st.n + ": " + st.name + "</h3><p>" + st.what + "</p><div class='pain'><b>Where it hurts:</b> " + st.pain + "</div>";
+  }
+  renderStage(0);
+
+  /* ---------- view 4: the decision room ---------- */
+  var roles = [
+    { id:"planner", name:"Yard planner", intro:"You plan the work. You see build status and work order, compartment by compartment.",
+      sees:["Build status and which trades are due in next","Whether work here is on sequence or pushed out of order","Pre-fit progress against the block schedule"],
+      hidden:"You do not see cost summaries or requirement negotiations; those belong to other roles." },
+    { id:"navy", name:"Navy sponsor", intro:"You speak for the ship’s future crew. You see capability and requirement changes, with approvals.",
+      sees:["The requirement each space must meet, and its change history","Which capability trade-offs are open for decision","Operational impact notes from the fleet"],
+      hidden:"You do not see the yard’s internal scheduling detail; you see its effect on delivery." },
+    { id:"gov", name:"Government official", intro:"You answer for public money. You see cost and schedule exposure, summarized.",
+      sees:["Cost and schedule exposure linked to this compartment’s open decisions","Which decisions are waiting, and on whom","The audit trail: every figure’s source, plainly labelled"],
+      hidden:"You do not see controlled technical detail; summaries only, by design." },
+    { id:"reg", name:"Safety regulator", intro:"You sign off. You see the approval chain: who, when, and against which design version.",
+      sees:["The sign-off chain for every inspection point in this compartment","Open safety questions, physically located in the model","Certification records against the applicable standard"],
+      hidden:"Provenance is your whole view: the record of who approved what is the product here." }
+  ];
+  var comps = [
+    { id:"c1", label:"MACHINERY", x:90,  w:130, name:"Machinery space", design:"Design version C, current since 12 May 2026",
+      rec:{ who:"Approved by K. Doucette (yard engineering) and Cdr. R. Marsh (Navy)", when:"12 May 2026", what:"Revised pump layout to clear a piping clash found at block stage" } },
+    { id:"c2", label:"OPS ROOM", x:340, w:110, name:"Operations room", design:"Design version E, current since 3 June 2026",
+      rec:{ who:"Approved by Cdr. R. Marsh (Navy) and L. Chen (combat systems)", when:"3 June 2026", what:"Console arrangement changed to match the shore test facility configuration" } },
+    { id:"c3", label:"CREW", x:230, w:100, name:"Crew accommodation", design:"Design version B, current since 20 Feb 2026",
+      rec:{ who:"Approved by K. Doucette (yard engineering)", when:"20 Feb 2026", what:"Berthing module standardized across ships 1 to 3" } },
+    { id:"c4", label:"VLS", x:560, w:90, name:"Missile launch cells", design:"Design version D, current since 28 June 2026, one decision open",
+      rec:{ who:"OPEN: awaiting regulator sign-off; yard and Navy have approved", when:"Raised 28 June 2026", what:"Blast venting change in a tight, crowded compartment. This is the kind of decision the room is for: three groups, one physical space, high stakes." } },
+    { id:"c5", label:"FLIGHT DECK", x:680, w:130, name:"Flight deck", design:"Design version A, current since keel laying, June 2026",
+      rec:{ who:"Approved by K. Doucette (yard engineering)", when:"June 2026", what:"Baseline unchanged since contract design" } }
+  ];
+  var curRole = 0, curComp = 3; // open on the interesting one
+  var rolebar = document.getElementById("rolebar");
+  var svg = document.getElementById("shipsvg");
+  var SVGNS = "http://www.w3.org/2000/svg";
+  roles.forEach(function(r,i){
+    var b = document.createElement("button");
+    b.className = "rolebtn"; b.setAttribute("role","tab");
+    b.setAttribute("aria-selected", i===0 ? "true" : "false");
+    b.textContent = r.name;
+    b.addEventListener("click", function(){ curRole=i; renderRoom(); });
+    b.addEventListener("keydown", function(e){
+      var d = e.key==="ArrowRight" ? 1 : e.key==="ArrowLeft" ? -1 : 0;
+      if(d){ curRole=(curRole+d+roles.length)%roles.length; renderRoom(); rolebar.children[curRole].focus(); e.preventDefault(); }
+    });
+    rolebar.appendChild(b);
+  });
+  comps.forEach(function(cp,i){
+    var g = document.createElementNS(SVGNS,"g");
+    g.setAttribute("class","comp");
+    g.setAttribute("tabindex","0");
+    g.setAttribute("role","button");
+    g.setAttribute("aria-label", cp.name + ", click to inspect");
+    var rect = document.createElementNS(SVGNS,"rect");
+    rect.setAttribute("x",cp.x); rect.setAttribute("y",118); rect.setAttribute("width",cp.w); rect.setAttribute("height",44); rect.setAttribute("rx",4);
+    var tx = document.createElementNS(SVGNS,"text");
+    tx.setAttribute("x",cp.x+cp.w/2); tx.setAttribute("y",143); tx.setAttribute("text-anchor","middle");
+    tx.textContent = cp.label;
+    g.appendChild(rect); g.appendChild(tx);
+    g.addEventListener("click", function(){ curComp=i; renderRoom(); });
+    g.addEventListener("keydown", function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); curComp=i; renderRoom(); } });
+    svg.appendChild(g);
+  });
+  var compcard = document.getElementById("compcard");
+  var rolecard = document.getElementById("rolecard");
+  function renderRoom(){
+    Array.prototype.forEach.call(rolebar.children, function(b,j){ b.setAttribute("aria-selected", j===curRole ? "true" : "false"); });
+    var gs = svg.querySelectorAll(".comp");
+    Array.prototype.forEach.call(gs, function(g,j){ g.setAttribute("data-sel", j===curComp ? "1" : "0"); });
+    var cp = comps[curComp], r = roles[curRole];
+    compcard.innerHTML = "<h3>" + cp.name + "</h3>" +
+      "<p style='margin:0;font-size:12.5px;'><span class='tag tier'>CURRENT DESIGN</span>&nbsp; " + cp.design + "</p>" +
+      "<div class='rec'><b>The record:</b> " + cp.rec.what + "<br>" + cp.rec.who + " · " + cp.rec.when + "</div>" +
+      "<p style='margin-top:8px;font-size:11px;color:var(--steel-soft);font-style:italic;'>All names and records are invented examples.</p>";
+    rolecard.innerHTML = "<h3>Your view: " + r.name + "</h3><p style='margin:0 0 4px;font-size:12.5px;color:var(--steel);'>" + r.intro + "</p><ul>" +
+      r.sees.map(function(x){ return "<li>"+x+"</li>"; }).join("") + "</ul><p class='locked' style='font-size:11.5px;margin-top:8px;'>" + r.hidden + "</p>";
+  }
+  renderRoom();
+})();
+</script>
+</body>
+</html>
