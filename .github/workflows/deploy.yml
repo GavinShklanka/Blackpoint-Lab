@@ -1,8 +1,9 @@
 name: Deploy site (portfolio + tornado simulator)
 
-# Publishes the Blackpoint Lab portfolio at the Pages root and the Manitoba
-# Tornado-System Simulator at /app/. Requires repo Settings → Pages → Source:
-# "GitHub Actions".
+# Publishes the Blackpoint Lab portfolio at the Pages root, the Manitoba
+# Tornado-System Simulator at /app/, the Cape Breton ED simulation at
+# /cape-breton-ed/, and the River-Class XR walkthrough at /river-class-xr/.
+# Requires repo Settings → Pages → Source: "GitHub Actions".
 
 on:
   push:
@@ -36,12 +37,13 @@ jobs:
           npm ci
           npm run build
 
-      - name: Assemble site (portfolio at root, app at /app, ED sim at /cape-breton-ed)
+      - name: Assemble site (portfolio at root, app at /app, ED sim at /cape-breton-ed, XR walkthrough at /river-class-xr)
         run: |
-          mkdir -p _site/app _site/cape-breton-ed
+          mkdir -p _site/app _site/cape-breton-ed _site/river-class-xr
           cp index.html _site/index.html
           cp -r manitoba-tornado-sim/dist/* _site/app/
           cp -r cape-breton-ed/* _site/cape-breton-ed/
+          cp -r river-class-xr/* _site/river-class-xr/
           touch _site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
